@@ -1,0 +1,247 @@
+<!doctype html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if IE 9 ]><html class="ie9 no-js"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+{% include 'easylockdown_head' %}
+  	<meta charset="utf-8">
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+  	<meta name="theme-color" content="{{ settings.color_brand }}">  	
+
+  	{% if settings.favicon != blank %}
+	    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+	{% endif %}
+
+  	<!-- Title and description ================================================== -->
+  	<title>
+  	{{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  	</title>
+  {% include "trackify_x" %}
+
+  	{% if page_description %}
+  		<meta name="description" content="{{ page_description | escape }}">
+  	{% endif %}
+
+  	{% include 'social-meta-tags' %}
+
+  	<!-- Google fonts ========================================== -->
+	{% if settings.type_base_family contains 'google' %}
+	  	{%- assign type_base_parts = settings.type_base_family | split: '_' -%}
+	  	{% capture baseGoogleUrl %}{{ type_base_parts[1] }}:{% if type_base_parts[2] == '300' %}300,{% endif %}400,700{% endcapture %}
+	  	{{ '//fonts.googleapis.com/css?family=' | append: baseGoogleUrl | stylesheet_tag }}
+	{% endif %}
+	{% if settings.type_header_family contains 'google' %}
+	  	{%- assign type_header_parts = settings.type_header_family | split: '_' -%}
+	  	{% capture headerGoogleUrl %}{{ type_header_parts[1] }}:{{ type_header_parts[2] }}{% endcapture %}
+	  	{{ '//fonts.googleapis.com/css?family=' | append: headerGoogleUrl | stylesheet_tag }}
+	{% endif %}
+	{% if settings.type_button_family contains 'google' %}
+	  	{%- assign type_button_family = settings.type_button_family | split: '_' -%}
+	  	{% capture buttonGoogleUrl %}{{ type_button_family[1] }}:{{ type_button_family[2] }}{% endcapture %}
+	  	{{ '//fonts.googleapis.com/css?family=' | append: buttonGoogleUrl | stylesheet_tag }}
+	{% endif %}
+
+  	<!-- CSS ================================================== -->
+	{{ 'main.scss.css' | asset_url | stylesheet_tag }}
+
+  	<!-- JS ================================================== -->
+  	{{ '//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js' | script_tag }}
+  	{{ 'plugins-top.js' | asset_url | script_tag }}  	
+
+  	{% if template contains 'customers' %}
+		{{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+  	{% endif %}
+  	<script type="text/javascript">
+		theme = {};
+		theme.t = {};
+		theme.map = {};
+		theme.cart_ajax = {{ settings.cart_ajax }};
+	</script>
+
+	<!-- Header hook for plugins ================================================== -->
+  	{{ content_for_header }}
+{%- include 'bold-product' with product, hide_action: 'header' -%}
+
+  {% include 'bold-common' %}
+
+  {% include 'judgeme_core' %}
+  
+  {% case template.name %}
+  {% when 'index' %}
+  	<link rel="canonical" href="https://www.lamuscle.com/" />
+  {% when 'page' %}
+  	<link rel="canonical" href="{{ page.metafields.global.canoncial_url }}" />
+  {% when 'article' %}
+  	<link rel="canonical" href="{{ article.metafields.global.canoncial_url }}" />
+  {% when 'blog' %}
+  	<link rel="canonical" href="https://www.lamuscle.com/lounge/" />
+  {% when 'product' %}
+  	<link rel="canonical" href="{{ product.metafields.global.canoncial_url }}" />
+  {% when 'collection' %}
+  	<link rel="canonical" href="{{ collection.metafields.global.canoncial_url }}" />
+  {% endcase %}
+  
+{% include 'geolocationredirect_snippet' %}
+  {%- include 'bold-common' -%}
+</head>  
+
+<body id="{{ page_title | handle }}" class="{% if customer %}customer-logged-in {% endif %}template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}" >
+	<script type="text/javascript">
+		//loading class for animations
+		document.body.className += ' ' + 'theme-loading';
+	</script>
+
+	{% section 'mobile-drawer' %}
+	{% section 'header' %}
+
+	<div class="main">
+		{% comment %}{{ content_for_layout }}{% endcomment %}{% include 'easylockdown_body' %}
+	</div>
+
+	{% section 'footer' %}
+	{% section 'promo-pop' %}
+	{% section 'age-checker' %}
+	
+	{% if settings.search_enable %}
+		<div class="search-draw js-search-draw mfp-hide">
+		    <div class="search-draw__wrapper">  
+		        <div class="search__head">
+		            <div class="search__label">
+		                <h3 class="search__label-title">{{ 'general.search.label' | t }}</h3>
+		            </div>
+		        </div>  
+		        <div class="search__inner">
+		            <form action="/search" method="get" class="search__form" role="search">
+		                <input type="hidden" name="type" value="{{ settings.search_limit }}">
+		                <input type="search" name="q" class="search__form-input js-search-input" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}">
+		                <button type="submit" class="search__form-submit">
+		                    <i class="icon icon--search" aria-hidden="true"></i>
+		                    <span class="icon-fallback__text">{{ 'general.search.submit' | t }}</span>
+		                </button>
+		            </form>
+		            {% assign search_nav = settings.search_linklist %}
+		            {% if linklists[search_nav].links.size > 0 %}
+		                <div class="search__nav">
+		                    <h4 class="search__nav-title h5">{{ linklists[search_nav].title }}</h4>
+		                    <ul class="search__nav-items o-list-bare">
+		                        {% for link in linklists[search_nav].links %}
+		                            <li class="search__nav-item">
+		                                <a href="{{ link.url }}" class="search__nav-link">{{ link.title }}</a>
+		                            </li>
+		                        {% endfor %}
+		                    </ul>
+		                </div>
+		            {% endif %}
+		        </div>
+		    </div>
+		</div>
+	{% endif %}
+	
+	<div class="ajaxcart-draw js-cart-draw mfp-hide">
+		<div class="ajaxcart-draw__wrapper js-cart-draw-inner">	
+			<div class="ajaxcart-draw__scroll">
+				<div class="ajaxcart__head">
+		            <div class="ajaxcart__label">
+		                <h3 class="ajaxcart__label-title">{{ 'cart.general.title' | t }}</h3>
+		            </div>
+		        </div>	
+	       		<div id="CartContainer"></div>
+	       		<div id="EmptyCart">
+	       			<div class="ajaxcart-empty">
+	       				<h5 class="ajaxcart-empty__title">{{ 'cart.general.empty' | t }}</h5>
+	       				<span class="emoji ajaxcart-empty__emoji">
+	       					<i class="icon icon--sad"></i>
+	       				</span>
+	       				<a href="/collections/all" class="c-btn c-btn--primary c-btn--full">{{ 'cart.general.empty_link' | t }}</a>
+	       			</div>
+	       		</div>
+	       	</div>
+		</div>
+	</div>
+
+	{% include 'currencies' %}
+{%- include 'bold-currency-picker-mount', openDirection: 'up' -%}
+	{% include 'ajax-cart-template' %}
+	{{ 'ajax-cart.js' | asset_url | script_tag }}
+	
+	{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+  	{{ 'plugins.js' | asset_url | script_tag }}
+  	{{ 'main.js' | asset_url | script_tag }}
+
+	<script>
+	{% if resetPassword %}
+	  	$(function() {
+			timber.resetPasswordSuccess();
+	  	});
+	{% endif %}
+  	</script>
+	<script>
+		theme.ajaxCartInit = function() {
+			ajaxCart.init({
+				cartContainer: '#CartContainer',
+				cartCountSelector: '#CartCount',
+				cartCostSelector: '#CartCost',
+				emptySelector: '#EmptyCart',
+				{% if settings.cart_ajax %}
+				triggerSelector: '.js-cart-trigger',
+				formSelector: '.js-product-form',
+				addToCartSelector: '.js-product-add',
+				{% endif %}
+				moneyFormat: {{ shop.money_format | json }}
+			});
+		};
+		//open cart after item is new added
+		$('body').on('completeAddItem.ajaxCart', function() {
+            setTimeout(function(){
+                theme.mfpOpen('cart');
+            }, 100);
+		});
+	</script>
+	<!-- Venue theme by Safe As Milk - http://safeasmilk.co/ -->
+	<!-- Theme version 3.4.0 -->
+	<script>
+      $(document).ready(function(){
+        
+        var template = '{{ template.name }}';
+        var NEW_LINK = '';
+        
+        switch (template) {
+            case 'product':
+                NEW_LINK = '{{ product.metafields.global.canoncial_url }}';
+                break;
+            case 'page':
+                NEW_LINK = '{{ page.metafields.global.canoncial_url }}';
+                break;
+            case 'collection':
+                NEW_LINK = '{{ collection.metafields.global.canoncial_url }}';
+                break;
+            case 'blog':
+                NEW_LINK = 'https://www.lamuscle.com/lounge/';
+                break;            
+            case 'article':
+                NEW_LINK = '{{ article.metafields.global.canoncial_url }}';
+                break;
+          	default:
+            	NEW_LINK = 'https://www.lamuscle.com/';
+            	
+        }
+        
+        //$('link[rel=canonical]').attr('href', NEW_LINK);
+
+      });
+	</script>
+
+{% include 'special-offers' %}
+{%- include 'bold-currency-converter' -%}
+
+<!-- spurit_uev-added -->
+{% include 'spurit_uev-theme-snippet' %}
+<!-- /spurit_uev-added -->
+
+<!-- Delete the Beeketing script below after uninstalling Happy Messenger app to remove it from your theme. For more info, read here: https://bit.ly/hmesscode or contact us at hi@beeketing.com. --><!-- BEEKETINGSCRIPT CODE START -->{% include 'bk-tracking' %}<!-- BEEKETINGSCRIPT CODE END -->
+<!-- **BEGIN** Hextom USB Integration // Main Include - DO NOT MODIFY -->
+    {% include 'hextom_usb_main' %}
+    <!-- **END** Hextom USB Integration // Main Include - DO NOT MODIFY -->
+</body>
+</html>
