@@ -1,0 +1,43 @@
+
+<!-- saved from url=(0146)https://servedby.flashtalking.com/container/8370;68125;6497;iframe/?spotName=Retargeting&U1=/de/de/matratzen/casper/&cachebuster=726361.1052904673 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body><script type="text/javascript">
+var init  = function(){
+if(document.location.href.indexOf('&U1') < 1 ){
+ return true;
+}
+var u1 = encodeURIComponent(document.location.href.split('&U1=')[1].split('&')[0].split(",")),
+segStump1 = 'https://servedby.flashtalking.com/segment/modify/',
+segStump2 = ';;pixel/?name=',
+segStump3 = '',
+segStump4 = '&setTime=0&granularity=day',
+u1containskey1 = u1.indexOf('%2F' || '%2Fca%2Fen' || '%2Fuk%2Fen') > -1,
+u1containskey2 = u1.indexOf('%2Fmattresses' || 'ca%2Fen%2Fmattresses' || 'uk%2Fen%2Fmattresses') > -1,
+u1containskey3 = u1.indexOf('%2Fcheckout%2Faddress' || 'ca%2Fen%2Fcheckout%2Faddress' || 'uk%2Fen%2Fcheckout%2Faddress') > -1;
+keys = [
+            'npo',
+            'npp',
+            'npr'
+];
+//console.log(u1);
+if(u1containskey1 && !(u1containskey2||u1containskey3)){
+if( (/(%2F)\b/.test(u1)) || (/(%2Fca%2Fen)\b/.test(u1)) || (/(%2Fuk%2Fen)\b/.test(u1)) ){
+segStump3 = "HomePage";
+newSegment = new Image();
+newSegment.src = segStump1 + keys[0] + segStump2 + segStump3 + segStump4;
+}
+}if(u1containskey2){
+if( (/(%2Fmattresses)\b/.test(u1)) || (/(ca%2Fen%2Fmattresses)\b/.test(u1)) || (/(uk%2Fen%2Fmattresses)\b/.test(u1)) ){
+segStump3 = "Shopper_Review";
+newSegment = new Image();
+newSegment.src = segStump1 + keys[1] + segStump2 + segStump3 + segStump4;
+}
+}if(u1containskey3){
+if( (/(%2Fcheckout%2Faddress)\b/.test(u1)) || (/(ca%2Fen%2Fcheckout%2Faddress)\b/.test(u1)) || (/(uk%2Fen%2Fcheckout%2Faddress)\b/.test(u1)) ){
+segStump3 = "Funnel";
+newSegment = new Image();
+newSegment.src = segStump1 + keys[2] + segStump2 + segStump3 + segStump4;
+}
+}
+}
+init();
+</script></body></html>
