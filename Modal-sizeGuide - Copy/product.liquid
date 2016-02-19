@@ -1,0 +1,345 @@
+<!-- /templates/product.liquid -->
+{% comment %}
+
+  Rich snippets (itemscope, itemtype, etc.) for products are a theme requirement,
+  and allow search engines to easily understand what the content is.
+
+  For more information on these Scheme.org tags, visit:
+    - http://schema.org/docs/gs.html
+
+{% endcomment %}
+
+<div itemscope itemtype="http://schema.org/Product">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  {% comment %}
+    Get first variant, or deep linked one
+  {% endcomment %}
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  {% include 'breadcrumb' %}
+
+  <div class="grid product-single medium---grid--full">
+    <div class="grid__item large--one-half text-center productimages">
+
+      <div class="photos-product">
+        {% for image in product.images %}
+            <div>
+                <img src="{{ image.src | img_url: 'master' }}" alt="{{ image.alt | escape }}">
+        	</div>
+        {% endfor %}
+      </div>
+      <div class="thumbs-product">
+        {% assign j = 0 %}
+        {% for image in product.images %}
+            <div data-slide="{{ j }}">
+                <img src="{{ image.src | img_url: 'compact' }}" alt="{{ image.alt | escape }}">
+        	</div>
+        {% assign j = j | plus: 1 %}
+        {% endfor %}
+      </div>
+      
+      
+      
+      
+    </div>
+
+    <div class="grid__item large--one-half productinfo">
+
+      <h1 class="productoptitle">{{ product.metafields.c_f['[p]Product Subtitle'] }}</h1>
+      <h1 itemprop="name" class="productitle">{{ product.metafields.c_f['[p]Product Title'] }}</h1>
+
+      <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+
+        <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+        {% comment %}
+          ID addToCartForm is a selector for the ajax cart plugin
+        {% endcomment %}
+        <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm" class="form-vertical">
+
+          
+          <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+          <span id="ProductPrice" class="h2" itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+            {{ current_variant.price | money }}
+          </span>
+
+          {% if product.compare_at_price_max > product.price %}
+            <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+            <p id="ComparePrice">
+              {{ 'products.product.compare_at' | t }} {{ current_variant.compare_at_price | money }}
+            </p>
+          {% endif %}
+          
+          
+          {% comment %}
+            Add product variants as a dropdown.
+              - By default, each variant (or combination of variants) will display as its own <option>
+              - To separate these into multiple steps, which we suggest, use option_selection.js (see below)
+
+            You can leverage jQuery to add a callback on page load and each time the select element changes:
+              - Include option_selection.js (as seen at the bottom of this file)
+              - This allows you to use JavaScript anytime the variant dropdown changes
+              - This also separates out your variant options (ie. size, color, etc.) to separate select elements
+
+            For more information on products with multiple options, visit:
+              - http://docs.shopify.com/support/your-website/themes/can-i-make-my-theme-use-products-with-multiple-options#update-product-liquid
+          {% endcomment %}
+          <select name="id" id="productSelect" class="product-single__variants">
+            {% for variant in product.variants %}
+              {% if variant.available %}
+
+                {% comment %}
+                  Note: if you use option_selection.js, your <select> tag will be overwritten, meaning what you have inside <option> will not reflect what you coded below.
+                {% endcomment %}
+                <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money_with_currency }}</option>
+
+              {% else %}
+                <option disabled="disabled">
+                  {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+
+          
+
+          <label for="Quantity" class="quantity-selector">{{ 'products.product.quantity' | t }}</label>
+          <input type="number" id="Quantity" name="quantity" value="1" min="1" class="quantity-selector">
+
+          <button type="submit" name="add" id="AddToCart" class="btn">
+            <span id="AddToCartText">{{ 'products.product.add_to_cart' | t }}</span>
+          </button>
+        </form>
+
+      </div>
+
+      <div class="product-description rte" itemprop="description">
+        <h2 class="accorcontrol accoractive" ><i class="fa fa-caret-right" aria-hidden="true"></i>DESCRIPTION</h2>
+        <div class="accontent accopen">
+        {{ product.description }}
+        </div>
+        
+        <h2 class="sizeguide" id="myBtn" style="font-size: 14px; letter-spacing: 0px; cursor: pointer;"><i class="fa fa-caret-right" aria-hidden="true"></i> FIT GUIDE</h2>
+        <div class="modal" id="myModal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <header>
+              <h3 tabindex="0">MEASUREMENTS</h3>
+              <p class="measurement-selector">
+              </p>
+              <div class="clearfix"></div>
+            </header>
+            <div id="menswear" class="gender-group">
+              <div class="content-group mens-clothing">
+                <table class="measurements responsive">
+                  <thead>
+                    <tr>
+                      <th>SIZE</th>
+                      <th>S</th>
+                      <th>M</th>
+                      <th>L</th>
+                      <th>XL</th>
+                      <th>XXL</th>
+                    </tr>
+                  </thead>
+                  <tbody class="inches">
+                    <tr class="even">
+                      <td>NECK</td>
+                      <td>15-15.5"</td>
+                      <td>15.5-16"</td>
+                      <td>16-16.5"</td>
+                      <td>16.5-17"</td>
+                      <td>17-17.5"</td>
+                    </tr>
+                    <tr>
+                      <td>CHEST</td>
+                      <td>36-38"</td>
+                      <td>38-40"</td>
+                      <td>40-42"</td>
+                      <td>42-44"</td>
+                      <td>44-46"</td>
+                    </tr>
+                    <tr class="even">
+                      <td>L/S SLEEVE</td>
+                      <td>32-33.5"</td>
+                      <td>33-34.5"</td>
+                      <td>34-35.5"</td>
+                      <td>35-36.5"</td>
+                      <td>36-37.5"</td>
+                    </tr>
+                  </tbody>                        
+                </table>
+              </div>
+            </div>
+            <footer>
+            </footer>
+          </div>      	
+        </div>                
+      </div>
+
+      {% comment %}
+        If the user is on a collection product page (ie with /collections/collection-handle/products/product-handle)
+        in the URL, we can show next/previous links to other products in the collection.
+      {% endcomment %}
+      {% if collection %}
+        {% if collection.previous_product or collection.next_product %}
+          <p>
+            {% if collection.previous_product %}
+              <span class="left">
+                {{ 'products.general.previous_product_html' | t | link_to: collection.previous_product }}
+              </span>
+            {% endif %}
+            {% if collection.next_product %}
+              <span class="left nextleft">
+                {{ 'products.general.next_product_html' | t | link_to: collection.next_product }}
+              </span>
+            {% endif %}
+          </p>
+        {% endif %}
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+
+{% comment %}
+  To take advantage of a callback on the select dropdown, add option_selection.js
+  and customize the JS in timber.productPage as needed.
+
+  Currently, timber.productPage does the following:
+    - Hides your <select> tag from above
+    - Breaks out the product variants into separate product options, if more than one exists
+    - Generates a <select> tag for each product option
+    - Enables/disables elements based on variant availability
+
+  Callback notes:
+    - Keep the callback available to the global scope (window.selectCallback) so that advanced
+      addons can override it.
+      * E.g. multiple currencies http://docs.shopify.com/manual/configuration/store-customization/currencies-and-translations/currencies/how-to-toggle-between-two-currencies
+{% endcomment %}
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
+<script>
+  var selectCallback = function(variant, selector) {
+    timber.productPage({
+      money_format: "{{ shop.money_format }}",
+      variant: variant,
+      selector: selector
+    });
+  };
+
+  jQuery(function($) {
+    new Shopify.OptionSelectors('productSelect', {
+      product: {{ product | json }},
+      onVariantSelected: selectCallback,
+      enableHistoryState: true
+    });
+
+    // Add label if only one product option and it isn't 'Title'. Could be 'Size'.
+    {% if product.options.size == 1 and product.options.first != 'Title' %}
+      $('.selector-wrapper:eq(0)').prepend('<label for="productSelect-option-0">{{ product.options.first | escape }}</label>');
+    {% endif %}
+
+    // Hide selectors if we only have 1 variant and its title contains 'Default'.
+    {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+      $('.selector-wrapper').hide();
+    {% endif %}
+  });
+</script>
+{%include 'preorder-me-widget'%}
+  
+<style> 
+  /* The Modal (background) */
+  .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 51; /* Sit on top */
+      padding-top: 0; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content */
+  .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%;
+      position: fixed; /* Stay in place */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+  }
+  .modal-content th {background-color: #f5f5f5; border: 10px solid #ffffff;}
+  .modal-content td {background-color: #f5f5f5; border: 10px solid #ffffff;}
+  .modal-content .even td {background-color: #e6e6e6;}
+  
+  @media screen and (max-width:1024px){
+    .modal-content {
+		width: 82%;
+    }
+  }  
+  
+  
+  @media screen and (max-width:620px){
+    .modal-content {
+    	padding: 0px;
+      	width: 100%;
+    }
+  .modal-content th {padding: 5px;}
+  .modal-content td {padding: 5px;}    
+  }
+
+  /* The Close Button */
+  .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+  }
+</style> 
+  
+<script>
+  // Get the modal
+  var modal = document.getElementById('myModal');
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the modal 
+  btn.onclick = function() {
+      modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+      modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+      if (event.target == modal) {
+          modal.style.display = "none";
+      }
+  }
+</script>  
