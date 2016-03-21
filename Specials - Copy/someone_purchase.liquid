@@ -1,0 +1,173 @@
+{% if settings.popup_enable %}
+<script type="text/javascript">
+  $(document).ready(function() {
+      var firstArray = [
+        'James',
+        'Mary',
+        'Robert',
+        'Jennifer',
+        'Michael',
+        'Elizabeth',
+        'Thomas',
+        'Nancy',
+        'Charles',
+        'Margaret',
+        'David',
+        'Ashley',
+        'Benjamin',
+        'Frank',
+        'Hannah',
+        'Karen',
+        'Lucy',
+        'Oscar',
+        'Peter',
+        'Rachel',
+        'Steve',
+        'Vanessa'
+      ];
+      var lastArray = [
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F',
+        'G',
+        'H',
+        'K',
+        'L',
+        'M',
+        'N',
+        'O',
+        'P',
+        'R',
+        'S',
+        'T',
+        'V',
+        'W',
+        'Y',
+      ];
+      var locationArray = [
+        'Birmingham, AL',
+        'Phoenix, AZ',
+        'Little Rock, AR',
+        'Los Angeles, CA',
+        'Denver, CO',
+        'Wilmington, DE',
+        'Washington D.C.',
+        'Jacksonville, FL',
+        'Atlanta, GA',
+        'Boise, ID',
+        'Chicago, IL',
+        'Indianapolis, IN',
+        'Wichita, KS',
+        'Louisville, KY',
+        'New Orleans, LA',
+        'Boston, MA',
+        'Lansing, MI',
+        'Jackson, MS',
+        'Omaha, NE',
+        'Las Vegas, NV',
+        'Newark, NJ',
+        'New York, NY',
+        'Albuquerque, NM',
+        'Charlotte, NC',
+        'Columbus, OH',
+        'Oklahoma City, OK',
+        'Philadelphia, PA',
+        'Columbia, SC',
+        'Memphis, TN',
+        'Houston, TX',
+        'Salt Lake City, UT',
+        'Seattle, WA',
+        'Milwaukee, WI',
+        'Cheyenne, WY'
+      ]
+    setInterval(function(){
+      var randTime = Math.floor((Math.random()*40)+5);
+      $('#randTime').html(randTime);
+
+      var firstRand = Math.floor(Math.random()*firstArray.length);
+      var randFirst = firstArray[firstRand];
+      $('#randFirst').html(randFirst);
+
+      var lastRand = Math.floor(Math.random()*lastArray.length);
+      var randLast = lastArray[lastRand];
+      $('#randLast').html(randLast);
+
+      var locationRand = Math.floor(Math.random()*locationArray.length);
+      var randLocation = locationArray[locationRand];
+      $('#randLocation').html(randLocation);
+
+      $('#recentBox').css("display", "block");
+      $('#recentBox').animate({'bottom': '15'}, {
+       duration: 800
+      });
+
+      setTimeout(function(){
+        $('#recentBox').animate({'bottom': '-115'}, {
+         duration: 800
+       });
+     }, 4500);
+
+     setTimeout(function(){
+       $('#recentBox').css("display", "none");
+    }, 5400);
+
+  }, 15000);
+  });
+</script>
+
+{% assign randomly_collection = collections[settings.popup_randomly_collection] %}
+{% capture index %}{{ 'now' | date: '%S' | times: randomly_collection.products.size | divided_by: 60 }}{% endcapture %}
+
+{% for product in randomly_collection.products offset:index limit:1000 %}
+
+  <div id="recentBox" style="display: none; bottom: -115px;">
+    <div id="recentImg">
+      <img src="{{ product | img_url: '120x85' }}" width="100%">
+    </div>
+    <div id="recentText" style="color:{{ settings.popup_message }};">
+      <span id="randFirst">Lucy</span> <span id="randLast">M</span>. in <span id="randLocation">Memphis, TN</span>
+      <br>
+      purchased a
+      <br>
+      <strong><a href="{{ product.url }}" style="color:{{ settings.popup_product_title_olor }} !important;">{{ product.title | slice: 0, 18 }}...</a></strong>
+      <br>
+      {% if settings.popup_ago_custom_time %}About <span id="randTime">21</span> minutes ago{% endif %}
+    </div>
+    <div class="clear" style="clear: both;"></div>
+  </div>
+
+{% endfor %}
+
+<style>
+  #recentBox {
+    width: 280px;
+    padding: 15px;
+    height: auto;
+    position: fixed;
+    z-index: 500;
+    left: 15px;
+    bottom: -115px;
+    background: #fff;
+    display: none;
+    box-shadow: 0px 0px 5px #000;
+}
+  
+  #recentImg {
+    width: 80px;
+    height: auto;
+    float: left;
+}
+  
+  #recentText {
+    width: calc(100% - 95px);
+    height: auto;
+    float: left;
+    font-size: 13px;
+    font-family: 'Open Sans';
+    margin-left: 15px;
+}
+</style>  
+{% endif %}
