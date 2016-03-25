@@ -1,0 +1,314 @@
+{% assign numBreaks = 3 %}
+<script>
+  var arrVariant = [];
+</script>
+<div data-section-id="{{ section.id }}" data-section-type="cart-template">
+
+  <h2 class="page-title" style="font-style:italic;color: #000">{{ 'cart.general.title' | t }}</h1>
+  
+  <!-- Bold: Quantity Breaks - Step 7 -->
+  <div id="shappify-qty-cart-msg"></div>
+  <!-- // end Bold code -->
+
+  {% if cart.item_count == 0 %}
+    <p><strong>{{ 'cart.general.empty' | t }}</strong></p>
+    {% if section.settings.featured_collection %}
+    {%- assign featuredCollection = section.settings.featured_collection -%}
+    {% if collections[featuredCollection].products.size > 0 %}
+      <p>{{ 'cart.general.featured_items_for_empty_cart' | t }}</p>
+      <ul class="block-grid columns3 collection-th flexbox-grid">
+      {% for product in collections[featuredCollection].products limit:9 %}
+      {% include 'bold-product' with product, hide_action: 'skip' %}  
+         {% include 'product-loop', grid_image_width: '200x200' %}
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {% endif %}
+  {% else %}
+
+  <div id="cart-contents" class="clearfix">
+    <form action="/cart" method="post" id="cartform">
+      <div class="cart-header clearfix">
+        <div class="cart-col1">
+          <h4>{{ 'cart.general.item' | t }}</h4>
+        </div>
+        <div class="cart-col2">
+          <h4>&nbsp;</h4>
+        </div> 
+        <div class="cart-col3">
+          <h4>{{ 'cart.general.price' | t }}</h4>
+        </div>
+        <div class="cart-col4">
+          <h4>{{ 'cart.general.quantity' | t }}</h4>
+        </div>
+        <div class="cart-col5">
+          <h4>{{ 'cart.general.total' | t }}</h4>
+        </div> 
+        <div class="cart-col6">
+          <h4>&nbsp;</h4>
+        </div>   
+      </div>
+
+      <ul class="cart-contents clearfix">
+          {% for item in cart.items %}
+          <script>
+            var objVariant = {};
+            objVariant.oldVariantId = "{{ item.variant.id }}";
+			objVariant.qty = "{{item.quantity}}";
+
+            // Get the Max Variant Price
+            {% assign maxPrice = 0 %}
+            {% for variant in item.product.variants %}
+			  {% if maxPrice < variant.price %}
+                {% assign maxPrice = variant.price %}
+                objVariant.maxVariantId = "{{variant.id}}";
+              {% endif %}
+            {% endfor %}
+            
+            // Get the relevat variant according to quantity
+			{% assign selBreak = 0 %}
+            {% assign minBreak = 10000 %}
+            {% for i in ( 1..5 ) %}
+
+              {% assign metaBreak = "price-break-" | append : i %}
+              {% assign metaSKU = "price-break-" | append : i | append : "-SKU" %}
+            
+              {% assign curBreak = item.product.metafields["global"][metaSKU] | plus : 0 %}
+                
+              {% if curBreak < minBreak and curBreak != 0 %}
+                {% assign minBreak = curBreak %}
+              {% endif %}
+                
+                console.log("Min:" + "{{ minBreak }}");
+				
+              {% if item.quantity >= curBreak and curBreak > selBreak %}
+                  {% assign selBreak = curBreak %}
+                  {% for variant in item.product.variants %}
+                    {% if variant.option1 == item.product.metafields["global"][metaSKU] or variant.option2 == item.product.metafields["global"][metaSKU] or variant.option3 == item.product.metafields["global"][metaSKU]%}
+                      objVariant.newVariantId = "{{variant.id}}";
+                      objVariant.temp = "{{curBreak}}";
+                    {% endif %}
+                  {% endfor %}
+		      {% endif %}
+              {% else %}
+              {% continue %}
+         
+
+            {% endfor %}
+            
+            {% if item.quantity < minBreak %}
+                objVariant.newVariantId = objVariant.maxVariantId;
+            {% endif %}
+			
+            // Put the variant policy
+            if( !objVariant.newVariantId ) objVariant.newVariantId = objVariant.oldVariantId;
+
+            if( objVariant.oldVariantId != objVariant.newVariantId)
+            {
+              arrVariant.push( {
+                variant_id :  objVariant.oldVariantId,
+                quantity : 0,
+                method : "change"
+              });                      
+              
+              arrVariant.push( {
+                variant_id :  objVariant.newVariantId,
+                quantity : objVariant.qty,
+                method : "add"
+              });                                
+            }
+            console.log("{{ minBreak }}");
+            console.log( objVariant );
+          </script>       
+          <li class="clearfix">
+            <div class="cart-col1">
+              <a class="cart-thumb" href="{{item.url}}"><img src="{{ item | img_url: 'compact' }}" alt="{{ item.title | escape }}" /></a>
+            </div>
+
+            <div class="cart-col2">
+              <a href="{{item.url}}">{{ item.title | escape }}</a>
+              <p class="short-desc">{{item.product.description | strip_html | truncatewords:15 }}</p>
+              {% assign propertySize = item.properties | size %}
+              {% if propertySize > 0 %}
+                <p class="custom-options">
+                {% for p in item.properties %}
+                  {% unless p.last == blank %}
+                    {% if p.last contains '/uploads/' %}
+                      {{ p.first }}: <a href="{{ p.last }}" target="_blank"><em>{{'cart.general.uploaded_file' | t }}</em></a><br />
+                    {% else %}
+                      {{ p.first }}: <em>{{ p.last }}</em><br />
+                    {% endif %}
+                  {% endunless %}
+                {% endfor %}
+                </p>
+              {% endif %} 
+              <br>
+              <span> SKU: {{ item.variant.sku }} </span>
+            </div> 
+
+            <div class="cart-col3">
+              <span class=price-money>{{ item.price | money }}</span>
+            </div>
+
+            {% comment %}Don't add class to pre-order items. We don't need to check stock on those.{% endcomment %}
+            {% assign className = "" %}
+            {% if item.variant.inventory_management %}
+              {% unless item.variant.inventory_policy == "continue" %}  
+                {% assign className = "quantity" %}
+              {% endunless %}
+            {% endif %}
+
+            <div class="cart-col4">
+              <label for="updates_{{ item.id }}">{{ 'cart.general.quantity' | t }}</label>
+              <input class="{{className}}" data-stk="{{item.variant.inventory_quantity}}" data-managed="{{item.variant.inventory_management}}" data-policy="{{item.variant.inventory_policy}}" type="text" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" min="1" max="9999" maxlength="4"/>    
+              <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0">{{ 'cart.general.remove' | t }}</a>
+            </div>
+
+            <div class="cart-col5">
+              <span class=price-money>{{item.line_price | money }}</span>
+            </div> 
+
+            <div class="cart-col6">
+              <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0" title="{{ 'cart.general.remove' | t }}"><span>X</span></a>
+            </div>   
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="cart-sub-actions clearfix">
+        <a class="go-back button secondary" href="/">{{ 'cart.general.continue_shopping' | t }}</a>
+        <input class="cart-update button secondary" type="submit" name="update" value="{{ 'cart.general.update' | t }}" />
+      </div>   
+	  <span class="quote">
+          Need a quotation - <a href="/pages/quote-request">Click Here!</a>
+       </span>
+      {% if section.settings.show_terms_cart %}   
+        <span id="agree-terms">
+          <input type="checkbox" id="agree" />
+          <label for="agree">{{ 'cart.general.agree_terms_html' | t }}</label>
+        </span>   
+      {% endif %}  
+
+      <div class="cart-actions clearfix">
+       <div class="action-main">
+        <div class="cart-tot2">
+          <h5>{{ 'cart.general.subtotal' | t }} <span class=price-money>{{ cart.total_price | money }}</span></h5>
+          <input class="button animated pulse" type="submit" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+          {% if section.settings.show_extra_checkout_options %}
+            {% if additional_checkout_buttons %}
+              <p class="additional-checkout-buttons">
+              {{ content_for_additional_checkout_buttons }}
+            </p>
+            {% endif %}
+          {% endif %}      
+          </div>  
+        </div>
+
+        {% if section.settings.shipping_calculator %}
+          {% assign shipClass = "shp-Enabled" %}
+        {% else %}
+          {% assign shipClass = "shp-Disabled" %}
+        {% endif %}
+
+        <div class="action-sub {{shipClass}}">
+          {% if section.settings.show_cart_note %}
+            <div class="cart-tot1">
+              <div id="cart-note">
+                <h5><label for="note">{{ 'cart.general.note' | t }}</label></h5>
+                <textarea name="note" id="note">{{ cart.note }}</textarea>
+              </div>
+            </div>
+          {% endif %}
+          {% include 'shipping-calculator' %}     
+        </div>
+      </div>  
+      
+    </form>
+  </div>
+{% endif %}
+</div>
+
+
+{% schema %}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_cart_note",
+        "label": "Show cart note",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_extra_checkout_options",
+        "label": "Show additional checkout buttons",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_terms_cart",
+        "label": "Show checkbox for terms and conditions",
+        "default": true
+      },
+      {
+        "id": "featured_collection",
+        "type": "collection",
+        "label": "Featured collection",
+        "info": "Will be displayed when the cart is empty"
+      },
+      {
+        "type": "header",
+        "content": "Shipping rates calculator"
+      },
+      {
+        "type": "checkbox",
+        "id": "shipping_calculator",
+        "label": "Enable",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "shipping_calculator_default_country",
+        "label": "Default country selection",
+        "default": "United States",
+        "info": "If your customer is logged-in, the country in his default shipping address will be selected. If you are not sure about the spelling to use here, refer to the first checkout page."
+      }
+    ]
+  }
+{% endschema %}
+
+<script>
+  
+  var funcCartAdd = function(){
+
+    if( arrVariant.length == 0 ){
+    	window.location.reload();
+    }
+    
+    // Shift the first element from array
+    var item = arrVariant.shift();
+
+    $.ajax({
+      url: '/cart/' + item.method + '.js',
+      dataType: 'json',
+      type: 'get',
+      data: {
+        quantity : item.quantity,
+        id : item.variant_id,
+      },
+      success: function(data) {
+        console.log( data );
+        funcCartAdd();
+      },
+      error: function(data)
+      {
+        funcCartAdd();
+        console.log(  data.responseJSON.description );
+      }
+    });
+  }  
+  
+  if( arrVariant.length > 0 ) funcCartAdd();
+  
+</script>

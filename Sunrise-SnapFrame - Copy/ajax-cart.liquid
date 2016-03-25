@@ -1,0 +1,82 @@
+Ajax add cart:
+        
+        <input type="hidden" id="product_id" value={{ product.id }}>
+        <script>
+          /*$( "form" ).on( "submit", function( event ) {
+                       
+            var P_I = $("#product_id").val();
+            var qty = $("#Quantity").val();
+            
+            console.log(P_I);
+            
+            if(P_I == '10478144899'){
+            	add_special_Item('40911365763',qty);
+            }
+
+          });*/
+          
+          $( "#AddToCart-product-template" ).on( "click", function( event ) {
+                       
+            var P_I = $("#product_id").val();
+            var qty = $("#Quantity").val();
+            
+            console.log(P_I);
+            
+            if(P_I == '10478144899'){
+              	add_main_Item('40366323331',qty);	            	
+            }
+            
+            return false;
+            
+			//setTimeout($("form").submit(), 2000);
+
+          });          
+
+          // POST to cart/add.js returns the JSON of the line item associated with the added item.
+          // -------------------------------------------------------------------------------------
+          function add_main_Item(variant_id, quantity, callback) {
+            var quantity = quantity || 1;
+            var params = {
+              type: 'POST',
+              url: '/cart/add.js',
+              data: 'quantity=' + quantity + '&id=' + variant_id,
+              dataType: 'json',
+              success: function(line_item) { 
+                if ((typeof callback) === 'function') {
+                  callback(line_item);
+                }
+                else {
+                  console.log('Success');
+                  add_special_Item('40911365763',quantity);
+                }
+              },
+              error: function(XMLHttpRequest, textStatus) {
+                console.log('Fail');
+              }
+            };
+            jQuery.ajax(params);
+          };
+          
+          function add_special_Item(variant_id, quantity, callback) {
+            var quantity = quantity || 1;
+            var params = {
+              type: 'POST',
+              url: '/cart/add.js',
+              data: 'quantity=' + quantity + '&id=' + variant_id,
+              dataType: 'json',
+              success: function(line_item) { 
+                if ((typeof callback) === 'function') {
+                  callback(line_item);
+                }
+                else {
+                  console.log('Success');
+                  location.href = '/cart';
+                }
+              },
+              error: function(XMLHttpRequest, textStatus) {
+                console.log('Fail');
+              }
+            };
+            jQuery.ajax(params);
+          };
+        </script>
