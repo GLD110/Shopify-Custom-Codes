@@ -1,0 +1,853 @@
+{% if cart.item_count > 0 and customer.tags.size > 0 %}
+
+<script>
+(function(window, document) {"use strict";
+ 
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/;";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') {
+        c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+        return c.substring(name.length,c.length);
+    }
+  }
+  return "";
+}
+
+function reqJquery(onload) {
+  if(typeof jQuery === 'undefined' || (parseInt(jQuery.fn.jquery) === 1 && parseFloat(jQuery.fn.jquery.replace(/^1\./,'')) < 10)){
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js';;
+    script.type = 'text/javascript';
+    script.onload = script.onreadystatechange = function() {
+      if (script.readyState) {
+        if (script.readyState === 'complete' || script.readyState === 'loaded') {
+          script.onreadystatechange = null;
+          onload(jQuery.noConflict(true));
+        }
+      }
+      else {
+        onload(jQuery.noConflict(true));
+      }
+    };
+    head.appendChild(script);
+  }else {
+    onload(jQuery);
+  }
+}
+
+reqJquery(function($){
+    
+  window.wh_data = {}
+  window.wh_data.api_version = 5;
+  
+  $(document).on('click', "input[name='checkout'], button[name='checkout'], [href$='checkout'], input[name='goto_pp'], button[name='goto_pp'], input[name='goto_gc'], button[name='goto_gc'], .additional-checkout-button, .google-wallet-button-holder, .amazon-payments-pay-button", function(ev){
+    if(window.wh_data.discounted_hash.discount_value || window.wh_data.discounted_hash.shipping){
+      ev.preventDefault();
+      wholesaleCheckout();
+    }
+  });
+
+  
+  function wholesaleCheckout(){
+      
+    window.wh_data.action_type = 'checkout';
+    if ($("[name='note']").length) {
+      window.wh_data.wh_cart.note = $("[name='note']")[0].value
+    }
+
+    var invoiceUrlParams = [];
+    var noteAttributes   = [];
+
+    $("[name^='attributes']").each(function() {
+      var attribute = $(this);
+      var name = $(this).attr("name");
+      name = name.replace(/^attributes\[/i, "").replace(/\]$/i, "");
+      var v = {
+        name: name,
+        value: attribute.val()
+      };
+      if (v.value == "") {
+        return
+      }
+      switch (attribute[0].tagName.toLowerCase()) {
+        case "input":
+          if (attribute.attr("type") == "checkbox") {
+            if (attribute.is(":checked")) {
+              noteAttributes.push(v)
+            }
+          } else {
+            noteAttributes.push(v)
+          }
+          break;
+        default:
+          noteAttributes.push(v)
+      }
+    });
+
+    var orderNote = "";
+    if ($("[name='note']").length) {
+      orderNote = $("[name='note']")[0].value
+    }
+    window.wh_data.wh_cart.note_attributes = noteAttributes;
+    window.wh_data.wh_cart.note = orderNote;
+
+    if (orderNote.length){
+      invoiceUrlParams.push("note=" + encodeURIComponent(orderNote))
+    }
+
+    if (noteAttributes.length){
+      noteAttributes.map(function(a) {
+        invoiceUrlParams.push("attributes" + encodeURIComponent("[" + a.name + "]") + "=" + encodeURIComponent(a.value))
+      })
+    }
+
+
+    if(window.wh_data.discounted_hash.discount_value || window.wh_data.discounted_hash.shipping){
+      $.ajax({
+        cache: false,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        type: "POST",
+        url: "/apps/wholesale_hero",
+        data: JSON.stringify(window.wh_data),
+        success: function(res) {
+          if(res.discount_method == 'code'){
+            res.invoice_url = '/checkout';
+            if (res.discount_code) {
+              invoiceUrlParams.push("discount=" + res.discount_code);
+            }
+            if (invoiceUrlParams.length) {
+              res.invoice_url += "?" + invoiceUrlParams.join("&")
+            }
+            window.location.href = res.invoice_url;
+          } else {
+            var orderRedirectUrl = res.order.invoice_url;
+            if(orderRedirectUrl){
+              if (invoiceUrlParams.length) {
+                orderRedirectUrl = orderRedirectUrl += "?" + invoiceUrlParams.join("&")
+              }
+            
+              setTimeout(function(){
+                window.location.href = orderRedirectUrl;
+              }, 500);
+            } else {
+              window.location.href = "/checkout";
+            }
+          }
+        }
+      });
+    } else {
+      window.location = '/checkout';
+    }
+    
+  }
+
+ 
+  function sameDomainAjax (paramHash, successCallback) {
+    $.ajax({
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(paramHash),
+      url: "/apps/wholesale_hero",
+      cache: false,
+      dataType: 'json',
+      type: 'POST',
+      success: function (data, success) {
+        successCallback(data);
+      }
+    });
+  }  
+ 
+  function whCheckCart(wh_data){
+    var paramHash= {api_version: wh_data.api_version, cart: wh_data.wh_cart, customer: wh_data.wh_customer, discount_code: wh_data.discount_code};
+    
+    sameDomainAjax(paramHash, function (data) {
+      window.wh_data.discounted_hash = data;
+      
+      if (data.minimums_note != "") {
+        $(".wh-minimums-note").html(data.minimums_note)
+        return
+      }
+
+      $(".wh-original-cart-total").css("text-decoration", "line-through");
+      $(".wh-cart-total").html(data.formatted_wh_total)
+
+      if(data.show_discount_code){
+        $(".wh-cart-total").before("<span class='booster-messages'><div id='booster-discount-item'></div><div id='booster-summary-item'></div><div class='booster-discounts-wrapper'><input type='text' id='booster-discount-code' placeholder='Discount Code'><button id='apply-booster-discount' class='btn btn--secondary'>Apply</button></div></span>");
+        if(window.wh_data.discount_code){
+          $('#booster-discount-code').val(data.discount_code);
+          $('#booster-discount-item').html(data.discount_item_html);
+        }
+      }
+
+      if (data.extra_note){$(".wh-extra-note").html(data.extra_note)}
+      
+      $("#wh-whModal-container #net-30-summary").html(data.net_30_html);
+      window.net_30_data = data;
+    });
+  }
+
+    window.wh_data.wh_customer = {
+      email: "{{customer.email | escape}}", 
+      id: {{customer.id}},  
+      tags: {{ customer.tags|json }},
+      default_address: {{customer.default_address|json}}
+    }
+   
+    window.wh_data.wh_cart = {{cart | json}}
+    window.wh_data.wh_cart.items = []
+   
+    
+    {% for item in cart.items %}
+      {% include 'wh_calculate_discount' with item.product %}
+      {% include 'wh_variant' with item.variant %}
+
+      {% if set_price or wh_discount_value < 1 %}
+    	window.wh_data.wh_cart.items.push({
+          original_item: {{item | json}},
+          variant_id: {{item.variant_id}},
+          product_id: {{item.product.id}},
+          quantity: {{item.quantity}},
+          wh_v_compare_price: {{wh_v_compare_at_price}},
+          wh_v_price: {{wh_v_price}},
+          price: {{item.variant.price}},
+          compare_at_price: {% if item.variant.compare_at_price == blank %} null {% else %} {{item.variant.compare_at_price}} {% endif %},
+          wh_discount: {{item.product.metafields.wh_discount | json}}
+        })
+      {% else %}
+        window.wh_data.wh_cart.items.push({
+          original_item: {{item | json}},
+          quantity: {{item.quantity}},
+          price: {{item.variant.price}},
+          compare_at_price: {% if item.variant.compare_at_price == blank %} null {% else %} {{item.variant.compare_at_price}} {% endif %},
+          wh_discount: {{item.product.metafields.wh_discount | json}}
+        }) 
+     {% endif %}
+        
+    {% endfor %}
+            
+    var whCookieCode = getCookie('wh_discount_' + window.wh_data.wh_cart.token);
+    if(whCookieCode){
+      window.wh_data.discount_code = whCookieCode;
+    }
+
+    whCheckCart(window.wh_data);
+
+    function ensureStock(){
+      var arr = []
+      $("input[max]").each(function(){
+        var el = $(this);
+        var max = parseInt(el.attr('max'), 10) || 10000;
+        var value = parseInt(el.val(), 10) || 0;
+        if (value > max){
+          arr.push(el);
+          el.val(max);
+        }      
+      });
+
+      if(arr.length > 0){
+        $("form[action$='cart']").submit();
+      }
+    }
+    setTimeout(ensureStock, 200);
+    
+    $(document).on('change', "input[name='updates[]'], input[id^='updates_'], input[id^='Updates_']", function(e) {
+      e.preventDefault();
+      $("form[action$='cart']").submit();
+    });
+    
+    $('[max]').change(function() {
+      var max = parseInt($(this).attr('max'), 10) || 10000;
+      var value = parseInt($(this).val(), 10) || 0;
+      if (value > max) { $(this).val(max); }
+    });
+
+   function whClearCart(){
+    $.ajax({
+      type: "POST",
+      url: "/cart/clear.js",
+      dataType: "JSON",
+      success: function(data){
+      },
+      error: function(data) {
+      }
+    });
+  }
+  
+  function submitNet30(wh_data){
+	
+    //change button to loading or spinner
+    $.ajax({
+      contentType: "application/json; charset=utf-8",
+      url: "/apps/wholesale_hero",
+      cache: false,
+      dataType: 'json',
+      data: JSON.stringify(wh_data),
+      type: 'POST',
+      success: function (data, success) { 
+        $("#wh-whModal-container").html(data.thank_you_message);
+        whClearCart();
+        //return false;
+        setInterval(function(){
+          window.location = "/";
+        }, 1000);
+      }
+    });
+    
+    return false;
+  }
+  
+
+  $(function(){
+    var whQuery=$,whModals=[],getCurrent=function(){return whModals.length?whModals[whModals.length-1]:null},selectCurrent=function(){var a,b=!1;for(a=whModals.length-1;a>=0;a--)whModals[a].$blocker&&(whModals[a].$blocker.toggleClass("current",!b).toggleClass("behind",b),b=!0)};whQuery.whModal=function(a,b){var c,d;if(this.$body=whQuery("body"),this.options=whQuery.extend({},whQuery.whModal.defaults,b),this.options.doFade=!isNaN(parseInt(this.options.fadeDuration,10)),this.$blocker=null,this.options.closeExisting)for(;whQuery.whModal.isActive();)whQuery.whModal.close();if(whModals.push(this),a.is("a"))if(d=a.attr("href"),/^#/.test(d)){if(this.$elm=whQuery(d),1!==this.$elm.length)return null;this.$body.append(this.$elm),this.open()}else this.$elm=whQuery("<div>"),this.$body.append(this.$elm),c=function(a,b){b.elm.remove()},this.showSpinner(),a.trigger(whQuery.whModal.AJAX_SEND),whQuery.get(d).done(function(b){if(whQuery.whModal.isActive()){a.trigger(whQuery.whModal.AJAX_SUCCESS);var d=getCurrent();d.$elm.empty().append(b).on(whQuery.whModal.CLOSE,c),d.hideSpinner(),d.open(),a.trigger(whQuery.whModal.AJAX_COMPLETE)}}).fail(function(){a.trigger(whQuery.whModal.AJAX_FAIL);var b=getCurrent();b.hideSpinner(),whModals.pop(),a.trigger(whQuery.whModal.AJAX_COMPLETE)});else this.$elm=a,this.$body.append(this.$elm),this.open()},whQuery.whModal.prototype={constructor:whQuery.whModal,open:function(){var a=this;this.block(),this.options.doFade?setTimeout(function(){a.show()},this.options.fadeDuration*this.options.fadeDelay):this.show(),whQuery(document).off("keydown.whModal").on("keydown.whModal",function(a){var b=getCurrent();27==a.which&&b.options.escapeClose&&b.close()}),this.options.clickClose&&this.$blocker.click(function(a){a.target==this&&whQuery.whModal.close()})},close:function(){whModals.pop(),this.unblock(),this.hide(),whQuery.whModal.isActive()||whQuery(document).off("keydown.whModal")},block:function(){this.$elm.trigger(whQuery.whModal.BEFORE_BLOCK,[this._ctx()]),this.$body.css("overflow","hidden"),this.$blocker=whQuery('<div class="jquery-whModal blocker current"></div>').appendTo(this.$body),selectCurrent(),this.options.doFade&&this.$blocker.css("opacity",0).animate({opacity:1},this.options.fadeDuration),this.$elm.trigger(whQuery.whModal.BLOCK,[this._ctx()])},unblock:function(a){!a&&this.options.doFade?this.$blocker.fadeOut(this.options.fadeDuration,this.unblock.bind(this,!0)):(this.$blocker.children().appendTo(this.$body),this.$blocker.remove(),this.$blocker=null,selectCurrent(),whQuery.whModal.isActive()||this.$body.css("overflow",""))},show:function(){this.$elm.trigger(whQuery.whModal.BEFORE_OPEN,[this._ctx()]),this.options.showClose&&(this.closeButton=whQuery('<a href="#close-whModal" rel="whModal:close" class="close-whModal '+this.options.closeClass+'">'+this.options.closeText+"</a>"),this.$elm.append(this.closeButton)),this.$elm.addClass(this.options.whModalClass).appendTo(this.$blocker),this.options.doFade?this.$elm.css("opacity",0).show().animate({opacity:1},this.options.fadeDuration):this.$elm.show(),this.$elm.trigger(whQuery.whModal.OPEN,[this._ctx()])},hide:function(){this.$elm.trigger(whQuery.whModal.BEFORE_CLOSE,[this._ctx()]),this.closeButton&&this.closeButton.remove();var a=this;this.options.doFade?this.$elm.fadeOut(this.options.fadeDuration,function(){a.$elm.trigger(whQuery.whModal.AFTER_CLOSE,[a._ctx()])}):this.$elm.hide(0,function(){a.$elm.trigger(whQuery.whModal.AFTER_CLOSE,[a._ctx()])}),this.$elm.trigger(whQuery.whModal.CLOSE,[this._ctx()])},showSpinner:function(){this.options.showSpinner&&(this.spinner=this.spinner||whQuery('<div class="'+this.options.whModalClass+'-spinner"></div>').append(this.options.spinnerHtml),this.$body.append(this.spinner),this.spinner.show())},hideSpinner:function(){this.spinner&&this.spinner.remove()},_ctx:function(){return{elm:this.$elm,$blocker:this.$blocker,options:this.options}}},whQuery.whModal.close=function(a){if(whQuery.whModal.isActive()){a&&a.preventDefault();var b=getCurrent();return b.close(),b.$elm}},whQuery.whModal.isActive=function(){return whModals.length>0},whQuery.whModal.defaults={closeExisting:!0,escapeClose:!0,clickClose:!0,closeText:"Close",closeClass:"",whModalClass:"booster-checkout-hero-whModal",spinnerHtml:null,showSpinner:!0,showClose:!0,fadeDuration:null,fadeDelay:1},whQuery.whModal.BEFORE_BLOCK="whModal:before-block",whQuery.whModal.BLOCK="whModal:block",whQuery.whModal.BEFORE_OPEN="whModal:before-open",whQuery.whModal.OPEN="whModal:open",whQuery.whModal.BEFORE_CLOSE="whModal:before-close",whQuery.whModal.CLOSE="whModal:close",whQuery.whModal.AFTER_CLOSE="whModal:after-close",whQuery.whModal.AJAX_SEND="whModal:ajax:send",whQuery.whModal.AJAX_SUCCESS="whModal:ajax:success",whQuery.whModal.AJAX_FAIL="whModal:ajax:fail",whQuery.whModal.AJAX_COMPLETE="whModal:ajax:complete",whQuery.fn.whModal=function(a){return 1===this.length&&new whQuery.whModal(this,a),this},whQuery(document).on("click.whModal",'a[rel="whModal:close"]',whQuery.whModal.close),whQuery(document).on("click.whModal",'a[rel="whModal:open"]',function(a){a.preventDefault(),whQuery(this).whModal()});
+
+    $(document).on('click', "button#apply-booster-discount", function(e) {
+      e.preventDefault();
+      setCookie('wh_discount_' + window.wh_data.wh_cart.token, $('#booster-discount-code').val().trim())
+      window.location.reload();
+    });
+
+    $(document).on('click', '#wh-30-open', function(){
+      $('#wh-whModal-container').whModal();
+      var whNoteValue = $("[name='note']")[0].value;
+      $("textarea.net-notes").val(whNoteValue);
+      return false;
+    });
+
+    $(document).on('click', '.close-whModal', function(){
+      $.whModal.close()
+    });
+
+    $(document).on('submit', 'form#net-order-form', function(){
+      if ($(".net-notes").length) {
+        window.wh_data.wh_cart.note = $(".net-notes").val();
+      }
+      var address = {};
+      address.first_name = $("input[name='address[first_name]']").val();
+      address.last_name = $("input[name='address[last_name]']").val();
+      address.company = $("input[name='address[company]']").val();
+      address.address1 = $("input[name='address[address1]']").val();
+      address.address2 = $("input[name='address[address2]']").val();
+      address.city  = $("input[name='address[city]']").val();
+      address.province  = $("select[name='address[province]']").val();
+      address.country  = $("select[name='address[country]']").val();
+      address.zip  = $("input[name='address[zip]']").val();
+      address.phone  = $("input[name='address[phone]']").val();   
+      
+      window.wh_data.address = address;      
+      window.wh_data.net_30 = 1;
+      window.wh_data.action_type = 'checkout';
+      submitNet30(window.wh_data);
+             
+      return false;
+    });
+  });
+
+
+});
+
+}(window, document));
+</script>
+
+{% endif %}
+
+
+{% if customer.tags contains 'whnet' %}
+{{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+
+<style type="text/css">
+.wh-wrap div, .wh-wrap span, .wh-wrap object, .wh-wrap iframe,
+.wh-wrap h1, .wh-wrap h2, .wh-wrap h3, .wh-wrap h4, .wh-wrap h5, .wh-wrap h6, 
+.wh-wrap p, .wh-wrap blockquote, .wh-wrap pre,
+.wh-wrap a, .wh-wrap img, .wh-wrap strong,
+.wh-wrap b, .wh-wrap u, .wh-wrap i,
+.wh-wrap dl, .wh-wrap dt, .wh-wrap dd, .wh-wrap ol, .wh-wrap ul, .wh-wrap li,
+.wh-wrap fieldset, .wh-wrap form, .wh-wrap label, .wh-wrap legend,
+.wh-wrap table, .wh-wrap caption, .wh-wrap tbody, .wh-wrap tfoot, .wh-wrap thead, .wh-wrap tr, .wh-wrap th, .wh-wrap td,{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  text-transform: none;
+}
+/* HTML5 display-role reset for older browsers */
+.wh-wrap article, .wh-wrap aside, .wh-wrap details, .wh-wrap figcaption, .wh-wrap figure, 
+.wh-wrap footer, .wh-wrap header, .wh-wrap hgroup, .wh-wrap menu, .wh-wrap nav, .wh-wrap section {
+	display: block;
+}
+.wh-wrap body {
+	line-height: 1;
+}
+.wh-wrap ol, .wh-wrap ul {
+	list-style: none;
+}
+.wh-wrap table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.blocker {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  z-index: 99999999;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.75);
+  text-align: center;
+}
+.blocker:before{
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -0.05em;
+}
+.blocker.behind {
+  background-color: transparent;
+}
+.wh-hero-whModal {
+  display: inline-block;
+  min-width: 400px;
+  vertical-align: middle;
+  position: relative;
+  z-index: 99999999;
+  max-width: 600px;
+  background: #fff;
+  padding: 30px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -o-border-radius: 8px;
+  -ms-border-radius: 8px;
+  border-radius: 8px;
+  -webkit-box-shadow: 0 0 10px #000;
+  -moz-box-shadow: 0 0 10px #000;
+  -o-box-shadow: 0 0 10px #000;
+  -ms-box-shadow: 0 0 10px #000;
+  box-shadow: 0 0 10px #000;
+  text-align: center;
+  text-transform: none;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333333;
+  -moz-transition: background-color 0.15s linear;
+  -webkit-transition: background-color 0.15s linear;
+  -o-transition: background-color 0.15s linear;
+  transition: background-color 0.15s cubic-bezier(0.785, 0.135, 0.150, 0.860);
+}
+
+
+
+.wh-hero-whModal hr {
+  height: 0;
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+  height: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 1px solid #eeeeee;
+}
+
+.wh-hero-whModal button,
+.wh-hero-whModal input,
+.wh-hero-whModal optgroup,
+.wh-hero-whModal select,
+.wh-hero-whModal textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+
+.wh-hero-whModal button {
+  overflow: visible;
+}
+.wh-hero-whModal button,
+.wh-hero-whModal select {
+  text-transform: none;
+  width:100%;
+}
+.wh-hero-whModal button {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+.wh-hero-whModal button::-moz-focus-inner,
+.wh-hero-whModal input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+.wh-hero-whModal input {
+  line-height: normal;
+  width:100%;
+}
+.wh-hero-whModal textarea {
+  line-height: normal;
+  width:100%;
+  border: 1px solid #ccc;
+  margin-top:10px;
+  margin-bottom: 10px;
+  min-height: inherit;
+}
+.wh-hero-whModal input[type='number']::-webkit-inner-spin-button,
+.wh-hero-whModal input[type='number']::-webkit-outer-spin-button {
+  height: auto;
+}
+
+.wh-hero-whModal body.fadein {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.wh-hero-whModal #wh-whModal-container {
+  background: white;
+  padding: 12px 18px 40px 18px;
+}
+
+@media only screen and (min-width:500px) {
+  .wh-hero-whModal #wh-whModal-container {
+    border-radius: 5px;
+    padding: 30px 40px;
+  }
+}
+
+@media only screen and (min-width:992px) {
+  .wh-hero-whModal #wh-whModal-container {
+    margin-top: 140px;
+  }
+}
+
+.wh-hero-whModal .fade {
+  opacity: 0;
+  -webkit-transition: opacity 0.15s linear;
+  -o-transition: opacity 0.15s linear;
+  transition: opacity 0.15s linear;
+}
+.wh-hero-whModal .fade.in {
+  opacity: 1;
+}
+
+.wh-hero-whModal h2 {
+ font-size: 24px;
+ font-family: inherit;
+ font-weight: 500;
+ line-height: 1.1;
+ color: inherit;
+}
+
+.wh-hero-whModal h3 {
+  font-family: inherit;
+  font-weight: normal;
+  line-height: 1.1;
+  color: inherit;
+  font-size: 18px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.wh-hero-whModal p.body-text {
+  font-size: 20;
+  margin-top: 40px;
+  margin-bottom: 10px;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .wh-hero-whModal select:focus,
+  .wh-hero-whModal textarea:focus,
+  .wh-hero-whModal input:focus {
+    font-size: 16px;
+    background: #eee;
+  }
+}
+
+.wh-hero-whModal .btn {
+  display: inline-block;
+  padding: 8px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  letter-spacing: 1px;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+
+.wh-hero-whModal .btn-success {
+  width: 100%;
+  color: #ffffff;
+  background-color: #4ed14e;
+}
+
+.wh-hero-whModal .btn-lg {
+  line-height: 24px;
+  font-size: 15px;
+  padding:14px;
+  line-height: 1.3333333;
+}
+
+.wh-hero-whModal .close {
+  -webkit-appearance: none;
+  padding: 0;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  float: right;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.wh-hero-whModal form{
+  margin-top:10px;
+}
+
+.wh-hero-whModal .whModal-content .close {
+  font-size: 30px;
+}
+.wh-hero-whModal .whModal-backdrop.in {
+  filter: alpha(opacity=65);
+  opacity: .65;
+}
+
+.wh-hero-whModal .completed_message {
+  display: none;
+}
+.wh-hero-whModal .complete .completed_message {
+  display: block;
+}
+
+.wh-hero-whModal .single-variant{
+  display:none;
+}
+
+.wh-hero-whModal form#wh-form{
+}
+
+.wh-hero-whModal div.footer{
+  margin-top:20px;
+}
+
+.wh-hero-whModal div.footer p{
+  color: #b3b3b3;
+  font-size:12px;
+}
+
+.wh-hero-whModal .alert {
+  padding: 10px;
+  margin: 20px 0px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.wh-hero-whModal .alert-success {
+  color: red;
+  background-color: red;
+  border-color: #d6e9c6;
+}
+
+.wh-hero-whModal .alert-danger {
+  color: red;
+  background-color: red;
+  border-color: #ebccd1;
+}
+
+
+@media (min-width: 0px) {
+  .wh-hero-whModal {
+    min-width:0px;
+  }
+
+  .wh-hero-whModal a.share-button.twitter{
+    width: 212px;
+    margin-top: 20px;
+    margin-left:0px;
+  }
+
+  .wh-hero-whModal a.share-button.fb{
+    width: 212px;
+  }
+
+}
+
+@media (min-width: 768px) {
+  .wh-hero-whModal {
+    min-width:600px;
+  }
+}
+
+.wh-hero-whModal input, .wh-hero-whModal input select{
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+  
+.wh-hero-whModal select{
+ margin-bottom:10px;
+}
+
+.wh-hero-whModal .hero-wrap{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.wh-hero-whModal img{
+  vertical-align: middle;
+  max-width: 100%;
+  max-height:75px;
+}
+
+.wh-hero-whModal img.single{
+  margin-right: 20px;
+  margin-left: 0px;
+  display: inline-block;
+  padding-right: 20px;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+  
+.wh-hero-whModal table#net-order{
+  margin-top:20px;	 
+  width:100%;
+}
+
+.wh-hero-whModal table#net-order td{
+  padding-top:10px;
+  padding-bottom:10px;
+  border:1px solid #eee;
+}
+.wh-hero-whModal table#net-order .net-order-total{
+  margin-top:20px;
+  font-weight:bold;
+}
+
+.wh-hero-whModal table#net-order td.net-order-prices{
+	text-align:right;
+}
+
+  .wh-hero-whModal a.close-whModal {
+    position: absolute;
+    top: -12.5px;
+    right: -12.5px;
+    display: block;
+    width: 30px;
+    height: 30px;
+    text-indent: -9999px;
+    background: url('data:image/png;base64,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') no-repeat 0 0;
+  }
+
+  a#wh-30-open{
+    cursor: pointer;
+  }
+</style>
+
+  <div id='wh-whModal-container' style='display:none;' class='wh-wrap wh-hero-whModal'>
+    
+    <h3 style="font-weight:bold;font-size:22px;">{{shop.metafields.wh_net.wh_net_button_text}}</h3>
+    <p style="text-align:left;" id="net-30-summary">{{shop.metafields.wh_net.wh_net_text}}</p>
+    
+    <table id="net-order" cellspacing="0" cellpadding="0">          
+      <tbody>
+      {% for item in cart.items %}
+        {% include 'wh_calculate_discount' with item.product %} 
+        {% include 'wh_variant' with item.variant %}
+        {% assign wh_line_price = item.quantity | times: wh_v_price  %} 
+      <tr>
+          <td><img class="images" src="{{ item | img_url: 'small' }}"></td>
+          <td class="line-item-title">
+              {{ item.product.title }} &nbsp;x{{ item.quantity }}<br />
+              {% unless item.variant.title contains 'Default' %}<small>{{ item.variant.title }}</small>{% endunless %}
+          </td>
+          <td class="net-order-prices">
+            {% if wh_line_price < item.line_price %}
+              <s>{{ item.line_price | money }}</s>
+            {% endif %}
+            {{ wh_line_price | money }}
+
+          </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot>               
+       <tr>
+         <td></td>
+         <td class="net-order-total">
+           Total
+         </td>
+         <td class="net-order-prices">
+           <span class="wh-original-cart-total">
+             {{ cart.total_price | money }}
+           </span>
+           <span class="wh-cart-total" style="font-weight:bold;"></span>
+           <div class="additional-notes">
+             <span class="wh-minimums-note"></span>
+           </div>
+         </td>
+       </tr>
+      </tfoot>
+    </table>
+    
+    <textarea class="net-notes" placeholder="Notes"></textarea>
+    
+    <hr/>
+    
+  	<h3>Shipping address</h3>
+    <form id="net-order-form" class="submit-address">
+      <input type="text" name="address[first_name]" value="{{ customer.default_address.first_name }}" placeholder="First Name" required>
+      <input type="text" name="address[last_name]" value="{{ customer.default_address.last_name }}" placeholder="Surname" required>
+      <input type="text" name="address[company]" value="{{ customer.default_address.company }}" placeholder="Company" >
+      <input type="text" name="address[address1]" value="{{ customer.default_address.address1 }}" placeholder="Address Line 1" required>
+      <input type="text" name="address[address2]" value="{{ customer.default_address.address2 }}" placeholder="Address Line 2" >
+      <input type="text" name="address[city]" value="{{ customer.default_address.city }}" placeholder="City" required>
+
+      <select id="AddressCountry" name="address[country]" data-default="{{ customer.default_address.country }}">{{ country_option_tags }}</select>
+      <div id="AddressProvinceContainer" style="display:none">
+          <select id="AddressProvince" name="address[province]" data-default="{{ customer.default_address.province }}"></select>
+      </div>
+
+      <input type="text" name="address[zip]" value="{{ customer.default_address.zip }}" placeholder="Zip/Postcode" autocapitalize="characters" required>
+      <input type="text" name="address[phone]" value="{{ customer.default_address.phone }}" placeholder="Phone" >
+      <button type="submit">Place Order</button>
+
+    </form>
+    
+        
+  </div>
+
+  <script>
+  new Shopify.CountryProvinceSelector('AddressCountry', 'AddressProvince',{ hideElement: 'AddressProvinceContainer' });
+</script>
+
+{% endif %}
