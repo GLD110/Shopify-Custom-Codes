@@ -1,1 +1,0 @@
-https://snapframesdirect.com/collections/custom-snap-frames-online/products/custom-black-snap-frames
