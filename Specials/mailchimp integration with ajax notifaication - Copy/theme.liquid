@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<!--[if lte IE 7 ]>   <html class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>   <html class="no-js ie8"> <![endif]-->
+<!--[if (gt IE 8)|!(IE)]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <meta name="msvalidate.01" content="ECD65A9DA91B2EE2412407434BDB8063" />
+<script>window.wh_metafields = {};
+ {% if customer.tags.size > 0 %} window.wh_customer_tags = true; {% endif %} 
+ window.wh_discount_value = 1;
+</script>
+    <!-- Version 1.4.8 -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="author" content="Filtrate Eyewear, filtrateeyewear.com" />
+    <meta name="google-site-verification" content="ru4bi-lewZlVdJgRNvp1yxEtoYuxpynf40m7MZbBW2Q" />
+    <!-- snippet reference -->
+    {% include 'meta' %}
+
+   <title>{{ page_title }} | {{ shop.name }}  {% if template == '404' %}404 Error{% endif %}</title>
+     {{ 'slick-theme.css' | asset_url | stylesheet_tag }}
+     {{ 'slick.css' | asset_url | stylesheet_tag }}
+	 {{ 'colorbox.css' | asset_url | stylesheet_tag }}
+  
+   	 {% comment %}{{ '//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js' | script_tag }}{% endcomment %}
+   	 {{ '//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js' | script_tag }}
+   	 {% comment %}<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>{% endcomment %}
+   <!--Estilos y scripts de menu movil-->
+  	 {{'demo.css' | asset_url | stylesheet_tag }}
+     	 {{'jquery.mmenu.all.css'| asset_url | stylesheet_tag}}
+  {{'font-awesome.min.css' | asset_url| stylesheet_tag}}
+		 
+  <!--Fin-->
+  	
+	
+	{% if page_description %}
+            <meta name="description" content="{{ page_description |  strip_html }}" />
+            {% endif %}
+    
+    <link rel="canonical" href="{{ canonical_url }}" />
+        
+    
+    {% comment %} upload your own favicon.ico file to the Assets section {% endcomment %}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ 'favicon.ico' | asset_url }}">
+     
+    {% comment %}
+    If you want to set custom icons to use on Apple iOS devices, upload the following files, delete this text, and un-comment these link tags
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ 'logo_apple_57.png' | asset_url }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ 'logo_apple_72.png' | asset_url }}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ 'logo_apple_114.png' | asset_url }}">
+    {% endcomment %}
+    
+    {% include 'opengraph-tags' %}
+    
+    {% comment %} Google Fonts {% endcomment %}
+    {% for i in (1..5) %}
+        {% capture font_setting_index %}{% cycle 'font_group': 'font_fam_base', 'font_fam_headings', 'font_fam_shoptitle', 'font_fam_nav', 'font_fam_special' %}{% endcapture %}
+        {% capture font_setting_cust_index %}{{ font_setting_index }}_cust{% endcapture %}
+        {% assign font_family_split = settings[font_setting_index] | split: '|' %}
+        {% assign curr_font_family = settings[font_setting_index] %}
+        {% if settings[font_setting_index] == 'GWF|CUSTOM' %}
+            <link href="//fonts.googleapis.com/css?family={{ settings[font_setting_cust_index] | replace: ' ', '+' }}" rel="stylesheet" type="text/css">
+        {% elsif font_family_split.first == 'GWF' %}
+            <link href="//fonts.googleapis.com/css?family={{ font_family_split.last | replace: ' ', '+' }}" rel="stylesheet" type="text/css">
+        {% endif %}
+    {% endfor %}
+    <script src="https://use.typekit.net/leo5wvr.js"></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
+    {{ 'jquery.fancybox-1.3.4.css' | asset_url | stylesheet_tag }}
+    {{ 'styles.css' | asset_url | stylesheet_tag }}
+    {{ 'hundt.scss.css' | asset_url | stylesheet_tag }}
+    {{ 'custom-fonts.scss.css' | asset_url | stylesheet_tag }}
+    
+  
+
+ 
+    
+    {% if template contains 'customers' %}
+    {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+    {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+    {% endif %}
+  
+    {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+  	
+    {{ '//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js' | script_tag }}
+    {{ 'tappifications.css' | asset_url | stylesheet_tag }}
+    {{ 'jquery.imagesloaded.js' | asset_url | script_tag }}
+    {{ 'jquery.flexslider-min.js' | asset_url | script_tag }}
+    {{ 'jquery.fancybox-1.3.4.pack.js' | asset_url | script_tag }}
+
+<script>
+Shopify.money_format = '{{shop.money_format | replace: "'", '"'}}';
+</script>
+    {{ 'main.js' | asset_url | script_tag }}
+
+
+
+{% comment %} THESE STYLES NEED TO BE IN A TEMPLATE {% endcomment %}
+<style type="text/css">
+  {% if settings.slide_txt_bg_show %}
+  {% assign hex2rgb_hex = settings.slide_txt_bg_col %}{% include 'hex2rgb' %}
+  .slideshow .slide .overlay-text .text span {
+    background: rgba({{ hex2rgb_r }}, {{ hex2rgb_g }}, {{ hex2rgb_b }}, {{ settings.slide_txt_bg_op }});
+  }
+  {% endif %}
+  
+  {% if settings.slide_txt_bg_show %}
+  {% assign hex2rgb_hex = settings.slide_txt_bg_col %}{% include 'hex2rgb' %}
+  .slide.full-width-image .overlay-text .text span {
+    background: rgba({{ hex2rgb_r }}, {{ hex2rgb_g }}, {{ hex2rgb_b }}, {{ settings.slide_txt_bg_op }});
+  }
+  {% endif %}
+
+  
+</style>
+
+  
+
+    {{ content_for_header }}
+
+  {% include 'bold-common' %}
+  <!-- BOLDTEST-YO -->
+
+ <script type="text/javascript">
+  var _learnq = _learnq || [];
+  _learnq.push(['account', 'nX7P8K']);
+  (function () {
+  var b = document.createElement('script'); b.type = 'text/javascript'; b.async = true;
+  b.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'a.klaviyo.com/media/js/analytics/analytics.js';
+  var a = document.getElementsByTagName('script')[0]; a.parentNode.insertBefore(b, a);
+  })();
+</script>
+ 
+<style type="text/css">.wh-hidden{display: none;}.wh-cart-total, .wh-discount-info, .wh-extra-note {color: #000000;background-color: #FFFF4D;padding: 0px;}.wh-cart-total {font-weight: bold;display: inline-block;  margin-top: 5px;font-size: 22px;}.additional-notes{text-align:right;background-color: #FFFF4D;}</style>
+ {{ 'slick.min.js' | asset_url | script_tag }}  
+<script src="https://use.typekit.net/dgd3fuj.js"></script>
+<script>try{Typekit.load({ async: true });}catch(e){}</script>
+  {% if product.metafields.inventory.ShappifyHidden == "true" %} {% endif %}
+  
+  <script id="mcjs">!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/5c362ef19345a0c50e94a6630/86145183c005d71aad765816a.js");</script>
+  <!--<script type='text/javascript'>$(function(){$(window).scroll(function(event){var dNow = new Date();var utcdate= (dNow.getMonth()+ 1);var st = $(this).scrollTop();if (st > 500){if(utcdate == 11){$("body").css({"display":"none"});}}});});</script>	-->
+</head>
+
+<!-- <body class="template-{{ template | split: '.' | first }}" > -->
+<body class="{{ page_title | handleize }}">
+    
+
+
+<div id="header-wrap">
+  <div id="topbar">
+    
+      <div class="util-area">
+                <div class="search-box elegant-input">
+                  {% if settings.header_signup_show %}
+                  <div class="signup-reveal-area">
+                    <a class="signup-reveal" href="#">Signup</a>
+                    {% if settings.header_signup_show %}{% include 'signup-form' %}{% endif %}
+                  </div>
+                  {% endif %}
+                   {% if settings.soc_icons_loc == 'head' %}
+                        {% include 'social-icons' %}
+                    {% elsif settings.soc_icons_loc == 'both' %}
+                		{% include 'social-icons' %}
+                    {% endif %}
+                  <form class="search-form" style="display:none" action="/search" method="get">
+                    <i></i>
+                    <input type="text" name="q" placeholder="{{ settings.text_search }}"/>
+                    <input type="submit" value="&rarr;" />
+                  </form>
+                </div>
+        		<div class="freeship_msg">
+       			  FREE USA SHIPPING
+       			</div>
+                <div class="utils">
+                  {% if customer %}
+                    <span class="your-acct"><a href="/account">Your account</a></span>
+              		<span class="slash">/</span>
+                    <span class="logout">{{ 'Logout' | customer_logout_link }}</span>
+                  {% endif %}
+                    <div class="cart-summary">
+                        <a href="/{% if template != 'cart' %}cart{% else %}checkout{% endif %}" class="cart-count {% if settings.use_btn_style_cart_link %}button{% endif %}">
+                            {{ settings.text_cart }} ({{ cart.item_count }})
+                        </a>
+                      
+                      {% include 'currencies-switcher' %}
+                    </div>
+                </div><!-- /.utils -->
+            </div><!-- /.util-area -->
+  </div>  
+  <div id="pageheader">
+
+        <div class="logo-area logo-pos-{{ settings.logo_pos }} cf">
+              <a href="#"class="fa fa-shopping-cart cartshow" aria-hidden="true" ></a>
+          	  <a href="/account/login"class="login cartshow" aria-hidden="true" >LOGIN</a>
+      <div class="mobile-burgger">
+      <a href="#main-mobile-nav" class="mobile-burgger"><span></span></a>
+			</div>
+          
+            {% capture logo_html %}
+            <div class="logo container">
+              
+                <a href="/" title="{{ shop.name }}">
+                {% if settings.use_logo_img %}
+                    <!-- <img class="logoimage" src="https://cdn.shopify.com/s/files/1/0285/7422/files/filtrate_logo_updatew.png?478557807679023801" alt="{{ shop.name }}" /> -->
+                    <img class="logoimage" src="{{"custom_header_logo.png" | asset_url}}" alt="{{ shop.name }}" />
+                    
+                {% else %}
+                    <span class="logotext">{{ shop.name }}</span>
+                {% endif %}
+                </a>
+               
+            </div><!-- /#logo -->
+            {% endcapture %}
+            
+            {% unless settings.logo_pos == 'below' %}{{ logo_html }}{% endunless %}
+            
+          
+            
+            {% if settings.logo_pos == 'below' %}{{ logo_html }}{% endif %}
+            
+          
+        </div><!-- /.logo-area -->  
+    <div id="main-mobile-nav" class="menu-mobile">
+      
+        {% include 'main-navigation' with 'mobile-menu' %}
+    
+    </div><!--/#main-nav- mobile-->
+    
+    </div><!-- /#pageheader -->
+    
+
+    
+    <div id="main-nav" class="nav-row">
+        {% include 'main-navigation' with 'new-main-menu' %}
+    </div><!-- /#main-nav -->
+  
+
+  </div>
+  <!-- /#header-wrap -->
+    
+    
+    <div id="content">
+       
+        {% unless settings.head_not_count == empty %}
+        {% if settings.head_not_home_only == false or template == 'index' %}
+        <div id="store-messages" class="messages-{{ settings.head_not_count.last }}">
+            <div class="container cf">
+            {% for i in (1..3) %}
+                {% capture iterstr %}{{ i }}{% endcapture %}
+                {% if settings.head_not_count contains iterstr %}
+                    {% assign line_1_idx = 'head_not_' | append: i | append: '_1' %}
+                    {% assign line_2_idx = 'head_not_' | append: i | append: '_2' %}
+                    {% assign msg_url_idx = 'head_not_' | append: i | append: '_url' %}
+                    {% assign msg_url = settings[msg_url_idx] %}
+                    <div class="message message-{{i}}">
+                      {% unless msg_url == empty %}<a href="{{ msg_url }}">{% endunless %}
+                        <h6 class="title">{{ settings[line_1_idx] }}</h6>
+                        <span class="tagline">{{ settings[line_2_idx] }}</span>
+                      {% unless msg_url == empty %}</a>{% endunless %}
+                      {% unless forloop.first %}<div class="fluff"></div>{% endunless %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div><!-- /#store-messages -->
+        {% endif %}
+        {% endunless %}
+        
+        
+        
+        {% if template == 'index' or template contains 'collection' or template contains 'product' or template contains 'blog' or template contains 'article' or template contains 'page' %}
+            {% if template == 'list-collections' %}
+                {% include 'collection-listing' %}
+            {% else %}
+                {{ content_for_layout }}
+            {% endif %}
+        {% else %}
+            <div class="container cf">
+                
+                {{ content_for_layout }}
+            </div><!-- /.container -->
+        {% endif %}
+    </div><!-- /#content -->
+    
+  
+  {% include 'footer' %}  
+  {% include 'currencies' %}
+  {% if social_items_on_page %}
+    {% if settings.social_show_tw %}<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>{% endif %}
+    {% if settings.social_show_go %}<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>{% endif %}
+    {% if settings.social_show_pi and template == 'product' %}<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>{% endif %}
+    {% if settings.social_show_fa and template == 'product' %}<script src="https://www.thefancy.com/fancyit.js" type="text/javascript"></script>{% endif %}
+    {% if settings.social_show_fb %}
+            <div id="fb-root"></div>
+            <script>(function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&status=0";
+            fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));</script>
+    {% endif %}
+  {% endif %}
+  
+
+  
+
+<input type="hidden" name="_pc_params" value="{{ shop.permanent_domain }}:{{ customer.id }}" />
+
+      {% if customer.tags.size > 0 and template != 'cart' %}
+        <script>
+          $(function(){
+            $(document).on('click', "input[name='checkout'], button[name='checkout'], input[name='goto_pp'], button[name='goto_pp'], input[name='goto_gc'], button[name='goto_gc'], [href$='checkout']", function(e){
+              e.preventDefault();
+              window.location = "/cart";
+            });
+          });
+        </script>
+      {% endif %}
+  <!--Popup -->
+<div style='display:none'>
+  {% if settings.home_custom_popup %}
+    <div id="newsletter_signup_form" class="custom-popup" style="background: white;">
+      <div style="text-align: center;" style="height: 100%;">
+         <img src="{{"popup-logo.png" | asset_url}}" width="20%">
+         <div style="
+            font-size: 25px;
+            color: #CAB759;
+            margin: 0 0 10px 0;
+            ">Become an INFILTRATER <br> and get all of the inside action!</div>
+         <img src="{{"FILTRATE_PopUp_Image.jpg" | asset_url}}" style="
+            width: 80%;
+            ">
+         <div style="
+            font-size: 21px;
+            color: #CAB759;
+            margin: 10px 0;
+            ">Sign up for our emailer and receive <br> 10% off of your next purchase</div>
+        <form action="//filtrateeyewear.us16.list-manage.com/subscribe/post?u=5c362ef19345a0c50e94a6630&amp;id=acbb73673f&SOURCE=Filtrate_Newsletter" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" novalidate data-popup="true"> 
+          <div id="fields" style="">
+              <input type="text" value="" name="FNAME" class="" id="mce-FNAME" placeholder="FIRST NAME" style="
+                 width: 20%;
+                 padding: 5px;
+                 margin: 5px 20px;
+                 border: solid 2px #CAB759;
+                 ">
+              <input type="text" value="" name="LNAME" class="" id="mce-LNAME" placeholder="LAST NAME" style="
+                 width: 20%;
+                 padding: 5px;
+                 margin: 5px 20px;
+                 border: solid 2px #CAB759;
+                 ">
+              <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" placeholder="EMAIL" style="
+                 width: 20%;
+                 padding: 5px;
+                 margin: 5px 20px;
+                 border: solid 2px #CAB759;
+                 ">
+              <input name="subscribe" type="submit" value="I WANT IN!" style="
+                  width: 19%;
+                  padding: 10px;
+				  margin-top: 15px;	                                                                           
+                  background: #CAB759;
+                  border: none;
+                  font-weight: bold;
+				  color: black;	                                                                              
+                  ">	
+           </div>
+         </form>
+        <script>
+          (function ($) {
+            $(document).on('submit', '#mc-embedded-subscribe-form', function (e) {
+              e.preventDefault();
+              var $form    = $(this);
+
+              $.ajax({
+                type: $form.attr('method'),
+                url: $form.attr('action').replace('/post?', '/post-json?').concat('&c=?'),
+                data: $form.serialize(),
+                timeout: 5000, // Set timeout value, 5 seconds
+                cache       : false,
+                dataType    : 'jsonp',
+                contentType: "application/json; charset=utf-8",
+                error       : function(err) {  
+                },
+                success     : function(data) {
+                    if (data.result != "success") {
+                       function_error();
+                    } else {
+                       function_success();
+                    }
+                }
+              });
+            });
+          })(jQuery);
+
+            function function_error(){              
+              $('#response-msg').text('Recipient your current eamil has too many recent signup requests');
+              $('[data-popup="popup-1"]').fadeIn(350);
+              $('#cboxOverlay').hide();
+              $('#colorbox').hide();
+            }
+          
+            function function_success(){
+              $('#response-msg').text('Almost finished... We need to confirm your email address. To complete the subscription process, please click the link in the email we just sent you.');
+              $('[data-popup="popup-1"]').fadeIn(350);            
+              $('#cboxOverlay').hide();
+              $('#colorbox').hide();
+            }
+          
+          //----- CLOSE
+          $(document).on('click', '[data-popup-close]', function(e)  {
+
+            $('[data-popup="popup-1"]').fadeOut(350);            
+            $('#colorbox').show();
+            $('#cboxOverlay').show();
+
+            e.preventDefault();
+          });
+          
+      	  </script> 
+      </div>                           
+    </div>  
+  
+  {% else %}
+      <div id="newsletter_signup_form">
+        <div class="normal_popup_wrap">
+          <p>Celebrate  Summer!</p>
+          <h3>All Month Long</h3>
+         <h1>Buy 2,</h1>
+         <h1>Get 1 Free</h1>
+          <div class="list-blk">
+                  <span>Enter Code <i>buy2get1</i> At Checkout </span>
+                </div>
+         <button class="pop_btn" onclick="window.location.href = 'https://filtrateeyewear.com/collections/all-sunglasses'; ">SHOP NOW</button>
+        </div>
+         <form style="display:none" id="email_signup" class="klaviyo_styling klaviyo_standard_embed_p8CGBf" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" novalidate="novalidate">
+			  <input type="hidden" name="g" value="nqe9dT">
+			  <div class="klaviyo_field_group">
+                <h1>Happy Merica’ Day! </h1>
+                <h2>20% Off Site Wide with Code <strong>Merica20</strong></h2>
+                
+			    <input type="email" value="" name="email" id="k_id_email" placeholder="Your email" />
+			  </div>
+			  <div class="klaviyo_messages">
+			    <div class="success_message" style="display:none;"></div>
+			    <div class="error_message" style="display:none;"></div>
+			    </div>
+			  <div class="klaviyo_form_actions">
+			    <button type="submit" class="klaviyo_submit_button">SHOP NOW</button>
+			  </div>
+			</form>
+			<style type="text/css">
+			.klaviyo_styling.klaviyo_standard_embed_qwFZ63,
+			.klaviyo_condensed_styling.klaviyo_standard_embed_qwFZ63 {
+			  font-family: inherit;
+			}.klaviyo_styling.klaviyo_standard_embed_qwFZ63 label,
+			.klaviyo_condensed_styling.klaviyo_standard_embed_qwFZ63 label {
+			  
+			}.klaviyo_styling.klaviyo_standard_embed_qwFZ63 input[type=text],
+			.klaviyo_styling.klaviyo_standard_embed_qwFZ63 input[type=email],
+			.klaviyo_condensed_styling.klaviyo_standard_embed_qwFZ63 input[type=text],
+			.klaviyo_condensed_styling.klaviyo_standard_embed_qwFZ63 input[type=email] {
+			  border-radius: undefined;
+			}.klaviyo_styling.klaviyo_standard_embed_qwFZ63 .klaviyo_submit_button,
+			.klaviyo_condensed_styling.klaviyo_standard_embed_qwFZ63 .klaviyo_submit_button {
+			  
+			  border-radius: undefined;
+			}.klaviyo_styling.klaviyo_standard_embed_qwFZ63 .klaviyo_submit_button:hover,
+			.klaviyo_condensed_styling.klaviyo_standard_embed_qwFZ63 .klaviyo_submit_button:hover {
+			  
+			}
+			</style>
+			<script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+			<script type="text/javascript">
+			  KlaviyoSubscribe.attachToForms('#email_signup', {
+			    hide_form_on_success: true,
+			     success: function ($form) {
+			     	localStorage.setItem("popupWasSuscribed",1);
+                     window.location = "http://www.filtrateeyewear.com/?summerpack=true";
+			     }
+			  });
+			</script>
+		 </div>
+  {% endif %}
+    </div>
+  <!--End Popup-->
+<script>
+  $( document ).ready(function() {
+    if($.colorbox){
+    } else {
+      !function(t,e,i){function n(i,n,o){var r=e.createElement(i);return n&&(r.id=Z+n),o&&(r.style.cssText=o),t(r)}function o(){return i.innerHeight?i.innerHeight:t(i).height()}function r(e,i){i!==Object(i)&&(i={}),this.cache={},this.el=e,this.value=function(e){var n;return void 0===this.cache[e]&&(void 0!==(n=t(this.el).attr("data-cbox-"+e))?this.cache[e]=n:void 0!==i[e]?this.cache[e]=i[e]:void 0!==X[e]&&(this.cache[e]=X[e])),this.cache[e]},this.get=function(e){var i=this.value(e);return t.isFunction(i)?i.call(this.el,this):i}}function h(t){var e=W.length,i=(A+t)%e;return i<0?e+i:i}function a(t,e){return Math.round((/%/.test(t)?("x"===e?E.width():o())/100:1)*parseInt(t,10))}function s(t,e){return t.get("photo")||t.get("photoRegex").test(e)}function l(t,e){return t.get("retinaUrl")&&i.devicePixelRatio>1?e.replace(t.get("photoRegex"),t.get("retinaSuffix")):e}function d(t){"contains"in x[0]&&!x[0].contains(t.target)&&t.target!==v[0]&&(t.stopPropagation(),x.focus())}function c(t){c.str!==t&&(x.add(v).removeClass(c.str).addClass(t),c.str=t)}function g(e){A=0,e&&!1!==e&&"nofollow"!==e?(W=t("."+tt).filter(function(){return new r(this,t.data(this,Y)).get("rel")===e}),-1===(A=W.index(_.el))&&(W=W.add(_.el),A=W.length-1)):W=t(_.el)}function u(i){t(e).trigger(i),at.triggerHandler(i)}function f(i){var o;if(!G){if(o=t(i).data(Y),_=new r(i,o),g(_.get("rel")),!U){U=$=!0,c(_.get("className")),x.css({visibility:"hidden",display:"block",opacity:""}),I=n(st,"LoadedContent","width:0; height:0; overflow:hidden; visibility:hidden"),b.css({width:"",height:""}).append(I),j=T.height()+k.height()+b.outerHeight(!0)-b.height(),D=C.width()+H.width()+b.outerWidth(!0)-b.width(),N=I.outerHeight(!0),z=I.outerWidth(!0);var h=a(_.get("initialWidth"),"x"),s=a(_.get("initialHeight"),"y"),l=_.get("maxWidth"),f=_.get("maxHeight");_.w=Math.max((!1!==l?Math.min(h,a(l,"x")):h)-z-D,0),_.h=Math.max((!1!==f?Math.min(s,a(f,"y")):s)-N-j,0),I.css({width:"",height:_.h}),J.position(),u(et),_.get("onOpen"),O.add(F).hide(),x.focus(),_.get("trapFocus")&&e.addEventListener&&(e.addEventListener("focus",d,!0),at.one(rt,function(){e.removeEventListener("focus",d,!0)})),_.get("returnFocus")&&at.one(rt,function(){t(_.el).focus()})}var p=parseFloat(_.get("opacity"));v.css({opacity:p===p?p:"",cursor:_.get("overlayClose")?"pointer":"",visibility:"visible"}).show(),_.get("closeButton")?B.html(_.get("close")).appendTo(b):B.appendTo("<div/>"),w()}}function p(){x||(V=!1,E=t(i),x=n(st).attr({id:Y,class:!1===t.support.opacity?Z+"IE":"",role:"dialog",tabindex:"-1"}).hide(),v=n(st,"Overlay").hide(),L=t([n(st,"LoadingOverlay")[0],n(st,"LoadingGraphic")[0]]),y=n(st,"Wrapper"),b=n(st,"Content").append(F=n(st,"Title"),R=n(st,"Current"),P=t('<button type="button"/>').attr({id:Z+"Previous"}),K=t('<button type="button"/>').attr({id:Z+"Next"}),S=t('<button type="button"/>').attr({id:Z+"Slideshow"}),L),B=t('<button type="button"/>').attr({id:Z+"Close"}),y.append(n(st).append(n(st,"TopLeft"),T=n(st,"TopCenter"),n(st,"TopRight")),n(st,!1,"clear:left").append(C=n(st,"MiddleLeft"),b,H=n(st,"MiddleRight")),n(st,!1,"clear:left").append(n(st,"BottomLeft"),k=n(st,"BottomCenter"),n(st,"BottomRight"))).find("div div").css({float:"left"}),M=n(st,!1,"position:absolute; width:9999px; visibility:hidden; display:none; max-width:none;"),O=K.add(P).add(R).add(S)),e.body&&!x.parent().length&&t(e.body).append(v,x.append(y,M))}function m(){function i(t){t.which>1||t.shiftKey||t.altKey||t.metaKey||t.ctrlKey||(t.preventDefault(),f(this))}return!!x&&(V||(V=!0,K.click(function(){J.next()}),P.click(function(){J.prev()}),B.click(function(){J.close()}),v.click(function(){_.get("overlayClose")&&J.close()}),t(e).bind("keydown."+Z,function(t){var e=t.keyCode;U&&_.get("escKey")&&27===e&&(t.preventDefault(),J.close()),U&&_.get("arrowKey")&&W[1]&&!t.altKey&&(37===e?(t.preventDefault(),P.click()):39===e&&(t.preventDefault(),K.click()))}),t.isFunction(t.fn.on)?t(e).on("click."+Z,"."+tt,i):t("."+tt).live("click."+Z,i)),!0)}function w(){var e,o,r,h=J.prep,d=++lt;if($=!0,q=!1,u(ht),u(it),_.get("onLoad"),_.h=_.get("height")?a(_.get("height"),"y")-N-j:_.get("innerHeight")&&a(_.get("innerHeight"),"y"),_.w=_.get("width")?a(_.get("width"),"x")-z-D:_.get("innerWidth")&&a(_.get("innerWidth"),"x"),_.mw=_.w,_.mh=_.h,_.get("maxWidth")&&(_.mw=a(_.get("maxWidth"),"x")-z-D,_.mw=_.w&&_.w<_.mw?_.w:_.mw),_.get("maxHeight")&&(_.mh=a(_.get("maxHeight"),"y")-N-j,_.mh=_.h&&_.h<_.mh?_.h:_.mh),e=_.get("href"),Q=setTimeout(function(){L.show()},100),_.get("inline")){var c=t(e).eq(0);r=t("<div>").hide().insertBefore(c),at.one(ht,function(){r.replaceWith(c)}),h(c)}else _.get("iframe")?h(" "):_.get("html")?h(_.get("html")):s(_,e)?(e=l(_,e),q=_.get("createImg"),t(q).addClass(Z+"Photo").bind("error."+Z,function(){h(n(st,"Error").html(_.get("imgError")))}).one("load",function(){d===lt&&setTimeout(function(){var e;_.get("retinaImage")&&i.devicePixelRatio>1&&(q.height=q.height/i.devicePixelRatio,q.width=q.width/i.devicePixelRatio),_.get("scalePhotos")&&(o=function(){q.height-=q.height*e,q.width-=q.width*e},_.mw&&q.width>_.mw&&(e=(q.width-_.mw)/q.width,o()),_.mh&&q.height>_.mh&&(e=(q.height-_.mh)/q.height,o())),_.h&&(q.style.marginTop=Math.max(_.mh-q.height,0)/2+"px"),W[1]&&(_.get("loop")||W[A+1])&&(q.style.cursor="pointer",t(q).bind("click."+Z,function(){J.next()})),q.style.width=q.width+"px",q.style.height=q.height+"px",h(q)},1)}),q.src=e):e&&M.load(e,_.get("data"),function(e,i){d===lt&&h("error"===i?n(st,"Error").html(_.get("xhrError")):t(this).contents())})}var v,x,y,b,T,C,H,k,W,E,I,M,L,F,R,S,K,P,B,O,_,j,D,N,z,A,q,U,$,G,Q,J,V,X={html:!1,photo:!1,iframe:!1,inline:!1,transition:"elastic",speed:300,fadeOut:300,width:!1,initialWidth:"600",innerWidth:!1,maxWidth:!1,height:!1,initialHeight:"450",innerHeight:!1,maxHeight:!1,scalePhotos:!0,scrolling:!0,opacity:.9,preloading:!0,className:!1,overlayClose:!0,escKey:!0,arrowKey:!0,top:!1,bottom:!1,left:!1,right:!1,fixed:!1,data:void 0,closeButton:!0,fastIframe:!0,open:!1,reposition:!0,loop:!0,slideshow:!1,slideshowAuto:!0,slideshowSpeed:2500,slideshowStart:"start slideshow",slideshowStop:"stop slideshow",photoRegex:/\.(gif|png|jp(e|g|eg)|bmp|ico|webp|jxr|svg)((#|\?).*)?$/i,retinaImage:!1,retinaUrl:!1,retinaSuffix:"@2x.$1",current:"image {current} of {total}",previous:"previous",next:"next",close:"close",xhrError:"This content failed to load.",imgError:"This image failed to load.",returnFocus:!0,trapFocus:!0,onOpen:!1,onLoad:!1,onComplete:!1,onCleanup:!1,onClosed:!1,rel:function(){return this.rel},href:function(){return t(this).attr("href")},title:function(){return this.title},createImg:function(){var e=new Image,i=t(this).data("cbox-img-attrs");return"object"==typeof i&&t.each(i,function(t,i){e[t]=i}),e},createIframe:function(){var i=e.createElement("iframe"),n=t(this).data("cbox-iframe-attrs");return"object"==typeof n&&t.each(n,function(t,e){i[t]=e}),"frameBorder"in i&&(i.frameBorder=0),"allowTransparency"in i&&(i.allowTransparency="true"),i.name=(new Date).getTime(),i.allowFullscreen=!0,i}},Y="colorbox",Z="cbox",tt=Z+"Element",et=Z+"_open",it=Z+"_load",nt=Z+"_complete",ot=Z+"_cleanup",rt=Z+"_closed",ht=Z+"_purge",at=t("<a/>"),st="div",lt=0,dt={},ct=function(){function t(){clearTimeout(h)}function e(){(_.get("loop")||W[A+1])&&(t(),h=setTimeout(J.next,_.get("slideshowSpeed")))}function i(){S.html(_.get("slideshowStop")).unbind(s).one(s,n),at.bind(nt,e).bind(it,t),x.removeClass(a+"off").addClass(a+"on")}function n(){t(),at.unbind(nt,e).unbind(it,t),S.html(_.get("slideshowStart")).unbind(s).one(s,function(){J.next(),i()}),x.removeClass(a+"on").addClass(a+"off")}function o(){r=!1,S.hide(),t(),at.unbind(nt,e).unbind(it,t),x.removeClass(a+"off "+a+"on")}var r,h,a=Z+"Slideshow_",s="click."+Z;return function(){r?_.get("slideshow")||(at.unbind(ot,o),o()):_.get("slideshow")&&W[1]&&(r=!0,at.one(ot,o),_.get("slideshowAuto")?i():n(),S.show())}}();t[Y]||(t(p),(J=t.fn[Y]=t[Y]=function(e,i){var n=this;return e=e||{},t.isFunction(n)&&(n=t("<a/>"),e.open=!0),n[0]?(p(),m()&&(i&&(e.onComplete=i),n.each(function(){var i=t.data(this,Y)||{};t.data(this,Y,t.extend(i,e))}).addClass(tt),new r(n[0],e).get("open")&&f(n[0])),n):n}).position=function(e,i){function n(){T[0].style.width=k[0].style.width=b[0].style.width=parseInt(x[0].style.width,10)-D+"px",b[0].style.height=C[0].style.height=H[0].style.height=parseInt(x[0].style.height,10)-j+"px"}var r,h,s,l=0,d=0,c=x.offset();if(E.unbind("resize."+Z),x.css({top:-9e4,left:-9e4}),h=E.scrollTop(),s=E.scrollLeft(),_.get("fixed")?(c.top-=h,c.left-=s,x.css({position:"fixed"})):(l=h,d=s,x.css({position:"absolute"})),!1!==_.get("right")?d+=Math.max(E.width()-_.w-z-D-a(_.get("right"),"x"),0):!1!==_.get("left")?d+=a(_.get("left"),"x"):d+=Math.round(Math.max(E.width()-_.w-z-D,0)/2),!1!==_.get("bottom")?l+=Math.max(o()-_.h-N-j-a(_.get("bottom"),"y"),0):!1!==_.get("top")?l+=a(_.get("top"),"y"):l+=Math.round(Math.max(o()-_.h-N-j,0)/2),x.css({top:c.top,left:c.left,visibility:"visible"}),y[0].style.width=y[0].style.height="9999px",r={width:_.w+z+D,height:_.h+N+j,top:l,left:d},e){var g=0;t.each(r,function(t){r[t]===dt[t]||(g=e)}),e=g}dt=r,e||x.css(r),x.dequeue().animate(r,{duration:e||0,complete:function(){n(),$=!1,y[0].style.width=_.w+z+D+"px",y[0].style.height=_.h+N+j+"px",_.get("reposition")&&setTimeout(function(){E.bind("resize."+Z,J.position)},1),t.isFunction(i)&&i()},step:n})},J.resize=function(t){var e;U&&((t=t||{}).width&&(_.w=a(t.width,"x")-z-D),t.innerWidth&&(_.w=a(t.innerWidth,"x")),I.css({width:_.w}),t.height&&(_.h=a(t.height,"y")-N-j),t.innerHeight&&(_.h=a(t.innerHeight,"y")),t.innerHeight||t.height||(e=I.scrollTop(),I.css({height:"auto"}),_.h=I.height()),I.css({height:_.h}),e&&I.scrollTop(e),J.position("none"===_.get("transition")?0:_.get("speed")))},J.prep=function(i){if(U){var o,a="none"===_.get("transition")?0:_.get("speed");I.remove(),(I=n(st,"LoadedContent").append(i)).hide().appendTo(M.show()).css({width:function(){return _.w=_.w||I.width(),_.w=_.mw&&_.mw<_.w?_.mw:_.w,_.w}(),overflow:_.get("scrolling")?"auto":"hidden"}).css({height:function(){return _.h=_.h||I.height(),_.h=_.mh&&_.mh<_.h?_.mh:_.h,_.h}()}).prependTo(b),M.hide(),t(q).css({float:"none"}),c(_.get("className")),o=function(){function i(){!1===t.support.opacity&&x[0].style.removeAttribute("filter")}var n,o,d=W.length;U&&(o=function(){clearTimeout(Q),L.hide(),u(nt),_.get("onComplete")},F.html(_.get("title")).show(),I.show(),d>1?("string"==typeof _.get("current")&&R.html(_.get("current").replace("{current}",A+1).replace("{total}",d)).show(),K[_.get("loop")||A<d-1?"show":"hide"]().html(_.get("next")),P[_.get("loop")||A?"show":"hide"]().html(_.get("previous")),ct(),_.get("preloading")&&t.each([h(-1),h(1)],function(){var i=W[this],n=new r(i,t.data(i,Y)),o=n.get("href");o&&s(n,o)&&(o=l(n,o),e.createElement("img").src=o)})):O.hide(),_.get("iframe")?(n=_.get("createIframe"),_.get("scrolling")||(n.scrolling="no"),t(n).attr({src:_.get("href"),class:Z+"Iframe"}).one("load",o).appendTo(I),at.one(ht,function(){n.src="//about:blank"}),_.get("fastIframe")&&t(n).trigger("load")):o(),"fade"===_.get("transition")?x.fadeTo(a,1,i):i())},"fade"===_.get("transition")?x.fadeTo(a,0,function(){J.position(0,o)}):J.position(a,o)}},J.next=function(){!$&&W[1]&&(_.get("loop")||W[A+1])&&(A=h(1),f(W[A]))},J.prev=function(){!$&&W[1]&&(_.get("loop")||A)&&(A=h(-1),f(W[A]))},J.close=function(){U&&!G&&(G=!0,U=!1,u(ot),_.get("onCleanup"),E.unbind("."+Z),v.fadeTo(_.get("fadeOut")||0,0),x.stop().fadeTo(_.get("fadeOut")||0,0,function(){x.hide(),v.hide(),u(ht),I.remove(),setTimeout(function(){G=!1,u(rt),_.get("onClosed")},1)}))},J.remove=function(){x&&(x.stop(),t[Y].close(),x.stop(!1,!0).remove(),v.remove(),G=!1,x=null,t("."+tt).removeData(Y).removeClass(tt),t(e).unbind("click."+Z).unbind("keydown."+Z))},J.element=function(){return t(_.el)},J.settings=X)}(jQuery,document,window);
+    }
+
+    if(sessionStorage["PopupShown"] == null && localStorage.getItem("popupWasSuscribed") == null) {
+      sessionStorage["PopupShown"] = 1;
+
+      if ($(window).width() > 858) {
+        var wcpop = "740px";  
+        var hcpop = "650px"; 
+      } else if ($(window).width() > 350) {
+        var wcpop = "300px";      /*"357px";  */
+        var hcpop = "500px";     /*"495px";  */
+      } /*else if ($(window).width() > 400) {
+        var wcpop = "200px";    /*"357px";  */
+        /*var hcpop = "333px";    /*"495px";  */
+      /*} else {
+        var wcpop = "250px";      /*"357px";  */
+       /* var hcpop = "250px";      /*"495px";  */
+      //}        
+       (function ($) {       
+         setTimeout(function(){
+           var cboxOptions = { 
+             href:"#newsletter_signup_form", 
+             width: wcpop,
+             height: hcpop,
+             opacity: 0.6,
+             className: 'filtrate_popup',
+             inline: true,
+             closeButton: true,
+             overlayClose: true
+           }
+
+           $.colorbox(cboxOptions);
+
+         }, 1500)
+       })(jQuery); 
+
+      $(".signclose, .pop_btn").click(function() { 
+        $.colorbox.close(); 
+      });
+
+	} /* end cookie */
+
+  $( ".op-pop" ).click(function() {
+    var cboxOptions = { 
+      href:"#newsletter_signup_form", 
+      width: '95%',
+      opacity: 0.6,
+      className: 'filtrate_popup',
+      inline: true,
+      closeButton: true
+    }
+    $.colorbox(cboxOptions);
+  });
+
+      });
+</script>
+  
+  
+  <!-- START Google Dynamic Remarketing For Theme.Liquid -->
+<script type="text/javascript">
+
+{% if template contains 'collection' %}
+// Collection Page
+var google_tag_params = {
+ecomm_prodid: ['{{ collection.all_products.first.variants.first.sku }}','{{ collection.all_products.first.id }}','{{ collection.all_products.first.variants.first.id }}'],
+ecomm_pagetype: 'product',
+ecomm_totalvalue: {{ collection.all_products.first.price_min | money_without_currency | remove: "," }}
+};
+
+{% elsif template contains 'product' %}
+// Product Page
+var google_tag_params = {
+ecomm_prodid: ['{{ product.variants.first.sku }}','{{ product.id }}','{{ product.variants.first.id }}'],
+ecomm_pagetype: 'product',
+ecomm_totalvalue: {{ product.price_min | money_without_currency | remove: "," }}
+};
+
+{% elsif template contains 'cart' %}
+// Cart Page
+var google_tag_params = {
+ecomm_prodid: [{% for item in cart.items %}'{{ item.variant.sku }}','{{ item.id }}','{{ item.variant_id }}'{% if forloop.last != true %},{% endif %}{% endfor %}],
+ecomm_pagetype: 'cart',
+ecomm_totalvalue: {{ cart.total_price | money_without_currency | remove: "," }}
+};
+
+{% elsif template contains 'search' %}
+// Search Page
+var google_tag_params = {
+ecomm_pagetype: 'searchresults'
+};
+
+{% elsif template contains 'index' %}
+// Home Page
+var google_tag_params = {
+ecomm_pagetype: 'home'
+};
+
+{% else %}
+// Other Page
+var google_tag_params = {
+ecomm_pagetype: 'other'
+};
+{% endif %}
+</script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 845492249;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+var google_conversion_format = 3;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/845492249/?value=0&guid=ON&script=0"/>
+</div>
+</noscript>
+
+  <div class="popup" data-popup="popup-1">
+      <div class="popup-inner">
+          <p id="response-msg"></p>
+          <p><a data-popup-close="popup-1" href="#">Close</a></p>
+          <a class="popup-close" data-popup-close="popup-1" href="#">x</a>
+      </div>
+  </div>
+  
+  <style>
+    /* Outer */
+    .popup {
+        width:100%;
+        height:100%;
+        display:none;
+        position:fixed;
+        top:0px;
+        left:0px;
+        background:rgba(0,0,0,0.75);
+    }
+
+    /* Inner */
+    .popup-inner {
+        max-width:350px;
+        width:90%;
+        padding:40px;
+        position:absolute;
+        top:50%;
+        left:50%;
+        -webkit-transform:translate(-50%, -50%);
+        transform:translate(-50%, -50%);
+        box-shadow:0px 2px 6px rgba(0,0,0,1);
+        border-radius:3px;
+        background:#fff;      	
+    }
+    
+    .popup-inner p {
+    	font-size: 15px;
+    }
+
+    /* Close Button */
+    .popup-close {
+        width:30px;
+        height:30px;
+        padding-top:4px;
+        display:inline-block;
+        position:absolute;
+        top:0px;
+        right:0px;
+        transition:ease 0.25s all;
+        -webkit-transform:translate(50%, -50%);
+        transform:translate(50%, -50%);
+        border-radius:1000px;
+        background:rgba(0,0,0,0.8);
+        font-family:Arial, Sans-Serif;
+        font-size:20px;
+        text-align:center;
+        line-height:100%;
+        color:#fff;
+    }
+
+    .popup-close:hover {
+        -webkit-transform:translate(50%, -50%) rotate(180deg);
+        transform:translate(50%, -50%) rotate(180deg);
+        background:rgba(0,0,0,1);
+        text-decoration:none;
+    }
+  </style>
+  
+<!-- END Google Dynamic Remarketing For Theme.Liquid -->
+  <div class="op-pop">o</div>
+ </body>
+</html>
+
