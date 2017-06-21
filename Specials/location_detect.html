@@ -1,0 +1,42 @@
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+ </head>
+ <body>
+<h3>Client side IP geolocation using <a href="http://freegeoip.net">freegeoip.net</a></h3>
+<div id="ip"></div>
+<div id="address"></div>
+<hr/>Full response: <pre id="details"></pre>
+<script>
+	$(document).ready(function(){ 
+		$.getJSON("http://freegeoip.net/json/", function(data) {
+			var country_code = data.country_code;
+			var country = data.country_name;
+			var ip = data.ip;
+			var time_zone = data.time_zone;
+			var latitude = data.latitude;
+			var longitude = data.longitude;
+
+			alert("Country Code: " + country_code);
+			alert("Country Name: " + country);
+			alert("IP: " + ip); 
+			alert("Time Zone: " + time_zone);
+			alert("Latitude: " + latitude);
+			alert("Longitude: " + longitude);   
+		});
+
+	$.get("http://freegeoip.net/json/", function (response) {
+		$("#ip").html("IP: " + response.ip);
+		$("#address").html("Location: " + response.city + ", " + response.region_name);
+		$("#details").html(JSON.stringify(response, null, 4));
+	}, "jsonp");
+	})
+</script>
+ </body>
+</html>
