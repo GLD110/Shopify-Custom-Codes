@@ -1,0 +1,864 @@
+{%- assign current_variant = product.selected_or_first_available_variant -%} 
+{%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+{%- assign product_image_zoom_size = '1024x1024' -%}
+{%- assign zoom_enabled = section.settings.zoom_product -%}
+
+<div itemscope itemtype="http://schema.org/Product" id="prod-{{product.id}}" class="clearfix" data-section-id="{{ section.id }}" data-section-type="product"{% if section.settings.show_preorder %} data-show-preorder="yes"{% endif %}{% if zoom_enabled %} data-zoom-enabled="true"{% endif%}>
+
+  <meta itemprop="name" content="{{ product.title }}">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: '800x' }}">
+
+  <h1 class="page-title">{{ product.title | escape}}</h1>   
+
+  <div id="product-images" class="clearfix{% if product.images.size > 1%} multi-image{% else %} single-image{% endif %}">
+    <a id="product-shot" class="productimage" data-image-id="{{featured_image.id}}" href="{{ featured_image | img_url: 'master' }}" style="display:none;">
+      <img src="{{ featured_image | img_url: product_image_zoom_size }}" alt="{{ featured_image.alt | escape }}" />
+      {% if product.compare_at_price > product.price %}
+        {% if section.settings.show_sale_sticker %}
+        <span class="sale round">{{ 'products.general.sale' | t }}</span>
+        {% endif %}
+      {% endif %}
+      <span class="icon-magnifier"></span>
+    </a>
+    
+    {% assign first_image = product.images[0] | product_img_url: product_image_zoom_size %}
+    {% assign url_header = 'https:' %}
+    
+    <div id="image-preview" style="width: 100%; height: 240px; padding: 10px 29%;">
+      <div id="border-image" style="border: solid 10px transparent; border-image: url('{{ url_header }}{{ first_image }}') 10 round; width: 160px; height: 200px;">
+      	<img align="middle" id="blah" src="https://cdn.shopify.com/s/files/1/1851/9071/files/Screenshot_1.png?2608424155909072247" style="width: 100%; height: 100%;">
+      </div>
+    </div>
+    
+    <div id="image-z-preview" style="display:none;">
+      <div id="border-z-image" style="border: solid 50px transparent; border-image: url('{{ url_header }}{{ first_image }}') 10 round; width: 800px; height: 1000px;">
+      	<img align="middle" id="blah-z" src="https://cdn.shopify.com/s/files/1/1851/9071/files/Screenshot_1.png?2608424155909072247" style="width: 100%; height: 100%;">
+      </div>
+    </div>    
+	
+    {% assign special_index = product.variants.size | plus : 1 %}
+    
+    <div id="more-images" class="product-thumbs-{{section.id}} clearfix" data-arrow-left="{% include 'icon-arrowleft'%}" data-arrow-right="{% include 'icon-arrowright'%}">   
+      {% for image in product.images %}
+        {%- assign active_image = "" -%}
+        {%- if featured_image == image -%}
+          {%- assign active_image = "active-img" -%}
+        {%- endif -%}
+        {% if forloop.first == true %}
+          {%- if featured_image != image -%}
+          	<a href="{{ image | product_img_url: product_image_zoom_size }}" class="{{active_image}} productimage smallimg{% if section.settings.mobile_hide_prd_images %} hide-for-mobile{% endif %}" data-image-index="{{forloop.index0}}" title="{{product.title | escape }}" data-image-id="{{ image.id }}" style="display:none;">
+        	<img src="{{ image | product_img_url: 'compact'}}" alt="{{ image.alt | escape }}" />
+          {%- endif -%}
+        {% elsif forloop.index0 < special_index %}
+            <a href="{{ image | product_img_url: product_image_zoom_size }}" class="{{active_image}} productimage smallimg{% if section.settings.mobile_hide_prd_images %} hide-for-mobile{% endif %}" data-image-index="{{forloop.index0}}" title="{{product.title | escape }}" data-image-id="{{ image.id }}">
+        	<img src="{{ image | product_img_url: 'compact'}}" alt="{{ image.alt | escape }}" />
+        {% endif %}      
+        </a>
+        {% if forloop.index0 > product.variants.size %}
+        	<input type="hidden" id="detail-image-{{ forloop.index }}" value="{{ image | product_img_url: 'grande'}}">
+        {% endif %}
+      {% endfor %}
+    </div> 
+	
+    <div id="customizing" style="margin-top: 10px; text-align:center;">
+      <input type ="button" id="cornerbutton" value="Corner" class="ffbutton"/>
+      <input type ="button" id ="loadPicture" value="Upload Picture"/>
+      <input type ="button" id="detail-frame" value="Profile Detail"/>
+      <input type='file' id="imgInp" style="display: none"/>
+      
+      <div class="image-description-thumbnails" style="margin-top: 10px;">
+        <p>See the frame with a sample image.</p>
+        <span >
+          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501');document.getElementById('blah-z').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501');" style="padding: 0px 5px;">
+            <img class="ffsampleimage" border="1" src="https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501" title="Boat" alt="Boat" width="80" style="border: solid 1px blue;"></a>
+          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501');document.getElementById('blah-z').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501');" style="padding: 0px 5px;">
+            <img class="ffsampleimage" border="1" src="https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501" title="Bird" alt="Bird" width="80" style="border: solid 1px blue;"></a>
+        </span>
+        <span >
+          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', $('#user_icon').attr('src'));document.getElementById('blah-z').setAttribute('src', $('#user_icon').attr('src'));" style="padding: 0px 5px;">
+            <img class="ffsampleimage" id="user_icon" border="1" src="https://cdn.shopify.com/s/files/1/1851/9071/files/user-icon.jpg?2700033208701510501" title="Your Image" alt="Your Image" width="80" style="border: solid 1px blue;"></a>
+        </span>
+      </div>
+    </div>
+      
+  </div>  
+    
+  <script>
+    
+    $( document ).ready(function() {
+      
+      var selected_value = $('#SingleOptionSelector-0').find(":selected").text();      
+      var temp_array = selected_value.split(" ");	
+      var selected_inch = parseFloat(temp_array[1]);
+      var border_width = selected_inch/0.1;
+	  var border_image = $('#border-image').css('border-image');
+      var frame_width = $('#frame_width').val() * 10;
+      var frame_height = $('#frame_height').val() * 10;
+      
+      $('#border-image').css('width',frame_width);
+      $('#border-image').css('height',frame_height);
+      $('#border-image').css('border','solid ' + border_width + 'px' + ' transparent');
+      $('#border-image').css('border-image',border_image);
+      
+      $( "#SingleOptionSelector-0" ).change(function() {
+        
+        var selected_value = $(this).find(":selected").text();      
+        var temp_array = selected_value.split(" ");	
+        var selected_inch = parseFloat(temp_array[1]); 
+        var border_width = selected_inch/0.1;
+        var border_image = $('#border-image').css('border-image');	
+        var frame_width = $('#frame_width').val() * 10;
+        var frame_height = $('#frame_height').val() * 10;
+        
+        var rate = frame_width / frame_height;
+        if(rate > 1){
+          	border_width = border_width * 160 / frame_width; 
+            frame_width = 160;
+            frame_height =  160 / rate;
+        }else{
+          	border_width = border_width * 200 / frame_height;
+            frame_height = 200;
+            frame_width = 200 * rate;
+        }          
+
+        $('#border-image').css('width',frame_width);
+        $('#border-image').css('height',frame_height);        
+        $('#border-image').css('border','solid ' + border_width + 'px' + ' transparent');
+        $('#border-image').css('border-image',border_image);       
+        
+      });    
+
+      $('.sizes').on('input',function(e){
+        
+        var selected_value = $('#SingleOptionSelector-0').find(":selected").text();      
+        var temp_array = selected_value.split(" ");	
+        var selected_inch = parseFloat(temp_array[1]);
+        var border_width = selected_inch/0.1;
+        var border_image = $('#border-image').css('border-image');
+        var frame_width = $('#frame_width').val() * 10;
+        var frame_height = $('#frame_height').val() * 10;
+        
+        var rate = frame_width / frame_height;
+        if(rate > 1){
+          	border_width = border_width * 160 / frame_width; 
+            frame_width = 160;
+            frame_height =  160 / rate;
+        }else{
+          	border_width = border_width * 200 / frame_height;
+            frame_height = 200;
+            frame_width = 200 * rate;
+        }        
+
+        $('#border-image').css('width',frame_width);
+        $('#border-image').css('height',frame_height);
+        $('#border-image').css('border','solid ' + border_width + 'px' + ' transparent');
+        $('#border-image').css('border-image',border_image);
+        
+      });
+
+    }); 
+    
+    function readURL(input, viewImg) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                viewImg.attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    $("#imgInp").change(function(){
+        readURL(this, $('#blah'));
+      	readURL(this, $('#blah-z'));
+      	readURL(this, $('#user_icon'));
+    });
+
+    $('#loadPicture').click(function(){
+        $('#imgInp').trigger('click');
+    });
+    
+    $('#cornerbutton').click(function(){
+      
+        var w =  window.open("","","toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=800px,height=800px");
+        var corner_image = $("#image-z-preview").html();
+      	$(w.document.body).html(corner_image);
+
+    }); 
+    
+    $('#detail-frame').click(function(){
+      var detail_image_index = parseInt({{ special_index }}) + parseInt($("#SingleOptionSelector-0 option:selected").index()) + 1;
+      if($("#detail-image-" + detail_image_index).val()){
+        var detail_image = 'https:' + $("#detail-image-" + detail_image_index).val();
+        var w =  window.open(detail_image,"","toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=800px,height=800px");
+      }
+    });     
+  </script>    
+  
+  <div id="product-details">
+    {% assign product_vendor_handle = product.vendor | handle %}
+    {% if collections[product_vendor_handle].handle == product_vendor_handle %}
+      {% assign vendor_url = collections[product_vendor_handle].url %}
+    {% else %}
+      {% assign vendor_url = product.vendor | url_for_vendor %}
+    {% endif %}
+
+    <h2 itemprop="brand" class="{% unless section.settings.show_vendor %}hide{% endunless%}">{{ product.vendor | link_to: vendor_url }}</h2>  
+
+    <div class="product-price-wrap" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+      <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+      {% if product.available %}
+        <link itemprop="availability" href="http://schema.org/InStock" />
+      {% else %}
+        <link itemprop="availability" href="http://schema.org/OutOfStock" />
+      {% endif %}
+      {% if product.compare_at_price > product.price %}
+        <span id="productPrice-{{ section.id }}" class="product-price on-sale" itemprop="price"><span class=price-money>{{ current_variant.price | money }}</span></span>&nbsp;<s id="comparePrice-{{ section.id }}" class="product-compare-price"><span class=price-money>{{ current_variant.compare_at_price | money }}</span></s>
+      {% else %}
+        <span id="productPrice-{{ section.id }}" class="product-price" itemprop="price"><span class=price-money>{{ current_variant.price | money }}</span></span>&nbsp;<s class="product-compare-price"></s>
+      {% endif %}
+    </div>     
+    
+    
+
+    {% if section.settings.show_product_sku %}
+      <div id="productSKU-{{ section.id }}" class="sku-info">{% if current_variant.sku != blank %}{{'products.product.sku' | t}} {{current_variant.sku}}{% endif %}</div>
+    {% endif %}
+
+    {% if product.available %}
+      <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form" id="AddToCartForm">
+        <div class="product-variants">
+          <fieldset>
+            {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+              {% for option in product.options_with_values %}
+                <div class="selector-wrapper js product-form__item">
+                  <label {% if option.name == 'default' %}class="label--hidden" {% endif %}for="SingleOptionSelector-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                  <select class="single-option-selector single-option-selector-{{ section.id }} product-form__input"
+                  id="SingleOptionSelector-{{ forloop.index0 }}"
+                  data-name="{{ option.name }}"
+                  data-index="option{{ forloop.index }}">
+                  {% for value in option.values %}
+                    <option value="{{ value | escape }}"{% if option.selected_value == value %} selected="selected"{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                  </select>
+                </div>
+              {% endfor %}
+            {% endunless %}
+
+            <select name="id" id="productSelect-{{ section.id }}" class="product-form__variants no-js">
+              {% for variant in product.variants %}
+                <option {% if variant == current_variant %} selected="selected" {% endif %}date-image-id="{{variant.featured_image.id}}" data-sku="{{ variant.sku }}" value="{{ variant.id }}" {% unless variant.available %} disabled="disabled" {% endunless %}>
+                {% if variant.available %}
+                  {{ variant.title }} - <span class=price-money>{{ variant.price | money_with_currency }}</span>
+                {% else %}
+                  {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                {% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </fieldset>
+          
+ 		{% assign global = product.metafields.global %}  
+            
+		<div id="dimension-block" style="border: solid 1px #b2b9bd; font-size: 12px;">
+            <table class="fftable">
+              <tbody>
+                <tr>
+                  <td class="ffhead" colspan="7">
+                    Picture dimensions in 
+                    <script language="JavaScript">
+                      <!--
+                        //document.write('inches');
+                        // -->
+                    </script>inches
+                  </td>
+                </tr>
+                <tr style="display: none;">
+                  <td class="ffdesc" colspan="7"><center>Hover the mouse over any entry box for help</center></td>
+                </tr>
+
+                <!-- the inside/outside dimensions choice -->
+                <tr style="display: none;">
+                  <td colspan="3" class="ffdesc">
+                    <table class="ffdesc">
+                      <tbody><tr>
+                        <td>
+                          <input type="radio" checked="" id="inout_inside_CM-Black" name="inout_CM-Black" value="Inside" onmouseover="ddrivetip('Graphic Dimensions are your poster or graphic size.','',250)" onmouseout="hideddrivetip()" onclick="snap_inout_changed(this)">
+                        </td>
+                        <td>	
+                          Graphic Dimensions. 
+                        </td>
+                        </tr>
+                      </tbody></table>	
+                  </td>
+                  <td colspan="4" class="ffdesc">
+                    <table class="ffdesc">
+                      <tbody><tr>
+                        <td>
+                          <input type="radio" id="inout_outside_CM-Black" name="inout_CM-Black" value="Outside" onmouseover="ddrivetip('External Dimensions are for from outside edge to outside edge of the frame.','',250)" onmouseout="hideddrivetip()" onclick="snap_inout_changed(this)">
+                        </td>
+                        <td>	
+                          External Dimensions.
+                        </td>
+                        </tr>
+                      </tbody></table>	
+                  </td>
+                </tr>
+
+                <!-- the width and height entries -->
+                <tr>
+                  <td colspan="3" class="ffdesc" align="right">Width&nbsp;
+                    <input autocomplete="off" type="text" class="sizes" id="frame_width" name="properties[Width]" value="16" onkeypress="return handleEnter(this, event)">
+                    <!-- change to type=hidden if you don't want this displayed or type=text to show it -->
+                    <input type="hidden" disabled="" readonly="" class="sizes" id="wdth_CM-Black" name="wdth_CM-Black" value="16">
+                  </td>
+                  <td colspan="4" class="ffdesc" align="right">Height&nbsp;
+                    <!-- the height entries -->
+                    <input autocomplete="off" type="text" class="sizes" id="frame_height" name="properties[Height]" value="20" onkeypress="return handleEnter(this, event)">
+                    <!-- change to type=hidden if you don't want this displayed or type=text to show it -->
+                    <input type="hidden" disabled="" readonly="" class="sizes" id="hght_CM-Black" name="hght_CM-Black" value="20">
+                  </td>
+                  	<input type="hidden" disabled="" readonly="" class="sizes" id="W_L_Psq" name="f_PSQ" value="{{ global.psq }}">
+                  	<input type="hidden" disabled="" readonly="" class="sizes" id="W_L_Pf" name="f_PF" value="{{ global.pf_k }}">
+                </tr>
+
+                <tr style="display: none;">
+                  <td class="border" colspan="7" height="1" bgcolor="#999999"></td>
+                </tr>
+                <!-- whether to have custom thickness or not -->
+
+                <tr style="display: none;">
+                  <td colspan="7" height="1" bgcolor="#eeeeee"></td>
+                </tr>
+                <tr>
+                  <td class="ffdesc" colspan="12">Graphic Thickness Option		
+                    <select class="ffthicksel" id="thickness_CM-Black" name="properties[Thickness]" rate="0.1">
+                      <option selected="selected" value="2 mm / 0.08 in (default)">2 mm / 0.08 in (default)</option>
+                      <option value="3 mm  / 0.12 in">3 mm  / 0.12 in</option>
+                      <option value="4 mm  / 0.16 in">4 mm  / 0.16 in</option>
+                      <option value="5 mm  / 0.20 in">5 mm  / 0.20 in</option>
+                      <option value="6 mm  / 0.24 in">6 mm  / 0.24 in</option>
+                      <option value="7 mm  / 0.28 in">7 mm  / 0.28 in</option>
+                      <option value="8 mm  / 0.32 in">8 mm  / 0.32 in</option>
+                      <option value="9 mm  / 0.35 in">9 mm  / 0.35 in</option>
+                      <option value="10 mm  / 0.39 in">10 mm  / 0.39 in</option>
+                    </select>	
+                  </td>
+
+                  <td align="right" style="display: none;"><input class="inf" type="text" readonly="" id="thk_CM-Black" name="thk_CM-Black" value="0.00"></td>
+
+                </tr>
+
+
+                <tr style="display: none;">
+                  <td class="border" colspan="7" height="1" bgcolor="#999999"></td>
+                </tr>
+
+                <!-- THE BACKING -->
+                <tr>
+                  <td colspan="7" class="ffdesc" align="left">Select Backing Choice</td>
+                </tr>
+                <tr style="">
+                  <td colspan="7" class="ffdesc" align="center" id="frame_back">
+                    <div style="width: 65px;height: 40px;float:left;">
+                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_0" onclick="snap_icon_changed('CM-Black',0)" >B1<br>
+                      <input type="radio" id="back_1" name="properties[Backing]" value="B1" price="{{ global.b1_k }}" onclick="snap_backing_changed(this);" checked="">
+                    </div>
+                    <div style="width:65px; height:25px; float:left">
+                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_1" onclick="snap_icon_changed('CM-Black',1)" >B2<br>
+                      <input type="radio" id="back_2" name="properties[Backing]" value="B2" price="{{ global.b2_k }}" onclick="snap_backing_changed(this);" >
+                    </div>
+                    <div style="width:65px; height:25px; float:left">
+                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_1" onclick="snap_icon_changed('CM-Black',1)" >B3<br>
+                      <input type="radio" id="back_3" name="properties[Backing]" value="B3" price="{{ global.b3_k }}" onclick="snap_backing_changed(this);" >
+                    </div>
+                  </td>
+                </tr>	
+                <!-- the Backing display -->
+                <tr>
+                  <td colspan="2" class="ffdesc"><span id="CM-Black_hbname">B1</span></td>
+                  <td align="right" style="text-align: right;"><input class="inf" type="text" readonly="" id="ar4_CM-Black" name="ar4_CM-Black" value="" style="text-align: right;"></td>
+                  <td class="ffdesc">sq&nbsp;ft</td>
+                  <td class="ffdesc">@</td>
+                  <td class="ffdesc" align="right"><input class="stripprice" type="text" readonly="" id="CM-Black_hbprice" value=""></td>
+                  <td align="right"><input class="inf" type="text" readonly="" id="hat_CM-Black" name="hat_CM-Black" value=""></td>
+                </tr>									
+
+                <!-- whether to use rounded corners or not -->
+
+                <tr style="display: none;">
+                  <td class="border" colspan="7" height="1" bgcolor="#999999"></td>
+                </tr>
+                <tr>
+                  <td class="ffdesc" colspan="5">
+
+                    Tick for chrome rounded corners
+
+
+                  </td>
+                  <td class="ffdesc" align="right">
+
+                    <input type="checkbox" id="rounded_CM-Black" name="properties[Tick for chrome rounded corners]" price="5" onclick="snap_redraw()" >
+
+                  </td>
+
+                  <td align="right"><input class="inf" type="text" readonly="" id="cpr_CM-Black" name="cpr_CM-Black" value="0.00"></td>
+                  <input type="hidden" class="inf" type="text" readonly="" id="tickforchromeroundedcorner_CM" value="{{ global.tickforchromeroundedcorner }}">
+
+                </tr>
+
+
+                <!-- the type of cover -->
+
+                <tr style="display: none;">
+                  <td class="border" colspan="7" height="1" bgcolor="#999999"></td>
+                </tr>
+                <tr>
+                  <td colspan="7" class="ffdesc" align="left">Choose a Cover</td>
+                </tr>
+                <tr>
+                  <td class="ffdesc" colspan="12" align="left">
+                    Non-reflective<input type="radio" checked="checked" name="properties[Cover]" value="Non-reflective" price="1" style="width: 30px;">
+
+                    Clear<input type="radio" name="properties[Cover]" value="Clear" price="1.25" style="width: 30px;">&nbsp;
+
+                    None<input type="radio" name="properties[Cover]" value="None" price="0" style="width: 30px;">&nbsp;  
+                  </td>
+                  <td align="right" style="display: none;"><input class="inf" type="text" readonly="" id="cvr_CM-Black" name="cvr_CM-Black" value="0.00"></td>
+                </tr>
+
+
+                <!-- whether to have factory assembly or not -->
+
+                <tr style="display: none;">
+                  <td class="border" colspan="7" height="1" bgcolor="#999999"></td>
+                </tr>
+                <tr>
+                  <td class="ffdesc">
+                    <img alt="" src="https://cdn.shopify.com/s/files/1/1851/9071/files/factory-assembly.jpg?5054555884087730018">
+                  </td>
+                  <td class="ffdesc" colspan="4">
+                    Tick for factory assembly (N/A on any frame larger than 40")
+                  </td>
+                  <td class="ffdesc" align="right">
+                    <input type="checkbox" checked="checked" name="properties[Tick for factory assembly]" id="assembly_CM-Black" price="0.2" onclick="snap_setpricenew();" >
+                  </td>
+
+                  <td align="right"><input class="inf" type="text" readonly="" id="ass_CM-Black" name="ass_CM-Black" value=""></td>
+                  <input type="hidden" class="inf" type="text" readonly="" id="assembly_pro_CM-Black" name="assembly_pro_CM-Black" value="{{ global.assembly }}">
+                  <input type="hidden" class="inf" type="text" readonly="" id="ass_o_pro_CM-Black" name="assembly_o_pro_CM-Black" value="{{ global.assembly }}">                
+                </tr>
+
+
+                <!-- whether to have Express service or not -->
+
+
+                <!-- some startup code -->
+                <script language="JavaScript">
+                  <!--
+                    /*function setform(){  	// Called via <body onload> - preset the demo width, height, across, down and border as appropriate
+                    ff('wdth_CM-Black').value = swidth;
+                    ff('went_CM-Black').value = swidth;
+                    ff('hght_CM-Black').value = sheight;
+                    ff('hent_CM-Black').value = sheight;
+                    s_innerouter = document.getElementById('inout_inside_CM-Black').checked ? 'Inside' : 'Outside';
+                    hideborder('CM-Black');
+                  }  */
+                  // -->
+                </script>
+
+                <tr style="display: none;">
+                  <td class="border" colspan="7" height="1" bgcolor="#999999"></td>
+                </tr>
+
+                <script language="JavaScript">
+                  <!--
+                    /*var thisdisc = document.getElementById('CM-Black$disc').value - 0;
+                  if ( thisdisc != 1 )
+                  {
+                    discper = Math.floor( ( 1 - thisdisc ) * 100 );
+                    document.write('<tr><td align=center colspan=7 class="ffdesc"><b>Prices include your discount of ' + discper + '%</b></td></tr>');
+                  }*/
+                  // -->
+                </script>
+
+                <!-- the frame name and weight -->
+                <tr style="display: none;">
+                  <td colspan="6" class="ffdesc"><input class="stripname" type="text" readonly="" size="50" id="CM-Black$stripname" value=""></td>
+                  <td align="right"><input class="stripprice" type="text" readonly="" id="wgt_CM-Black" name="wgt_CM-Black" value=""></td>
+                </tr>
+
+                <!-- the length display -->
+                <tr>
+                  <td colspan="2" class="ffdesc">Length</td>
+                  <td align="right"><input class="inf" type="text" readonly="" id="len_CM-Black" name="len_CM-Black" value=""></td>
+                  <td class="ffdesc">ft</td>
+                  <td class="ffdesc">@</td>
+                  <td class="ffdesc" align="right"><input class="stripprice" type="text" readonly="" id="CM-Black_stripprice" value=""></td>
+                  <td align="right" style="text-align:right;"><input class="inf" type="text" readonly="" id="frt_CM-Black" name="frt_CM-Black" value=""></td>
+                </tr>
+
+                <!-- cutting charge - only display if value defined -->
+                <script language="JavaScript">
+                  <!--
+                    /*if ( 25 ) 
+                    {
+                      var cctemp = topounds(25 * document.getElementById('CM-Black$disc').value);
+                      document.getElementById('CM-Black$cctemp').value = cctemp;
+                      document.write('<tr><td colspan=4 class="ffdesc">Cutting Charge</td>' 
+                                     + '<td>&nbsp;</td>'
+                                     + '<td class="ffdesc" align=right><input class="stripprice" type=text readonly id="CM-Black$ccprice" value="'
+                                     + currsymbol + cctemp + '"></td>'
+                                     + '<td align=right><input class="inf" type=text readonly id="cct_CM-Black" name="cct_CM-Black" value=""></td>'
+                                     + '</tr>');
+                    }*/
+                  // -->
+                </script>
+                <tr>
+                  <td colspan="4" class="ffdesc">Cutting Charge</td><td>&nbsp;</td>
+                  <td align="right"><input class="stripprice" type="text" readonly="" id="CM-Black_cctemp" name="CM-Black_cctemp" value=""></td>
+                  <td align="right"><input class="inf" type="text" readonly="" id="cct_CM-Black" name="cct_CM-Black" value=""></td>
+                </tr>
+
+                <!-- the calculate button and total display -->
+                <tr>
+                  <td colspan="3" align="center" style="display:none">
+                    <!-- the calc graphic can be changed - remember to alter the width and height to suit -->
+                    <input type="button" value="Calculate Price" onclick="snap_setpricenew('CM-Black');" class="ffxsmall">
+                  </td>
+                  <td class="ffdesc" colspan="6" align="right" style="text-align:right;"><b>Unit Price</b></td>
+                  <td align="right"><input class="total" type="text" name="properties[Unit-price]" readonly="" id="tot_CM-Black" name="tot_CM-Black" value=""></td>
+                </tr>
+              </tbody>
+          </table>
+        </div>
+            
+        <script>
+          $( "form" ).on( "submit", function( event ) {
+                       
+            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", ""));
+            var orginal_Quantity = parseFloat($(".qty-field input").val());
+            var total_price = parseFloat($("#tot_CM-Black").val()) * orginal_Quantity;
+            var quantity = (total_price - P_I * orginal_Quantity).toFixed(2) / 0.01;
+            
+            console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (total_price - P_I * orginal_Quantity)+'<br>' + quantity);
+            
+            add_special_Item('26432036293',quantity);
+
+          });
+
+          // POST to cart/add.js returns the JSON of the line item associated with the added item.
+          // -------------------------------------------------------------------------------------
+          function add_special_Item(variant_id, quantity, callback) {
+            var quantity = quantity || 1;
+            var params = {
+              type: 'POST',
+              url: '/cart/add.js',
+              data: 'quantity=' + quantity + '&id=' + variant_id,
+              dataType: 'json',
+              success: function(line_item) { 
+                if ((typeof callback) === 'function') {
+                  callback(line_item);
+                }
+                else {
+                  console.log('Success');
+                }
+              },
+              error: function(XMLHttpRequest, textStatus) {
+                console.log('Fail');
+              }
+            };
+            jQuery.ajax(params);
+          };            
+          
+          window.onload = function(){
+			price_change();            
+          };
+          
+          $("#SingleOptionSelector-0").change(function(){
+            setTimeout(price_change, 500);
+          });
+          
+          $('.sizes').on('input',function(e){
+            price_change();
+          });
+          
+          $('.sizes').on('keydown', function(e) {
+              if (e.keyCode == 13) {
+                  e.stopPropagation();
+                  return false;
+              }
+          });
+          
+          function snap_backing_changed(){
+          	price_change();
+          }
+          
+          function snap_redraw(){
+            var checked = $("#rounded_CM-Black:checked").length;
+
+            if (checked == 0) {
+              $("#cpr_CM-Black").val("0.00");
+              price_change();
+              return false;
+            } else {
+              var corner_price = $("#tickforchromeroundedcorner_CM").val();
+              $("#cpr_CM-Black").val(corner_price);
+              price_change();
+              return true;
+            }
+          }
+          
+          function snap_setpricenew(){
+            var checked = $("#assembly_CM-Black:checked").length;
+
+            if (checked == 0) {
+              $("#assembly_pro_CM-Black").val("0.00");
+              price_change();
+              return false;
+            } else {
+              var original_ass = $("#ass_o_pro_CM-Black").val();
+              $("#assembly_pro_CM-Black").val(original_ass);
+              price_change();
+              return true;
+            }                 
+          }
+                    
+          function price_change(){
+            //Issues for price
+            var W = parseFloat($("#frame_width").val());
+            var H = parseFloat($("#frame_height").val());
+            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", ""));
+            var PSQ = parseFloat($("#W_L_Psq").val());
+            var PF = parseFloat($("#W_L_Pf").val());
+            var ass_pro = parseFloat($("#assembly_pro_CM-Black").val());
+            var CP = parseFloat($("#cpr_CM-Black").val());
+
+            var square = W * H * 0.00694444;
+            $("#ar4_CM-Black").val(square.toFixed(2));
+            
+            var Bx = $("#frame_back input[type='radio']:checked").attr('price');
+            var CM_hbname = $("#frame_back input[type='radio']:checked").val();
+            $("#CM-Black_hbname").text(CM_hbname); 
+            $("#CM-Black_hbprice").val(Bx);
+            
+            var hat_CM_price = square * Bx;
+            $("#hat_CM-Black").val(hat_CM_price.toFixed(2));
+            
+            var len_CM = 2 * (W + H) / 12;
+            $("#len_CM-Black").val(len_CM.toFixed(2));
+            $("#CM-Black_stripprice").val(P_I);
+            $("#frt_CM-Black").val((len_CM * P_I).toFixed(2));
+            
+            var CM_cctemp = W * H * PSQ;
+            $("#CM-Black_cctemp").val('$' + CM_cctemp.toFixed(2));
+            $("#cct_CM-Black").val(CM_cctemp.toFixed(2));
+            
+            var ass_CM = (len_CM * P_I + hat_CM_price) * ass_pro / 100;
+            $("#ass_CM-Black").val(ass_CM.toFixed(2));
+            
+            var tatal_price = len_CM * P_I + CM_cctemp + hat_CM_price + PF + ass_CM + CP;   
+            $("#tot_CM-Black").val(tatal_price.toFixed(2));
+          };
+          
+        </script>         
+          
+
+          <div id="stockMsg-{{ section.id }}">
+            {% if section.settings.show_preorder %}
+              {% if current_variant.inventory_management and current_variant.inventory_quantity <= 0 and current_variant.inventory_policy == "continue" %}
+                <div class="var-msg">
+                  <!-- inventory is managed and stock qty is 0 or less but item can still be purchased -->
+                  {{'products.product.preorder_msg' | t}}
+                </div>
+              {% endif %} 
+            {% endif %} 
+          </div>
+        </div> 
+
+        <div class="quick-actions clearfix">  
+          {% if section.settings.show_qty %}
+            <p class="qty-field">
+              <label for="product-quantity-{{product.id}}">{{'products.product.quantity' | t}}</label>
+              <input type="number" id="product-quantity-{{product.id}}" name="quantity" value="1" min="1" />
+            </p>
+          {% endif %}                                            
+          <button type="submit"
+          class="purchase button pulse animated" 
+          name="add"
+          id="addToCart-{{ section.id }}"
+          {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+          <span id="addToCartText-{{ section.id }}">
+            {% unless current_variant.available %}
+              {{ 'products.product.sold_out' | t }}
+            {% else %}
+              {{ 'products.product.add_to_cart' | t }}
+            {% endunless %}
+          </span>
+          </button>
+        </div>
+      </form>
+    {% else %}
+      <p><strong>{{'products.product.out_of_stock_msg' | t}}</strong></p>
+    {% endif %}    
+    
+    
+
+    {% if collection %}
+      {% if collection.previous_product or collection.next_product %}
+        <div class="product-nav clearfix">     
+          {% if collection.previous_product %}
+            {% capture prev_url %}{{ collection.previous_product}}#content{% endcapture %}
+            <span class="left">{{ 'products.general.previous_product_html' | t | link_to: prev_url }}</span>
+          {% endif %}
+          {% if collection.next_product %}
+            {% capture next_url %}{{ collection.next_product}}#content{% endcapture %}
+            <span class="right">{{ 'products.general.next_product_html' | t | link_to: next_url }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endif %}      
+    
+    
+    <img src="https://cdn.shopify.com/s/files/1/1541/9841/files/safe.jpg?346227664110536345">
+
+    {% if section.settings.product_social %}
+      <div id="share-me" class="clearfix">
+        {% capture shareHeading %}{{ 'products.general.share' | t }}{% endcapture %}
+        {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product, share_heading:shareHeading %}
+      </div>
+    {% endif %}
+  </div> <!-- product details -->
+  
+
+
+  <div id="product-description" class="rte" itemprop="description">
+    {{ product.description }}
+  </div>
+  
+  <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div><br>
+  
+</div>  
+
+{% if section.settings.product_related %}
+  {% include 'related' %}
+{% endif %}  
+
+{% unless product.empty? %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+  </script>
+{% endunless %}
+  
+{% comment %}
+Place this in your product.liquid template, at the bottom.
+{% endcomment %}
+{% if product.variants.size > 1 %}
+<script>
+  var variantImages = {},
+    thumbnails,
+    variant,
+    variantImage,
+    optionValue,
+    productOptions = [];
+    {% for variant in product.variants %}
+       variant = {{ variant | json }};
+       if ( typeof variant.featured_image !== 'undefined' && variant.featured_image !== null ) {
+         variantImage =  variant.featured_image.src.split('?')[0].replace(/http(s)?:/,'');
+         variantImages[variantImage] = variantImages[variantImage] || {};
+         {% for option in product.options %}
+         
+           {% assign option_value = variant.options[forloop.index0] %}
+           {% assign option_key = 'option-' | append: forloop.index0 %}
+         	
+           if (typeof variantImages[variantImage][{{ option_key | json }}] === 'undefined') {
+             variantImages[variantImage][{{ option_key | json }}] = {{ option_value | json }};
+           }
+           else {
+             var oldValue = variantImages[variantImage][{{ option_key | json }}];
+             if ( oldValue !== null && oldValue !== {{ option_value | json }} )  {
+               variantImages[variantImage][{{ option_key | json }}] = null;
+             }
+           }
+         {% endfor %}
+       }
+       productOptions.push(variant);
+    {% endfor %}
+</script> 
+{% endif %}  
+
+{% schema %}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_preorder",
+        "label": "Show \"pre-order\" message",
+        "default": true,
+        "info": "This will only appear when a product has managed inventory that is 0 or less and still available to buy"
+      },
+      {
+        "type": "checkbox",
+        "id": "zoom_product",
+        "label": "Enable image zoom",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_qty",
+        "label": "Show qty box on product screen",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_product_sku",
+        "label": "Show SKU",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sale_sticker",
+        "label": "Show sale sticker",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_social",
+        "label": "Show sharing buttons",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Related items"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_related",
+        "label": "Enable",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title_related",
+        "label": "Title",
+        "default": "You may also like..."
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_related_items",
+        "label": "Hide related items on mobile",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}
