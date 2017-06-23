@@ -1,0 +1,63 @@
+Ajax change cart:
+
+<a href="/cart/change?id={{ item.variant_id }}&amp;quantity=0">
+
+      <script>
+                           
+        function free_validation(){
+          var free_item_qty = parseInt($("input[data-id*='41374586956']").val());
+          var main_item_qty = parseInt($("input[data-id*='40457406924']").val());
+          if(free_item_qty > main_item_qty){
+            return false;
+          }
+          else
+            return true;
+        }
+        
+        $(document).ready(function() {
+          $(window).keydown(function(event){
+            if( (event.keyCode == 13) && (free_validation() == false) ) {
+              event.preventDefault();
+              return false;
+            }
+          });
+          
+          $("[name='checkout']").click(function(){
+            if( (free_validation() == false) ) {
+              event.preventDefault();
+              return false;
+            }          	
+          });
+          
+          $("a[data-id*='40457406924']").click(function(){
+          	change_special_Item('41374586956');
+            return false;
+          });
+        });        
+        
+        // POST to cart/change.js returns the JSON of the line item associated with the added item.
+        // -------------------------------------------------------------------------------------
+        function change_special_Item(variant_id, quantity, callback) {
+          var quantity = quantity || 0;
+          var params = {
+            type: 'POST',
+            url: '/cart/change.js',
+            data: 'quantity=' + quantity + '&id=' + variant_id,
+            dataType: 'json',
+            success: function(line_item) { 
+              if ((typeof callback) === 'function') {
+                callback(line_item);
+              }
+              else {
+                location.href = $("a[data-id*='40457406924']").attr("href");
+                console.log('Success');
+              }
+            },
+            error: function(XMLHttpRequest, textStatus) {
+              console.log('Fail');
+            }
+          };
+          jQuery.ajax(params);
+        };          
+
+      </script>

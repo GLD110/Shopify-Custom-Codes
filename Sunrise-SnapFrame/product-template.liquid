@@ -586,12 +586,12 @@
         <script>
           $( "form" ).on( "submit", function( event ) {
                        
-            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", ""));
-            var orginal_Quantity = parseFloat($(".qty-field input").val());
-            var total_price = parseFloat($("#tot_CM-Black").val()) * orginal_Quantity;
-            var quantity = (total_price - P_I * orginal_Quantity).toFixed(2) / 0.01;
+            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", "")).toFixed(2);
+            var orginal_Quantity = parseInt($(".qty-field input").val());
+            var total_price = parseFloat($("#tot_CM-Black").val()).toFixed(2) * orginal_Quantity;
+            var quantity = parseInt(((parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) / 0.01).toFixed(0) * orginal_Quantity);
             
-            console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (total_price - P_I * orginal_Quantity)+'<br>' + quantity);
+            console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) +'<br>' + quantity);
             
             add_special_Item('26432036293',quantity);
 

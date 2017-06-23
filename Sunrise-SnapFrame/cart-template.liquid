@@ -81,7 +81,7 @@
             <div class="cart-col4">
               <label for="updates_{{ item.id }}">{{ 'cart.general.quantity' | t }}</label>
               <input class="{{className}}" data-stk="{{item.variant.inventory_quantity}}" data-managed="{{item.variant.inventory_management}}" data-policy="{{item.variant.inventory_policy}}" type="text" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" />    
-              <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0">{{ 'cart.general.remove' | t }}</a>
+              <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0" line-id="{{ forloop.index }}">{{ 'cart.general.remove' | t }}</a>
             </div>
 
             <div class="cart-col5">
@@ -89,13 +89,17 @@
             </div> 
 
             <div class="cart-col6">
-              <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0" title="{{ 'cart.general.remove' | t }}"><span>X</span></a>
+              <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0" title="{{ 'cart.general.remove' | t }}" line-id="{{ forloop.index }}"><span>X</span></a>
             </div>   
+            <input type="hidden" id="line-id" value="{{ forloop.index }}">
+            <input type="hidden" id="custom-counts-per" value="">
+            <input type="hidden" id="custom-counts-all" value="">
           </li>
         {% endfor %}
       </ul>
       
 	  <script>
+       
       	window.onload = function(){
 			cart_change();            
         };
@@ -106,6 +110,7 @@
             
             var meta_div = $(this).find("div p:contains('Unit-price')");
             var meta_text = meta_div.text();
+            var per_price = parseFloat($(this).find(".cart-col3 span").text().replace('$', ''));
             var locate_price = meta_text.indexOf("Unit-price");
             var u_customized_price = parseFloat(meta_text.slice(locate_price + 11, meta_text.length));
             var special_title = $(this).find(".cart-col2 a").text();
@@ -113,26 +118,76 @@
             if((u_customized_price != '') && (special_title.indexOf("Customized Value") < 0)){
               
               $(this).find(".cart-col3 .price-money").text("$" + u_customized_price);
-              $(this).find(".cart-col4 input").attr("readonly", "true");
  
               var main_count = parseInt($(this).find(".cart-col4 input").val());
-              var u_t_c_price = u_customized_price * main_count;
+              var u_t_c_price = (u_customized_price * main_count).toFixed(2);
+              var custom_counts_per = parseInt(((u_customized_price - per_price) / 0.01).toFixed(2));
+              var custom_counts_all = custom_counts_per * main_count;
+              
               $(this).find(".cart-col5 .price-money").text("$" + u_t_c_price);
-              $(this).find(".cart-col6 a").hide();
+              $(this).find("#custom-counts-per").val(custom_counts_per);
+              $(this).find("#custom-counts-all").val(custom_counts_all);
 
             }
             
           });
 
-          var customized_title = $("a:contains('Customized Value')");
-          customized_title.parent().parent().css({"display":"none"});
-          
-          var customized_counts = parseInt(customized_title.parent().parent().find(".cart-col4 input").val());
-          var cart_counts = parseInt($(".cart-info a em").text());
-          var virtual_count = cart_counts - customized_counts;
-          //$(".cart-info a em").text(virtual_count);
-          
-        }
+            var customized_title = $("a:contains('Customized Value')");
+            customized_title.parent().parent().css({"display":"none"});
+
+            var customized_counts = parseInt(customized_title.parent().parent().find(".cart-col4 input").val());                      
+
+          }
+                                                                                                               
+          $(document).ready(function() {
+                                                                                                     
+            $(".cart-remove-line").click(function() {
+              var line_id = $(this).parent().parent().find("#line-id").val();
+              var custom_counts_all = parseInt($(this).parent().parent().find("#custom-counts-all").val());        
+              var customized_title = $(this).parent().parent().parent().find("a:contains('Customized Value')");
+              var customized_counts = parseInt(customized_title.parent().parent().find(".cart-col4 input").val());
+              var update_custom_counts = customized_counts - custom_counts_all;
+
+              change_special_Item(line_id, update_custom_counts);
+              return false;            
+            }); 
+                                                                                                       
+            $('.cart-col4 input').on('change', function() {
+				var custom_counts_per = parseInt($(this).parent().parent().find("#custom-counts-per").val());                                                                                    
+                var custom_counts_all = parseInt($(this).parent().parent().find("#custom-counts-all").val());      
+                var customized_title = $(this).parent().parent().parent().find("a:contains('Customized Value')");
+                var customized_counts = parseInt(customized_title.parent().parent().find(".cart-col4 input").val());
+                var update_custom_counts = customized_counts - custom_counts_all + custom_counts_per * $(this).val(); 
+				customized_title.parent().parent().find(".cart-col4 input").val(update_custom_counts);
+            });
+          });
+                                                                                                                                                                                                                                                                                                                      
+          // POST to cart/change.js returns the JSON of the line item associated with the added item.
+          // -------------------------------------------------------------------------------------
+          function change_special_Item(self_line_id, custom_quantity, callback) {
+            var quantity = custom_quantity || 0;
+            var params = {
+              type: 'POST',
+              url: '/cart/change.js',
+              data: 'quantity=' + quantity + '&id=' + '26432036293',
+              dataType: 'json',
+              success: function(line_item) { 
+                if ((typeof callback) === 'function') {
+                  callback(line_item);
+                }
+                else {
+                  location.href = '/cart/change?line=' + self_line_id + '&quantity=0';
+                  console.log('Success');
+                }
+              },
+              error: function(XMLHttpRequest, textStatus) {
+                console.log('Fail');
+              }
+            };
+            jQuery.ajax(params);
+
+          };  
+                 
       </script>     
 
       <div class="cart-sub-actions clearfix">

@@ -1,0 +1,41 @@
+Shopify tag sort:
+
+  {% capture all_tags_with_num %}
+  {% for tag in collection.all_tags %}
+  {% assign tag_num = tag | split: ' ' | first %}
+  {{ tag_num }}|{{ tag }}
+  {% endfor %}
+  {% endcapture %}  
+  {{ all_tags }}
+    
+  <select name="BrowseBy" id="BrowseBy" class="btn--tertiary">
+    <option value="{{ collection_url }}">{{ 'collections.sorting.all_tags' | t }}</option>
+    {% for tag in collection.all_tags %}
+    {% assign tag_num = tag | split: ' ' | first %}
+    {% if tag_num == '4' %} 
+      {% capture new_url %}{{ tag | link_to_tag: tag | split: 'href="' | last | split: '"' | first }}{% endcapture %}    
+      <option{% if current_tags contains tag %} selected{% endif %} value="{{ new_url }}">{{ tag }}</option>
+    {% endif %}
+    {% endfor %}
+    {% for tag in collection.all_tags %}
+    {% assign tag_num = tag | split: ' ' | first %}
+    {% if tag_num == '8' %}
+      {% capture new_url %}{{ tag | link_to_tag: tag | split: 'href="' | last | split: '"' | first }}{% endcapture %}    
+      <option{% if current_tags contains tag %} selected{% endif %} value="{{ new_url }}">{{ tag }}</option>
+    {% endif %}
+    {% endfor %}
+    {% for tag in collection.all_tags %}
+    {% assign tag_num = tag | split: ' ' | first %}
+    {% if tag_num == '12' %}
+      {% capture new_url %}{{ tag | link_to_tag: tag | split: 'href="' | last | split: '"' | first }}{% endcapture %}    
+      <option{% if current_tags contains tag %} selected{% endif %} value="{{ new_url }}">{{ tag }}</option>
+    {% endif %}
+    {% endfor %}
+    {% for tag in collection.all_tags %}
+    {% assign tag_num = tag | split: ' ' | first %}
+    {% if tag_num == '16' %}
+      {% capture new_url %}{{ tag | link_to_tag: tag | split: 'href="' | last | split: '"' | first }}{% endcapture %}    
+      <option{% if current_tags contains tag %} selected{% endif %} value="{{ new_url }}">{{ tag }}</option>
+    {% endif %}
+    {% endfor %}    
+  </select>
