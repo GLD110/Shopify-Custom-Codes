@@ -27,13 +27,13 @@
     
     <div id="image-preview" style="width: 100%; height: 240px; padding: 10px 29%;">
       <div id="border-image" style="border: solid 10px transparent; border-image: url('{{ url_header }}{{ first_image }}') 10 round; width: 160px; height: 200px;">
-      	<img align="middle" id="blah" src="https://cdn.shopify.com/s/files/1/1851/9071/files/Screenshot_1.png?2608424155909072247" style="width: 100%; height: 100%;">
+      	<img align="middle" id="blah" src="https://cdn.shopify.com/s/files/1/2097/9773/files/Screenshot_1.png?12698308685955628614" style="width: 100%; height: 100%;">
       </div>
     </div>
     
     <div id="image-z-preview" style="display:none;">
       <div id="border-z-image" style="border: solid 50px transparent; border-image: url('{{ url_header }}{{ first_image }}') 10 round; width: 800px; height: 1000px; margin:150px;">
-      	<img align="middle" id="blah-z" src="https://cdn.shopify.com/s/files/1/1851/9071/files/Screenshot_1.png?2608424155909072247" style="width: 100%; height: 100%;">
+      	<img align="middle" id="blah-z" src="https://cdn.shopify.com/s/files/1/2097/9773/files/Screenshot_1.png?12698308685955628614" style="width: 100%; height: 100%;">
       </div>
     </div>    
 	
@@ -79,14 +79,14 @@
       <div class="image-description-thumbnails" style="margin-top: 10px;">
         <p>See the frame with a sample image.</p>
         <span >
-          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501');document.getElementById('blah-z').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501');" style="padding: 0px 5px;">
-            <img class="ffsampleimage" border="1" src="https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501" title="Boat" alt="Boat" width="80" style="border: solid 1px blue;"></a>
-          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501');document.getElementById('blah-z').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501');" style="padding: 0px 5px;">
-            <img class="ffsampleimage" border="1" src="https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501" title="Bird" alt="Bird" width="80" style="border: solid 1px blue;"></a>
+          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', 'https://cdn.shopify.com/s/files/1/2097/9773/files/pic-boat_20fa73cd-357d-4a33-a2d6-c3522c38d89a.jpg?13707739402431699602');document.getElementById('blah-z').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-boat.jpg?2700033208701510501');" style="padding: 0px 5px;">
+            <img class="ffsampleimage" border="1" src="https://cdn.shopify.com/s/files/1/2097/9773/files/pic-boat_20fa73cd-357d-4a33-a2d6-c3522c38d89a.jpg?13707739402431699602" title="Boat" alt="Boat" width="80" style="border: solid 1px blue;"></a>
+          <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', 'https://cdn.shopify.com/s/files/1/2097/9773/files/pic-bird1.jpg?12698308685955628614');document.getElementById('blah-z').setAttribute('src', 'https://cdn.shopify.com/s/files/1/1851/9071/files/pic-bird1.jpg?2700033208701510501');" style="padding: 0px 5px;">
+            <img class="ffsampleimage" border="1" src="https://cdn.shopify.com/s/files/1/2097/9773/files/pic-bird1.jpg?12698308685955628614" title="Bird" alt="Bird" width="80" style="border: solid 1px blue;"></a>
         </span>
         <span >
           <a href="javascript:void(0)" onclick="document.getElementById('blah').setAttribute('src', $('#user_icon').attr('src'));document.getElementById('blah-z').setAttribute('src', $('#user_icon').attr('src'));" style="padding: 0px 5px;">
-            <img class="ffsampleimage" id="user_icon" border="1" src="https://cdn.shopify.com/s/files/1/1851/9071/files/user-icon.jpg?2700033208701510501" title="Your Image" alt="Your Image" width="80" style="border: solid 1px blue;"></a>
+            <img class="ffsampleimage" id="user_icon" border="1" src="https://cdn.shopify.com/s/files/1/2097/9773/files/user-icon.jpg?12698308685955628614" title="Your Image" alt="Your Image" width="80" style="border: solid 1px blue;"></a>
         </span>
       </div>
     </div>
@@ -485,7 +485,7 @@
                 </tr>
                 <tr>
                   <td class="ffdesc">
-                    <img alt="" src="https://cdn.shopify.com/s/files/1/1851/9071/files/factory-assembly.jpg?5054555884087730018">
+                    <img alt="" src="https://cdn.shopify.com/s/files/1/2097/9773/files/factory-assembly.jpg?12698308685955628614">
                   </td>
                   <td class="ffdesc" colspan="4">
                     Tick for factory assembly (N/A on any frame larger than 40")
@@ -582,137 +582,7 @@
               </tbody>
           </table>
         </div>
-            
-        <script>
-          $( "form" ).on( "submit", function( event ) {
-                       
-            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", "")).toFixed(2);
-            var orginal_Quantity = parseInt($(".qty-field input").val());
-            var total_price = parseFloat($("#tot_CM-Black").val()).toFixed(2) * orginal_Quantity;
-            var quantity = parseInt(((parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) / 0.01).toFixed(0) * orginal_Quantity);
-            
-            console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) +'<br>' + quantity);
-            
-            add_special_Item('26432036293',quantity);
-
-          });
-
-          // POST to cart/add.js returns the JSON of the line item associated with the added item.
-          // -------------------------------------------------------------------------------------
-          function add_special_Item(variant_id, quantity, callback) {
-            var quantity = quantity || 1;
-            var params = {
-              type: 'POST',
-              url: '/cart/add.js',
-              data: 'quantity=' + quantity + '&id=' + variant_id,
-              dataType: 'json',
-              success: function(line_item) { 
-                if ((typeof callback) === 'function') {
-                  callback(line_item);
-                }
-                else {
-                  console.log('Success');
-                }
-              },
-              error: function(XMLHttpRequest, textStatus) {
-                console.log('Fail');
-              }
-            };
-            jQuery.ajax(params);
-          };            
-          
-          window.onload = function(){
-			price_change();            
-          };
-          
-          $("#SingleOptionSelector-0").change(function(){
-            setTimeout(price_change, 500);
-          });
-          
-          $('.sizes').on('input',function(e){
-            price_change();
-          });
-          
-          $('.sizes').on('keydown', function(e) {
-              if (e.keyCode == 13) {
-                  e.stopPropagation();
-                  return false;
-              }
-          });
-          
-          function snap_backing_changed(){
-          	price_change();
-          }
-          
-          function snap_redraw(){
-            var checked = $("#rounded_CM-Black:checked").length;
-
-            if (checked == 0) {
-              $("#cpr_CM-Black").val("0.00");
-              price_change();
-              return false;
-            } else {
-              var corner_price = $("#tickforchromeroundedcorner_CM").val();
-              $("#cpr_CM-Black").val(corner_price);
-              price_change();
-              return true;
-            }
-          }
-          
-          function snap_setpricenew(){
-            var checked = $("#assembly_CM-Black:checked").length;
-
-            if (checked == 0) {
-              $("#assembly_pro_CM-Black").val("0.00");
-              price_change();
-              return false;
-            } else {
-              var original_ass = $("#ass_o_pro_CM-Black").val();
-              $("#assembly_pro_CM-Black").val(original_ass);
-              price_change();
-              return true;
-            }                 
-          }
-                    
-          function price_change(){
-            //Issues for price
-            var W = parseFloat($("#frame_width").val());
-            var H = parseFloat($("#frame_height").val());
-            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", ""));
-            var PSQ = parseFloat($("#W_L_Psq").val());
-            var PF = parseFloat($("#W_L_Pf").val());
-            var ass_pro = parseFloat($("#assembly_pro_CM-Black").val());
-            var CP = parseFloat($("#cpr_CM-Black").val());
-
-            var square = W * H * 0.00694444;
-            $("#ar4_CM-Black").val(square.toFixed(2));
-            
-            var Bx = $("#frame_back input[type='radio']:checked").attr('price');
-            var CM_hbname = $("#frame_back input[type='radio']:checked").val();
-            $("#CM-Black_hbname").text(CM_hbname); 
-            $("#CM-Black_hbprice").val(Bx);
-            
-            var hat_CM_price = square * Bx;
-            $("#hat_CM-Black").val(hat_CM_price.toFixed(2));
-            
-            var len_CM = 2 * (W + H) / 12;
-            $("#len_CM-Black").val(len_CM.toFixed(2));
-            $("#CM-Black_stripprice").val(P_I);
-            $("#frt_CM-Black").val((len_CM * P_I).toFixed(2));
-            
-            var CM_cctemp = W * H * PSQ;
-            $("#CM-Black_cctemp").val('$' + CM_cctemp.toFixed(2));
-            $("#cct_CM-Black").val(CM_cctemp.toFixed(2));
-            
-            var ass_CM = (len_CM * P_I + hat_CM_price) * ass_pro / 100;
-            $("#ass_CM-Black").val(ass_CM.toFixed(2));
-            
-            var tatal_price = len_CM * P_I + CM_cctemp + hat_CM_price + PF + ass_CM + CP;   
-            $("#tot_CM-Black").val(tatal_price.toFixed(2));
-          };
-          
-        </script>         
-          
+                           
 
           <div id="stockMsg-{{ section.id }}">
             {% if section.settings.show_preorder %}
@@ -836,6 +706,150 @@ Place this in your product.liquid template, at the bottom.
     {% endfor %}
 </script> 
 {% endif %}  
+
+<script>
+  /*$( "form" ).on( "submit", function( event ) {
+
+            var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", "")).toFixed(2);
+            var orginal_Quantity = parseInt($(".qty-field input").val());
+            var total_price = parseFloat($("#tot_CM-Black").val()).toFixed(2) * orginal_Quantity;
+            var quantity = parseInt(((parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) / 0.01).toFixed(0) * orginal_Quantity);
+
+            console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) +'<br>' + quantity);
+
+            add_special_Item('43899056586',quantity);
+
+          });*/
+
+  $('#addToCart-product-template').on('click', function(e) {
+
+    var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", "")).toFixed(2);
+    var orginal_Quantity = parseInt($(".qty-field input").val());
+    var total_price = parseFloat($("#tot_CM-Black").val()).toFixed(2) * orginal_Quantity;
+    var quantity = parseInt(((parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) / 0.01).toFixed(0) * orginal_Quantity);
+
+    console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) +'<br>' + quantity);
+
+    add_special_Item('43899056586',quantity);
+
+  });
+
+  // POST to cart/add.js returns the JSON of the line item associated with the added item.
+  // -------------------------------------------------------------------------------------
+  function add_special_Item(variant_id, quantity, callback) {
+    var quantity = quantity || 1;
+    var params = {
+      type: 'POST',
+      url: '/cart/add.js',
+      data: 'quantity=' + quantity + '&id=' + variant_id,
+      dataType: 'json',
+      success: function(line_item) { 
+        if ((typeof callback) === 'function') {
+          callback(line_item);
+        }
+        else {
+          console.log('Success');
+        }
+      },
+      error: function(XMLHttpRequest, textStatus) {
+        console.log('Fail');
+      }
+    };
+    jQuery.ajax(params);
+  };            
+
+  window.onload = function(){
+    price_change();            
+  };
+
+  $("#SingleOptionSelector-0").change(function(){
+    setTimeout(price_change, 500);
+  });
+
+  $('.sizes').on('input',function(e){
+    price_change();
+  });
+
+  $('.sizes').on('keydown', function(e) {
+    if (e.keyCode == 13) {
+      e.stopPropagation();
+      return false;
+    }
+  });
+
+  function snap_backing_changed(){
+    price_change();
+  }
+
+  function snap_redraw(){
+    var checked = $("#rounded_CM-Black:checked").length;
+
+    if (checked == 0) {
+      $("#cpr_CM-Black").val("0.00");
+      price_change();
+      return false;
+    } else {
+      var corner_price = $("#tickforchromeroundedcorner_CM").val();
+      $("#cpr_CM-Black").val(corner_price);
+      price_change();
+      return true;
+    }
+  }
+
+  function snap_setpricenew(){
+    var checked = $("#assembly_CM-Black:checked").length;
+
+    if (checked == 0) {
+      $("#assembly_pro_CM-Black").val("0.00");
+      price_change();
+      return false;
+    } else {
+      var original_ass = $("#ass_o_pro_CM-Black").val();
+      $("#assembly_pro_CM-Black").val(original_ass);
+      price_change();
+      return true;
+    }                 
+  }
+
+  function price_change(){
+    //Issues for price
+    var W = parseFloat($("#frame_width").val());
+    var H = parseFloat($("#frame_height").val());
+    var P_I = parseFloat($("#productPrice-product-template .price-money").text().replace("$", ""));
+    var PSQ = parseFloat($("#W_L_Psq").val());
+    var PF = parseFloat($("#W_L_Pf").val());
+    var ass_pro = parseFloat($("#assembly_pro_CM-Black").val());
+    var CP = parseFloat($("#cpr_CM-Black").val());
+
+    var square = W * H * 0.00694444;
+    $("#ar4_CM-Black").val(square.toFixed(2));
+
+    var Bx = $("#frame_back input[type='radio']:checked").attr('price');
+    var CM_hbname = $("#frame_back input[type='radio']:checked").val();
+    $("#CM-Black_hbname").text(CM_hbname); 
+    $("#CM-Black_hbprice").val(Bx);
+
+    var hat_CM_price = square * Bx;
+    $("#hat_CM-Black").val(hat_CM_price.toFixed(2));
+
+    var len_CM = 2 * (W + H) / 12;
+    $("#len_CM-Black").val(len_CM.toFixed(2));
+    $("#CM-Black_stripprice").val(P_I);
+    $("#frt_CM-Black").val((len_CM * P_I).toFixed(2));
+
+    var CM_cctemp = W * H * PSQ;
+    $("#CM-Black_cctemp").val('$' + CM_cctemp.toFixed(2));
+    $("#cct_CM-Black").val(CM_cctemp.toFixed(2));
+
+    var ass_CM = (len_CM * P_I + hat_CM_price) * ass_pro / 100;
+    console.log(P_I);
+    $("#ass_CM-Black").val(ass_CM.toFixed(2));
+
+    var tatal_price = len_CM * P_I + CM_cctemp + hat_CM_price + PF + ass_CM + CP;   
+    $("#tot_CM-Black").val(tatal_price.toFixed(2));
+  };
+
+</script>   
 
 {% schema %}
   {
