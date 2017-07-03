@@ -1,0 +1,195 @@
+{% assign show_single_variant_details = true %}
+
+<div class="container">
+  
+  {% if cart.item_count == 0 %}
+  
+  <h2 class="page-title">{{ 'cart.general.empty_title' | t }}</h2>
+  <div class="rte">{{ 'cart.general.empty_subtext_html' | t }}</div>
+
+  {% else %}
+  
+  <div class="reading-column">
+  
+    <h1 class="page-title">{{ 'cart.general.title' | t }}</h1>
+    
+    {% if section.settings.cart_notification_show and section.settings.cart_notification_pos != 'under-items' %}
+    <div class="notification">
+      <h5 class="no-margin">{{ section.settings.cart_notification_text }}</h5>
+    </div>
+    {% endif %}
+    
+
+    
+    <form action="/cart" method="post" id="cartform">
+      <div class="spaced opposing-items">
+        {% for item in cart.items %}
+          {% if forloop.first %}
+          {% assign collection_url = item.product.collections.first.url %}
+          {% if collection_url == nil or collection_url == empty or collection_url == '/collections/frontpage' %}{% assign collection_url = '/collections/all' %}{% endif %}
+          {% endif %}
+        {% endfor %}
+        <a class="more-link left" href="{{ collection_url }}">{{ 'cart.general.continue' | t }}</a>
+
+        <input type="submit" id="checkout" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+      </div>
+
+
+      <ul class="cart-items plain">
+        <li class="heading border-bottom cf">
+          <span class="description">{{ 'cart.label.description' | t }}</span>
+          <span class="quantity">{{ 'cart.label.quantity' | t }}</span>
+          <span class="price">{{ 'cart.label.price' | t }}</span>
+        </li>
+        {% for item in cart.items %}
+          <li class="item border-bottom cf">
+            <div class="description cf">
+              <a class="image" href="{{ item.url }}">
+                <img src="{{ item | img_url: '100x' }}" alt="{{ item.title | escape }}"
+                     srcset="{{ item | img_url: '100x' }} 100w,
+                             {{ item | img_url: '200x' }} 200w" sizes="100px"/>
+              </a>
+            
+              <div>{{ item.product.title | link_to: item.product.url }}</div>
+
+              {% if item.product.variants.size > 1 %}
+              <span class="variant">{{ item.variant.title }}</span>
+              {% elsif show_single_variant_details %}
+              {% unless item.variant.title contains 'Default' %}
+              <span class="variant">{{ item.variant.title }}</span>
+              {% endunless %}
+              {% endif %}
+              {% comment %} Line Item Properties {% endcomment %}
+              {% for p in item.properties %}
+              <div class="property">
+                {% unless p.last == blank %}
+                <span class="label">{{ p.first }}:</span>
+                {% if p.last contains '/uploads/' %}
+                <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                {% else %}
+                {{ p.last }}
+                {% endif %}
+                <br />
+                {% endunless %}
+              </div>
+              {% endfor %}
+              
+              {% if item.variant.inventory_management == 'shopify' and item.variant.inventory_quantity < 1 %}
+              <div class="backorder">
+                <p>{{ 'cart.general.backorder' | t }}</p>
+              </div>
+              {% endif %}
+              
+              <p><a href="/cart/change?line={{ forloop.index }}&quantity=0" class="remove feature-col">{{ 'cart.general.remove' | t }}</a></p>
+            </div>
+            <div class="quantity">
+              <input class="select-on-focus" type="text" size="2" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" />
+            </div>
+            <div class="price"><h5>{{ item.line_price | money }}</h5></div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="spaced align-right">
+        <input type="submit" class="alt" id="update-cart" name="update" value="{{ 'cart.general.update' | t }}" />
+      </div>
+      
+      {% if section.settings.cart_notification_show and section.settings.cart_notification_pos == 'under-items' %}
+      <div class="notification">
+        <h5 class="no-margin">{{ section.settings.cart_notification_text }}</h5>
+      </div>
+      {% endif %}
+	  {% comment %}			
+      	{% include "scm-attribute-cart" %}
+	  {% endcomment %}
+      <div class="border-bottom">
+        <div class="row">
+          <div class="half column no-mobile-margin">
+            <label for="note">{{ 'cart.label.note' | t }}</label>
+          </div>
+
+          <div class="half column align-right desktop">
+            <label for="checkout">{{ 'cart.label.subtotal' | t }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="row section">
+        <div class="half column">
+          <textarea id="note" name="note" rows="10" cols="50">{{ cart.note }}</textarea>
+        </div>
+
+        <div class="half column align-right">
+          <label class="mobile" for="checkout">{{ 'cart.label.subtotal' | t }}</label>
+          
+          <h2>{{ cart.total_price | money }}</h2>
+          
+          <input type="submit" id="checkout" name="checkout" value="{{ 'cart.general.checkout' | t }}" />
+
+          {% if additional_checkout_buttons %}        
+          <div class="extra-checkout-buttons">
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+  
+  {% endif %}
+  
+</div>
+
+<script>
+  $(document).ready(function(){
+    var total_price = '{{ cart.total_price }}';
+    console.log($("input [name='checkout']"));
+    if(total_price < 2500){
+    	$("input[name='checkout']").attr('disabled', 'disabled');
+    }
+  });
+</script>  
+
+{% comment %}
+	{% include 'scm-attribute-cart' %}
+{% endcomment %}
+
+{% schema %}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Notification bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_notification_show",
+        "label": "Show notification",
+		"default": false
+      },
+      {
+        "type": "text",
+        "id": "cart_notification_text",
+        "label": "Text"
+      },
+      {
+        "type": "select",
+        "id": "cart_notification_pos",
+        "label": "Position",
+		"default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Under page title"
+          },
+          {
+            "value": "under-items",
+            "label": "Under items list"
+          }
+        ]
+      }
+	]
+  }
+{% endschema %}
