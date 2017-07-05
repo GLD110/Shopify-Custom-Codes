@@ -411,16 +411,16 @@
                 <tr style="">
                   <td colspan="7" class="ffdesc" align="center" id="frame_back">
                     <div style="width: 65px;height: 40px;float:left;">
-                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_0" onclick="snap_icon_changed('CM-Black',0)" >B1<br>
-                      <input type="radio" id="back_1" name="properties[Backing]" value="B1" price="{{ global.b1_k }}" onclick="snap_backing_changed(this);" checked="">
+                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_0" onclick="snap_icon_changed('CM-Black',0)" >White<br>
+                      <input type="radio" id="back_1" name="properties[Backing]" value="White" price="{{ global.b1_k }}" onclick="snap_backing_changed(this);" checked="">
                     </div>
                     <div style="width:65px; height:25px; float:left">
-                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_1" onclick="snap_icon_changed('CM-Black',1)" >B2<br>
-                      <input type="radio" id="back_2" name="properties[Backing]" value="B2" price="{{ global.b2_k }}" onclick="snap_backing_changed(this);" >
+                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_1" onclick="snap_icon_changed('CM-Black',1)" >Grey<br>
+                      <input type="radio" id="back_2" name="properties[Backing]" value="Grey" price="{{ global.b2_k }}" onclick="snap_backing_changed(this);" >
                     </div>
                     <div style="width:65px; height:25px; float:left">
-                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_1" onclick="snap_icon_changed('CM-Black',1)" >B3<br>
-                      <input type="radio" id="back_3" name="properties[Backing]" value="B3" price="{{ global.b3_k }}" onclick="snap_backing_changed(this);" >
+                      <img style="float:left;display: none;" class="backing_icon" width="20" height="20" id="CM-Black_backimg_1" onclick="snap_icon_changed('CM-Black',1)" >None<br>
+                      <input type="radio" id="back_3" name="properties[Backing]" value="None" price="{{ global.b3_k }}" onclick="snap_backing_changed(this);" >
                     </div>
                   </td>
                 </tr>	
@@ -467,14 +467,14 @@
                   <td colspan="7" class="ffdesc" align="left">Choose a Cover</td>
                 </tr>
                 <tr>
-                  <td class="ffdesc" colspan="12" align="left">
-                    Non-reflective<input type="radio" checked="checked" name="properties[Cover]" value="Non-reflective" price="1" style="width: 30px;">
+                  <td class="ffdesc" colspan="6" align="left" id="frame-cover">
+                    Non-reflective<input type="radio" checked="checked" name="properties[Cover]" value="Non-reflective" price="0.007" style="width: 30px;" onclick="snap_cover_changed();">
 
-                    Clear<input type="radio" name="properties[Cover]" value="Clear" price="1.25" style="width: 30px;">&nbsp;
+                    Clear<input type="radio" name="properties[Cover]" value="Clear" price="0.007" style="width: 30px;" onclick="snap_cover_changed();">&nbsp;
 
-                    None<input type="radio" name="properties[Cover]" value="None" price="0" style="width: 30px;">&nbsp;  
+                    None<input type="radio" name="properties[Cover]" value="None" price="0" style="width: 30px;" onclick="snap_cover_changed();">&nbsp;  
                   </td>
-                  <td align="right" style="display: none;"><input class="inf" type="text" readonly="" id="cvr_CM-Black" name="cvr_CM-Black" value="0.00"></td>
+                  <td align="right"><input class="inf" type="text" readonly="" id="cvr_CM-Black" name="cvr_CM-Black" value="0.00"></td>
                 </tr>
 
 
@@ -533,9 +533,11 @@
                 </script>
 
                 <!-- the frame name and weight -->
-                <tr style="display: none;">
-                  <td colspan="6" class="ffdesc"><input class="stripname" type="text" readonly="" size="50" id="CM-Black$stripname" value=""></td>
-                  <td align="right"><input class="stripprice" type="text" readonly="" id="wgt_CM-Black" name="wgt_CM-Black" value=""></td>
+                <tr>
+                  <td colspan="2" class="ffdesc">Weight</td>
+                  <td colspan="4" class="ffdesc"><input class="stripname" type="text" readonly="" size="50" id="CM-Black-stripname" value=""></td>
+                  <td align="right"><input class="stripprice" type="text" readonly="" id="wgt_CM-Black" name="properties[Weight]" value=""></td>
+                  <input class="stripprice" type="hidden" readonly="" id="wgt_p_CM-Black" value="{{ global.weightperprice }}">
                 </tr>
 
                 <!-- the length display -->
@@ -566,8 +568,8 @@
                 </script>
                 <tr>
                   <td colspan="4" class="ffdesc">Cutting Charge</td><td>&nbsp;</td>
-                  <td align="right"><input class="stripprice" type="text" readonly="" id="CM-Black_cctemp" name="CM-Black_cctemp" value=""></td>
-                  <td align="right"><input class="inf" type="text" readonly="" id="cct_CM-Black" name="cct_CM-Black" value=""></td>
+                  <td align="right"><input class="stripprice" type="text" readonly="" id="CM-Black_cctemp" name="CM-Black_cctemp" value="${{ global.cuttingcharge }}"></td>
+                  <td align="right"><input class="inf" type="text" readonly="" id="cct_CM-Black" name="cct_CM-Black" value="{{ global.cuttingcharge }}"></td>
                 </tr>
 
                 <!-- the calculate button and total display -->
@@ -780,6 +782,10 @@ Place this in your product.liquid template, at the bottom.
   function snap_backing_changed(){
     price_change();
   }
+  
+  function snap_cover_changed(){
+    price_change();
+  }  
 
   function snap_redraw(){
     var checked = $("#rounded_CM-Black:checked").length;
@@ -828,25 +834,37 @@ Place this in your product.liquid template, at the bottom.
     var CM_hbname = $("#frame_back input[type='radio']:checked").val();
     $("#CM-Black_hbname").text(CM_hbname); 
     $("#CM-Black_hbprice").val(Bx);
+    
+    var cover_price = W * H * parseFloat($("#frame-cover input[type='radio']:checked").attr('price'));
+    $("#cvr_CM-Black").val(cover_price.toFixed(2));    
 
     var hat_CM_price = square * Bx;
     $("#hat_CM-Black").val(hat_CM_price.toFixed(2));
 
     var len_CM = 2 * (W + H) / 12;
     $("#len_CM-Black").val(len_CM.toFixed(2));
-    $("#CM-Black_stripprice").val(P_I);
+    $("#CM-Black_stripprice").val('$' + P_I);
     $("#frt_CM-Black").val((len_CM * P_I).toFixed(2));
+    
+    var selected_variant = $('#SingleOptionSelector-0').find(":selected").text(); 
+    $('#CM-Black-stripname').val(selected_variant);
 
-    var CM_cctemp = W * H * PSQ;
-    $("#CM-Black_cctemp").val('$' + CM_cctemp.toFixed(2));
-    $("#cct_CM-Black").val(CM_cctemp.toFixed(2));
+    //var CM_cctemp = W * H * PSQ;
+    //$("#CM-Black_cctemp").val('$' + CM_cctemp.toFixed(2));
+    //$("#cct_CM-Black").val(CM_cctemp.toFixed(2));
+    var CM_cctemp = parseFloat($("#cct_CM-Black").val());
 
     var ass_CM = (len_CM * P_I + hat_CM_price) * ass_pro / 100;
     console.log(P_I);
     $("#ass_CM-Black").val(ass_CM.toFixed(2));
 
-    var tatal_price = len_CM * P_I + CM_cctemp + hat_CM_price + PF + ass_CM + CP;   
-    $("#tot_CM-Black").val(tatal_price.toFixed(2));
+    var total_price = len_CM * P_I + CM_cctemp + cover_price + hat_CM_price + PF + ass_CM + CP;   
+    $("#tot_CM-Black").val(total_price.toFixed(2));
+    
+    var weight_per_price = parseFloat($('#wgt_p_CM-Black').val());
+    var weight = total_price * weight_per_price;
+    $('#wgt_CM-Black').val(weight.toFixed(1) + '(lbs)');
+    
   };
 
 </script>   
