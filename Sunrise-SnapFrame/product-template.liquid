@@ -358,13 +358,13 @@
                 <!-- the width and height entries -->
                 <tr>
                   <td colspan="3" class="ffdesc" align="right">Width&nbsp;
-                    <input autocomplete="off" type="text" class="sizes" id="frame_width" name="properties[Width]" value="16" onkeypress="return handleEnter(this, event)">
+                    <input autocomplete="off" type="text" class="sizes" id="frame_width" name="properties[Width]" value="16">
                     <!-- change to type=hidden if you don't want this displayed or type=text to show it -->
                     <input type="hidden" disabled="" readonly="" class="sizes" id="wdth_CM-Black" name="wdth_CM-Black" value="16">
                   </td>
                   <td colspan="4" class="ffdesc" align="right">Height&nbsp;
                     <!-- the height entries -->
-                    <input autocomplete="off" type="text" class="sizes" id="frame_height" name="properties[Height]" value="20" onkeypress="return handleEnter(this, event)">
+                    <input autocomplete="off" type="text" class="sizes" id="frame_height" name="properties[Height]" value="20">
                     <!-- change to type=hidden if you don't want this displayed or type=text to show it -->
                     <input type="hidden" disabled="" readonly="" class="sizes" id="hght_CM-Black" name="hght_CM-Black" value="20">
                   </td>
@@ -448,7 +448,7 @@
                   </td>
                   <td class="ffdesc" align="right">
 
-                    <input type="checkbox" id="rounded_CM-Black" name="properties[Tick for chrome rounded corners]" price="5" onclick="snap_redraw()" >
+                    <input type="checkbox" id="rounded_CM-Black" name="properties[Rounded Corners]" price="5" onclick="snap_redraw()" >
 
                   </td>
 
@@ -491,7 +491,7 @@
                     Tick for factory assembly (N/A on any frame larger than 40")
                   </td>
                   <td class="ffdesc" align="right">
-                    <input type="checkbox" checked="checked" name="properties[Tick for factory assembly]" id="assembly_CM-Black" price="0.2" onclick="snap_setpricenew();" >
+                    <input type="checkbox" checked="checked" name="properties[Factory Assembly]" id="assembly_CM-Black" price="0.2" onclick="snap_setpricenew();" >
                   </td>
 
                   <td align="right"><input class="inf" type="text" readonly="" id="ass_CM-Black" name="ass_CM-Black" value=""></td>
@@ -620,6 +620,7 @@
           </button>
         </div>
       </form>
+    <div id="mytimer_container" style="width:100%;"></div>
     {% else %}
       <p><strong>{{'products.product.out_of_stock_msg' | t}}</strong></p>
     {% endif %}    
@@ -732,7 +733,16 @@ Place this in your product.liquid template, at the bottom.
 
     console.log(P_I +'<br>'+ orginal_Quantity +'<br>'+ (parseFloat($("#tot_CM-Black").val()) - P_I).toFixed(2) +'<br>' + quantity);
 
-    add_special_Item('43899056586',quantity);
+    //var return = add_special_Item('43899056586',quantity);
+    
+    $.when(add_special_Item('43899056586',quantity)).done(function(return_v){
+      if(return_v == 'success')
+        $('form').submit();
+      else
+        return false;    	
+    });
+    
+    //settimeout($('form').submit(), 500);
 
   });
 
@@ -750,10 +760,12 @@ Place this in your product.liquid template, at the bottom.
           callback(line_item);
         }
         else {
+          return 'success';
           console.log('Success');
         }
       },
       error: function(XMLHttpRequest, textStatus) {
+        return 'fail';
         console.log('Fail');
       }
     };
@@ -778,6 +790,27 @@ Place this in your product.liquid template, at the bottom.
       return false;
     }
   });
+  
+  $('.sizes').focusout(function(){
+         
+    //Weight and Height Limitation.
+
+    var max_W = 48;
+    var max_H = 72;
+    var min_W = 5;
+    var min_H = 5;
+
+    var W = parseFloat($("#frame_width").val());
+    var H = parseFloat($("#frame_height").val()); 
+
+    if( W < min_H || W > max_W || H < min_W || H > max_H ){
+      alert("Invalid size - valid range for height is 5in to 48in and width is 5in to 72in");      
+      $("#frame_width").val(16);
+      $("#frame_height").val(20);      
+    }     
+    price_change();
+     
+  });
 
   function snap_backing_changed(){
     price_change();
@@ -791,10 +824,12 @@ Place this in your product.liquid template, at the bottom.
     var checked = $("#rounded_CM-Black:checked").length;
 
     if (checked == 0) {
+      $('#rounded_CM-Black').val('No');
       $("#cpr_CM-Black").val("0.00");
       price_change();
       return false;
     } else {
+      $('#rounded_CM-Black').val('Yes');
       var corner_price = $("#tickforchromeroundedcorner_CM").val();
       $("#cpr_CM-Black").val(corner_price);
       price_change();
@@ -825,7 +860,7 @@ Place this in your product.liquid template, at the bottom.
     var PSQ = parseFloat($("#W_L_Psq").val());
     var PF = parseFloat($("#W_L_Pf").val());
     var ass_pro = parseFloat($("#assembly_pro_CM-Black").val());
-    var CP = parseFloat($("#cpr_CM-Black").val());
+    var CP = parseFloat($("#cpr_CM-Black").val());   
 
     var square = W * H * 0.00694444;
     $("#ar4_CM-Black").val(square.toFixed(2));
