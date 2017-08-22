@@ -1,0 +1,278 @@
+@font-face {
+    font-family: 'asapp';
+    src:  url('fonts/asapp.eot?uw6kko');
+    src:  url('fonts/asapp.eot?uw6kko#iefix') format('embedded-opentype'),
+        url('fonts/asapp.ttf?uw6kko') format('truetype'),
+        url('fonts/asapp.woff?uw6kko') format('woff'),
+        url('fonts/asapp.svg?uw6kko#asapp') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^='icon-'],
+[class*=' icon-'] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'asapp' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-case::before {
+    content: '\e900';
+}
+
+.icon-search::before {
+    content: '\e901';
+}
+
+.icon-close_chat::before {
+    content: '\e902';
+}
+
+.icon-laptop::before {
+    content: '\e903';
+}
+
+.icon-minimize_chat::before {
+    content: '\e904';
+}
+
+.icon-sms::before {
+    content: '\e905';
+}
+
+.icon-thumbsdown::before {
+    content: '\e906';
+}
+
+.icon-thumbsup::before {
+    content: '\e907';
+}
+
+.icon-pencil::before {
+    content: '\e908';
+}
+
+.icon-expand::before {
+    content: '\e909';
+}
+
+.icon-true::before,
+.icon-icon_true::before {
+    content: '\e90a';
+}
+
+.icon-minimize::before {
+    content: '\e90b';
+}
+
+.icon-seen::before {
+    content: '\e90c';
+}
+
+.icon-error::before {
+    content: '\e90d';
+}
+
+.icon-loading::before {
+    content: '\e90e';
+}
+
+.icon-send::before {
+    content: '\e90f';
+}
+
+.icon-file-upload::before {
+    content: '\e910';
+}
+
+.icon-star-outline::before {
+    content: '\e911';
+}
+
+.icon-feedback::before {
+    content: '\e912';
+}
+
+.icon-star-fill::before {
+    content: '\e913';
+}
+
+.icon-chat::before {
+    content: '\e914';
+}
+
+.icon-minimize-chevron-1::before {
+    content: '\e915';
+}
+
+.icon-icon_id::before {
+    content: '\e916';
+}
+
+.icon-icon_verified::before {
+    content: '\e917';
+}
+
+.icon-icon_mail::before {
+    content: '\e918';
+}
+
+.icon-icon_phone::before {
+    content: '\e919';
+}
+
+.icon-icon_navArrow::before {
+    content: '\e91c';
+}
+
+.icon-icon_date::before {
+    content: '\e91e';
+}
+
+.icon-icon_arrow-inactive::before {
+    content: '\e91a';
+}
+
+.icon-icon_status::before {
+    content: '\e91b';
+}
+
+.icon-icon_arrow-closed::before {
+    content: '\e91d';
+}
+
+.icon-icon_arrow-active::before {
+    content: '\e91f';
+}
+
+.icon-icon_nav::before {
+    content: '\e920';
+}
+
+.icon-outgoing::before,
+.icon-arrowOuting::before {
+    content: '\e923';
+}
+
+.icon-check-mark::before {
+    content: '\e924';
+}
+
+.icon-plus::before {
+    content: '\e925';
+}
+
+.icon-power::before {
+    content: '\e926';
+}
+
+.icon-x::before {
+    content: '\e927';
+}
+
+.icon-trash-can::before {
+    content: '\e928';
+}
+
+.icon-agent-ended-chat::before {
+    content: '\e929';
+}
+
+.icon-deep-link::before {
+    content: '\e92a';
+}
+
+.icon-chat2::before {
+    content: '\e92b';
+}
+
+.icon-dollar::before {
+    content: '\e92c';
+}
+
+.icon-pen::before {
+    content: '\e92d';
+}
+
+.icon-alert::before,
+.icon-alertError::before {
+    content: '\e921';
+}
+
+.icon-icon_magic::before {
+    content: '\e922';
+}
+
+.icon-platform-mobile::before {
+    content: '\e92e';
+}
+
+.icon-platform-web::before {
+    content: '\e92f';
+}
+
+.icon-reload::before {
+    content: '\e930';
+}
+
+.icon-desk::before {
+    content: '\e931';
+}
+
+.icon-SMS::before {
+    content: '\e932';
+}
+
+.icon-ios::before {
+    content: '\e933';
+}
+
+.icon-android::before {
+    content: '\e934';
+}
+
+.icon-away::before {
+    content: '\e935';
+}
+
+.icon-active::before {
+    content: '\e93c';
+}
+
+.icon-mobile::before,
+.icon-icon_mobile::before {
+    content: '\e936';
+}
+
+.icon-head::before {
+    content: '\e937';
+}
+
+.icon-location-pin::before {
+    content: '\e938';
+}
+
+.icon-email::before {
+    content: '\e939';
+}
+
+.icon-thumbs-up::before {
+    content: '\e93a';
+}
+
+.icon-thumbs-down::before {
+    content: '\e93b';
+}
+
+.icon-download::before {
+    content: '\e93d';
+}
