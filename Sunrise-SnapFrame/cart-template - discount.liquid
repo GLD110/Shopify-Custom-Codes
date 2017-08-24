@@ -50,29 +50,36 @@
       </div>
 
       <ul class="cart-contents clearfix">
-        {% for item in cart.items %}
+          {% for item in cart.items %}
           <script>
             var objVariant = {};
             objVariant.oldVariantId = "{{ item.variant.id }}";
-            objVariant.qty = "{{item.quantity}}";
+			objVariant.qty = "{{item.quantity}}";
 
             // Get the Max Variant Price
             {% assign maxPrice = 0 %}
             {% for variant in item.product.variants %}
-              {% if maxPrice < variant.price %}
+			  {% if maxPrice < variant.price %}
                 {% assign maxPrice = variant.price %}
                 objVariant.maxVariantId = "{{variant.id}}";
               {% endif %}
             {% endfor %}
             
-            // Get the relevat variant accordint to quantity
-            {% assign selBreak = 0 %}
-            {% for i in ( 1..numBreaks ) %}
+            // Get the relevat variant according to quantity
+			{% assign selBreak = 0 %}
+            {% assign minBreak = 10000 %}
+            {% for i in ( 1..5 ) %}
 
               {% assign metaBreak = "price-break-" | append : i %}
               {% assign metaSKU = "price-break-" | append : i | append : "-SKU" %}
             
-              {% assign curBreak = item.product.metafields["global"][metaBreak] | plus : 0 %}
+              {% assign curBreak = item.product.metafields["global"][metaSKU] | plus : 0 %}
+                
+              {% if curBreak < minBreak and curBreak != 0 %}
+                {% assign minBreak = curBreak %}
+              {% endif %}
+                
+                console.log("Min:" + "{{ minBreak }}");
 				
               {% if item.quantity >= curBreak and curBreak > selBreak %}
                   {% assign selBreak = curBreak %}
@@ -82,17 +89,21 @@
                       objVariant.temp = "{{curBreak}}";
                     {% endif %}
                   {% endfor %}
-
+		      {% endif %}
               {% else %}
-                  {% continue %}
-              {% endif %}
+              {% continue %}
+         
 
             {% endfor %}
+            
+            {% if item.quantity < minBreak %}
+                objVariant.newVariantId = objVariant.maxVariantId;
+            {% endif %}
 			
             // Put the variant policy
-             if( !objVariant.newVariantId ) objVariant.newVariantId = objVariant.maxVariantId;
+            if( !objVariant.newVariantId ) objVariant.newVariantId = objVariant.oldVariantId;
 
-            if( objVariant.oldVariantId != objVariant.newVariantId )
+            if( objVariant.oldVariantId != objVariant.newVariantId)
             {
               arrVariant.push( {
                 variant_id :  objVariant.oldVariantId,
@@ -104,10 +115,11 @@
                 variant_id :  objVariant.newVariantId,
                 quantity : objVariant.qty,
                 method : "add"
-              });                      
+              });                                
             }
+            console.log("{{ minBreak }}");
             console.log( objVariant );
-          </script>	
+          </script>       
           <li class="clearfix">
             <div class="cart-col1">
               <a class="cart-thumb" href="{{item.url}}"><img src="{{ item | img_url: 'compact' }}" alt="{{ item.title | escape }}" /></a>
@@ -148,7 +160,7 @@
 
             <div class="cart-col4">
               <label for="updates_{{ item.id }}">{{ 'cart.general.quantity' | t }}</label>
-              <input class="{{className}}" data-stk="{{item.variant.inventory_quantity}}" data-managed="{{item.variant.inventory_management}}" data-policy="{{item.variant.inventory_policy}}" type="text" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" />    
+              <input class="{{className}}" data-stk="{{item.variant.inventory_quantity}}" data-managed="{{item.variant.inventory_management}}" data-policy="{{item.variant.inventory_policy}}" type="text" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" min="1" max="9999" maxlength="4"/>    
               <a class="cart-remove-line" href="/cart/change?line={{ forloop.index }}&quantity=0">{{ 'cart.general.remove' | t }}</a>
             </div>
 
@@ -167,12 +179,14 @@
         <a class="go-back button secondary" href="/">{{ 'cart.general.continue_shopping' | t }}</a>
         <input class="cart-update button secondary" type="submit" name="update" value="{{ 'cart.general.update' | t }}" />
       </div>   
-
+	  <span class="quote">
+          Need a quotation - <a href="/pages/quote-request">Click Here!</a>
+       </span>
       {% if section.settings.show_terms_cart %}   
-        <p id="agree-terms">
+        <span id="agree-terms">
           <input type="checkbox" id="agree" />
           <label for="agree">{{ 'cart.general.agree_terms_html' | t }}</label>
-        </p>   
+        </span>   
       {% endif %}  
 
       <div class="cart-actions clearfix">
