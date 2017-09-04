@@ -23,7 +23,7 @@ class Endpoint extends MY_Controller {
     
     // Define a header
     header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: GET");
+    header("Access-Control-Allow-Methods: GET, POST");
     header('Content-Type: application/json');
     
     // Get the shop from the HTTP Header or private shop  
