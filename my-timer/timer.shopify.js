@@ -1,6 +1,6 @@
 /* @charset "UTF-8" */
 /*
- * @author <shanchao@myhexin.com>
+ * @author <diana4545@outlook.com>
  * @create 2016-12-12
  */
 (function ($) {
