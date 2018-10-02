@@ -14,6 +14,22 @@
 <div id="address"></div>
 <hr/>Full response: <pre id="details"></pre>
 <script>
+function ipLookUp () {
+  $.ajax('http://ip-api.com/json')
+  .then(
+      function success(response) {
+          console.log('User\'s Location Data is ', response);
+          console.log('User\'s Country', response.country);
+      },
+
+      function fail(data, status) {
+          console.log('Request failed.  Returned status of',
+                      status);
+      }
+  );
+}
+ipLookUp()
+
 	$(document).ready(function(){
 		$.getJSON("http://freegeoip.net/json/", function(data) {
 			var country_code = data.country_code;
