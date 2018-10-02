@@ -30,6 +30,22 @@ function ipLookUp () {
 }
 ipLookUp()
 
+function ipLookUp () {
+  $.ajax('https://ipapi.co/json')
+  .then(
+      function success(response) {
+          console.log('User\'s Location Data is ', response);
+          console.log('User\'s Country', response.country);
+      },
+
+      function fail(data, status) {
+          console.log('Request failed.  Returned status of',
+                      status);
+      }
+  );
+}
+ipLookUp()
+
 	$(document).ready(function(){
 		$.getJSON("http://freegeoip.net/json/", function(data) {
 			var country_code = data.country_code;
