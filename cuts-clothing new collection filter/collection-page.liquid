@@ -9,7 +9,7 @@
 <div class="container top-image">
   {% if collection.handle == "spring-2018" %}
   	<img src="{{ "HERO_SPRINGPAGE.jpg" | asset_url }}">
-  {% else %}  	  	
+  {% else %}
   	{% if collection.image %}<img src="{{ collection.image | img_url: 'master' }}">{% else %}<img src="{{ "all_products_header.jpg" | file_url }}">{% endif %}
   {% endif %}
   <div class="collection-filter" style="display: none;">
@@ -26,7 +26,6 @@
       <a class="col-lg-3 col-md-3 col-sm-4 col-xs-12" href="elongated">Elongated</a>
     </div>
   </div>
-  
   <div class="new-collection-filter">
     <div class="filter-header-wrapper">
     <div class="filter-header">
@@ -48,16 +47,42 @@
         <a class="col-lg-4 col-md-4 col-sm-12 col-xs-12" href="regular" style="background-image: url('{{ "Regular.png" | file_url }}');">Regular</a>
       </div>
       <div class="color-filter">
-        <a class="col-lg-3 col-md-3 col-sm-12 col-xs-12" href="all" style="background-image: url('{{ "All_Colors.png" | file_url }}');">All the colors listed</a>
+        {% if collections.['all'].all_products_count != 0 %}
+        <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="all" style="background-image: url('{{ "All_Colors.png" | file_url }}');">All the colors listed</a>
+        {% endif %}
+        {% if collections.['black-cuts'].all_products_count != 0 %}
         <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="black-cuts" style="background-image: url('{{ "Black.png" | file_url }}');">Black</a>
+        {% endif %}
+        {% if collections.['optic-white'].all_products_count != 0 %}
         <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="optic-white" style="background-image: url('{{ "Optic_White.png" | file_url }}');">Optic White</a>
+        {% endif %}
+        {% if collections.['green'].all_products_count !=0 %}
         <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="green" style="background-image: url('{{ "Green.png" | file_url }}');">Green</a>
-        <a class="col-lg-3 col-md-3 col-sm-12 col-xs-12" href="grey" style="background-image: url('{{ "Grey.png" | file_url }}');">Grey</a>
-        <a class="col-lg-3 col-md-3 col-sm-12 col-xs-12" href="coral" style="background-image: url('{{ "Coral.png" | file_url }}');">Coral</a>
+        {% endif %}
+        {% if collections.['grey'].all_products_count !=0 %}
+        <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="grey" style="background-image: url('{{ "Grey.png" | file_url }}');">Grey</a>
+        {% endif %}
+        {% if collections.['plum'].all_products_count !=0 %}
+        <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="plum" style="background-image: url('{{ "Plum.png" | file_url }}');">Plum</a>
+        {% endif %}
+        {% if collections.['coral'].all_products_count !=0 %}
+        <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="coral" style="background-image: url('{{ "Coral.png" | file_url }}');">Coral</a>
+        {% endif %}
+        {% if collections.['stone-brown'].all_products_count !=0 %}
         <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="stone-brown" style="background-image: url('{{ "Stone_Brown.png" | file_url }}');">Stone Brown</a>
+        {% endif %}
+        {% if collections.['coastal-fog'].all_products_count !=0 %}
         <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="coastal-fog" style="background-image: url('{{ "Coastal_Fog.png" | file_url }}');">Coastal Fog</a>
+        {% endif %}
+        {% if collections.['blue-nights'].all_products_count !=0 %}
         <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="blue-nights" style="background-image: url('{{ "Blue_Nights.png" | file_url }}');">Blue Nights</a>
-        <a class="col-lg-3 col-md-3 col-sm-12 col-xs-12" href="stone-grey" style="background-image: url('{{ "Stone_Grey.png" | file_url }}');">Stone Grey</a>
+        {% endif %}
+        {% if collections.['stone-grey'].all_products_count !=0 %}
+        <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="stone-grey" style="background-image: url('{{ "Stone_Grey.png" | file_url }}');">Stone Grey</a>
+        {% endif %}
+        {% if collections.['burnt-pink'].all_products_count !=0 %}
+        <a class="col-lg-2 col-md-2 col-sm-12 col-xs-12" href="burnt-pink" style="background-image: url('{{ "Burnt_Pink.png" | file_url }}');">Burnt Pink</a>
+        {% endif %}
       </div>
       <div class="size-filter">
         <a class="col-lg-3 col-md-3 col-sm-12 col-xs-12" href="s" style="background-image: url('{{ "S.png" | file_url }}');">S</a>
@@ -73,7 +98,7 @@
 
 <div class="container">
   <div class="row">
-    
+
     {% if settings.listing_page_design != "disable-sidebar" %}
     <aside class="{% if settings.listing_page_design == "left-right-sidebar" %}col-md-3{% else %}col-md-4{% endif %} col-lg-3 col-xl-2 collection-list{% if settings.listing_page_design == "closed-sidebar" %} without-left-col{% endif %}" id="leftColumn">
       {% if settings.listing_page_design != "right-sidebar" %}<div class="move-height"></div>{% endif %}
@@ -81,7 +106,7 @@
       {% if settings.listing_page_design == "left-right-sidebar" %}{% include "collection-sidebar-left" %}{% endif %}
     </aside>
     {% endif %}
-    
+
     <aside class="{{ collection_grid }}" id="centerColumn">
       <div class="title-box"><h2 class="text-center text-uppercase title-under">{{ collection.title }}</h2></div>
       {% if settings.show_collection_description %}{{ collection.description }}{% endif %}
@@ -93,7 +118,7 @@
       {% include "collection-tollbar" current_grid: current_pagination_limit %}
 
       <!-- /filters row -->
-      <div id="centerCol"><div class="product-listing row">{% for product in collection.products %}{% if product.available %}<div class="{{ product_grid }}">{% include "product-grid-item" hoverzoom: "true" %}</div>{% endif %}{% endfor %}</div></div>
+      <div id="centerCol"><div class="product-listing row">{% for product in collection.products %}{% if product.available %}{% assign collection_name = collection.title %}{% if collection_name == 'S' or collection_name == 'M' or collection_name == 'L' or collection_name == 'XL' or collection_name == 'XXL' %}{% for variant in product.variants %}{% if variant.available and (variant.option1 == collection_name) %}<div class="{{ product_grid }}">{% include "product-grid-item" hoverzoom: "true" %}</div>{% endif %}{% endfor %}{% else %}<div class="{{ product_grid }}">{% include "product-grid-item" hoverzoom: "true" %}</div>{% endif %}{% endif %}{% endfor %}</div></div>
       <div class="infinitybutton">{% if settings.enable_infinite_scroll %}{% if paginate.next %}<div class="show-more"><a href="{{ paginate.next.url }}" class="btn btn--ys btn--xl">{{ 'collections.toolbar.button_show_more' | t }}</a></div>{% else %}{% if paginate.previous %}<div class="show-more" ><a class="btn btn--ys btn--xl disable">{{ 'collections.toolbar.button_show_more_disabled' | t }}</a></div>{% endif %}{% endif %}{% endif %}</div>
       {% if settings.enable_infinite_scroll %}<div class="divider--lg visible-xs"></div>{% endif %}
       {% endpaginate %}
@@ -145,7 +170,7 @@
 {% endif %}
 
 <style>
-  
+
 .top-image {
   overflow: hidden;
   margin: 0 0 30px 0;
@@ -156,50 +181,50 @@
 .top-image img {
   width: 100%;
 }
-  
+
 .breadcrumbs {
   display: none !important;
 }
-  
+
   .filter-group-collars-and-butt {
     display: block;
   }
-  
+
   .collection-filter a.all {
     background: #222;
     margin-bottom: 0;
     text-align: center;
     color: white;
   }
-  
+
   .collection-filter a {
     background: #777;
     text-align: center;
     color: white;
   }
-  
+
   .collars-filter a {
   }
-  
+
   .collars-filter label {
   }
-  
+
   .title-box {
     display: none;
   }
-  
+
   .filters-row {
     display: none;
-  }    
-  
+  }
+
   .new-collection-filter {
   	text-align: center;
   }
-  .filter-header-wrapper { 
+  .filter-header-wrapper {
   	border-bottom: solid 1px;
   }
-  .new-collection-filter a { 
-    text-underline-position: under; 
+  .new-collection-filter a {
+    text-underline-position: under;
     color: black;
   }
   .filter-header {
@@ -209,13 +234,13 @@
   }
   @media (max-width: 992px) {
     .filter-header-wrapper {
-      height: 182px;	
+      height: 182px;
     }
-    .filter-header {      
-      width: 100%;      
+    .filter-header {
+      width: 100%;
     }
   }
-  .filter-header a { 
+  .filter-header a {
   	height: 100%;
     line-height: 90px;
     font-size: 13px;
@@ -225,128 +250,133 @@
   }
   .filter-header a.active {
   	background-color: whitesmoke;
-  }  
+  }
   .filter-body {
   	position: absolute;
     width: 100%;
     z-index: 99999;
     background-color: white;
   }
-  .filter-body div { 
+  .filter-body div {
   	display: none;
   }
-  .filter-body a:hover { 
+  .filter-body a:hover {
   	background-color: lightyellow;
   }
-  .filter-body a:active { 
+  .filter-body a:active {
   	background-color: lightyellow;
-  }  
-  .filter-body a.active { 
+  }
+  .filter-body a.active {
   	background-color: lightyellow;
-  }    
-  .collar-filter { 
+  }
+  .collar-filter {
   	height: 100px;
     width: 60%;
     margin: auto;
   }
   @media (max-width: 992px) {
-    .collar-filter {      
-      width: 100%;      
+    .collar-filter {
+      width: 100%;
     }
   }
-  .collar-filter a { 
+  .collar-filter a {
   	line-height: 100px;
   }
-  .cut-filter { 
+  .cut-filter {
   	height: 100px;
     width: 60%;
     margin: auto;
   }
   @media (max-width: 992px) {
-    .cut-filter {      
-      width: 100%;      
+    .cut-filter {
+      width: 100%;
     }
-  }  
-  .cut-filter a { 
+  }
+  .cut-filter a {
   	line-height: 100px;
   }
-  .color-filter { 
+  .color-filter {
   	height: 200px;
-    width: 80%;
+    width: 95%;
     margin: auto;
   }
-  @media (max-width: 992px) {
-    .color-filter {      
-      width: 100%;      
+   @media (min-width: 1400px) {
+    .color-filter {
+      width: 85%;
     }
-  }   
-  .color-filter a { 
+  }
+  @media (max-width: 992px) {
+    .color-filter {
+      width: 100%;
+    }
+  }
+  .color-filter a {
   	line-height: 100px;
   }
-  .size-filter { 
+  .size-filter {
   	height: 100px;
     width: 70%;
     margin: auto;
   }
   @media (max-width: 992px) {
-    .size-filter {      
-      width: 100%;      
+    .size-filter {
+      width: 100%;
     }
-  }    
-  .size-filter a { 
+  }
+  .size-filter a {
   	line-height: 100px;
   }
-  
-  .collar-filter a { 
+
+  .collar-filter a {
   	background-repeat: no-repeat;
     background-position: 30px center;
   }
   @media (max-width: 992px) {
-    .collar-filter a {       
+    .collar-filter a {
       background-position: 90px center;
     }
-  }     
-  
-  .cut-filter a { 
+  }
+
+  .cut-filter a {
   	background-repeat: no-repeat;
     background-position: 20px center;
   }
   @media (max-width: 992px) {
-    .cut-filter a {       
+    .cut-filter a {
       background-position: 80px center;
     }
-  }    
-  
-  .color-filter a { 
+  }
+
+  .color-filter a {
   	background-repeat: no-repeat;
-    background-position: 5px center;
+    background-position: 0px center;
   }
   @media (max-width: 992px) {
-    .color-filter a {       
+    .color-filter a {
       background-position: 80px center;
     }
-  }     
-  .size-filter a { 
+  }
+  .size-filter a {
   	background-repeat: no-repeat;
     background-position: center;
     font-size: 0;
   }
-    
+
 </style>
 <script>
   $('.filter-header a').click(function(e){
     e.preventDefault();
-    if($(this).hasClass('active')){    	
+    if($(this).hasClass('active')){
       $(this).removeClass('active');
-      var filter = $(this).attr('filter');    
-      $('.' + filter).hide();      
+      var filter = $(this).attr('filter');
+      $('.' + filter).hide();
     }
     else{
-      $('.filter-header a').removeClass('active');      
+      $('.filter-header a').removeClass('active');
       $(this).addClass('active');
       var filter = $(this).attr('filter');
       $('.filter-body div').hide();
-      $('.' + filter).show();	
-    }    
-  });  
+      $('.' + filter).show();
+    }
+  });
 </script>
