@@ -1,0 +1,798 @@
+{% assign number_of_comments = article.comments_count %}
+
+{% if comment and comment.created_at %}
+  {% assign number_of_comments = article.comments_count | plus: 1 %}
+{% endif %}
+
+{% paginate article.comments by 5 %}
+
+<div class="blog-header">
+    <div class="wrapper">
+        <div class="desktop-b-menu grid">
+            <div class="grid__item large--two-thirds">
+                <a href="/blogs/news" class="active">HOME</a>
+                <a href="/blogs/learn/tagged/wellbeing">WELLBEING</a>
+              	<a href="/blogs/learn/tagged/pleasure">PLEASURE</a>
+                <a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a>
+                <a href="/blogs/learn/tagged/technology">TECH</a>
+            </div>
+            <div class="grid__item large--one-third blog-search">
+                <form action="/search" method="get" class="clearfix" role="search">
+                    <input type="hidden" name="type" value="article">
+                    <div class="input-group">
+                        <span class="input-wrap">
+                            <input type="search" name="q" value="" class="input-group-field"
+                                   aria-label="Search">
+                        </span>
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn icon-fallback-text">
+                                <span class="icon icon-search" aria-hidden="true"></span>
+                                <span class="fallback-text">Search</span>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>      
+    </div>
+</div>
+
+{% comment %}{% include 'breadcrumb' %}{% endcomment %}
+
+
+<div class="blog-article-wrap">
+<div class="wrapper">
+  <div class="grid-uniform">
+  <div class="grid__item blog-tag-title">
+    <div class="h1-wrap">
+      <h1 class="mobile-b-h1">
+        <span>Home ⌵</span>
+      </h1>
+      <div class="mobile-b-menu grid">
+        <div class="grid__item large--two-thirds">
+          <ul class="hide">
+            <li><a href="/blogs/news" class="active">HOME</a></li>
+            <li><a href="/blogs/learn/tagged/wellbeing">WELLBEING</a></li>
+            <li><a href="/blogs/learn/tagged/pleasure">PLEASURE</a></li>
+            <li><a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a></li>
+            <li><a href="/blogs/learn/tagged/technology">TECH</a></li>
+          </ul>  
+        </div>                      
+      </div>
+    </div>
+    <hr>
+  </div>
+  </div>
+
+
+<div class="grid" data-section-id="{{ section.id }}" data-section-type="article-template">
+
+  <article class="grid__item" itemscope itemtype="http://schema.org/Article">
+
+    <div class="grid">
+      <div class="grid__item post-large--ten-twelfths" style="margin: auto; float: none;">
+
+        <header class="section-header">
+          <h1 class="section-header__title">{{ article.title }}</h1>
+        </header>
+
+          <h2 class="section-header__subtitle">
+              {{ article.excerpt }}
+          </h2>
+        
+        <p class="blog-article-readmore" style="float: left; margin-bottom: 30px;">
+          {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}       
+        </p>
+        <span class="read-more" style="float: left; margin-top: 6px; margin-left: 5px;">{{ article.created_at | date: "%b %d" }} </span><span style="float: left; margin-top: 3px; margin-left: 3px;"> 5 min read </span>
+        
+        {% comment %}
+        <p>
+          <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
+          {% if section.settings.article_author_enable %}
+            <span class="meta-sep">&#8226;</span>
+            {{ article.author }}
+          {% endif %}
+          {% if article.tags.size > 0 %}
+            <span class="meta-sep">&#8226;</span>
+            {% for tag in article.tags %}
+              <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %} <span class="meta-sep">&#8226;</span> {% endunless %}
+            {% endfor %}
+          {% endif %}
+        </p>
+        {% endcomment %}
+        
+        <div class="blog-article-image">
+            <img class="article__image lazyload"
+                 src="{{ article.image.src | img_url: '1080x' }}"
+                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                 data-aspectratio="1.5"
+                 data-sizes="auto"
+                 alt="{{ article.image.alt }}">
+        </div>
+        <div class="rte" itemprop="articleBody">
+          {{ article.content }}
+        </div>           
+        <style>
+          .rte p { letter-spacing: 1px; }
+          @media screen and ( max-width: 500px ){
+          	.rte p { letter-spacing: 0; }
+          }
+        </style> 
+
+        {% if section.settings.social_sharing %}          
+          {% include 'social-sharing' %}
+        	<style>
+              .social-sharing { text-align: right; }              
+              @media screen and ( max-width: 500px ){
+                .social-sharing { text-align: center; }
+              }
+              .social-sharing.is-clean a span {
+              	font-size: 22px;
+              }
+              .social-sharing.is-clean .icon-facebook {
+                color: #0f1720;
+              }
+              .social-sharing.is-clean .icon-twitter {
+                  color: #0f1720;
+              }
+              .social-sharing.is-clean .icon-pinterest {
+                  color: #0f1720;
+              }
+              .social-sharing.is-clean a { border: none; }
+              .social-sharing.is-clean a .share-title {
+                display: none;
+              }
+        	</style>
+        {% endif %}        
+
+        {% comment %}
+          Create links to the next and previous articles, if available.
+        {% endcomment %}
+        {% if blog.next_article or blog.previous_article %}
+          <hr class="hr--clear hr--small">
+          <p class="clearfix hide">
+            {% if blog.previous_article %}
+              <span class="left">
+                &larr; {{ 'blogs.article.older_post' | t | link_to: blog.previous_article }}
+              </span>
+            {% endif %}
+            {% if blog.next_article %}
+              <span class="right">
+                {{ 'blogs.article.newer_post' | t | link_to: blog.next_article }} &rarr;
+              </span>
+            {% endif %}
+          </p>
+        {% endif %}
+
+        {% if blog.comments_enabled? %}
+          <hr class="hr--clear hr--small">
+
+          {% comment %}
+            Just like blog.liquid page, define how many comments should be on each page.
+          {% endcomment %}
+
+            {% comment %}
+              #comments is required, it is used as an anchor link by Shopify.
+            {% endcomment %}
+            <div id="comments">
+
+              {% if comment and comment.created_at %}
+                <p class="note form-success">
+                  {% if blog.moderated? %}
+                    {{ 'blogs.comments.success_moderated' | t }}
+                  {% else %}
+                    {{ 'blogs.comments.success' | t }}
+                  {% endif %}
+                </p>
+              {% endif %}
+
+              {% if number_of_comments > 0 %}
+                <ul>
+                  {% comment %}
+                    If a comment was just submitted with no blank field, show it.
+                  {% endcomment %}
+                  {% if comment and comment.created_at %}
+                    <li id="{{ comment.id }}" class="comment first{% if article.comments_count == 0 %} last{% endif %}">
+                      {% include 'comment' %}
+                    </li>
+                  {% endif %}
+
+                  {% comment %}
+                    Showing the rest of the comments.
+                  {% endcomment %}
+                  {% for comment in article.comments %}
+                    <li id="{{ comment.id }}" class="comment{% unless number_of_comments > article.comments_count %}{% if forloop.first %} first{% endif %}{% endunless %}{% if forloop.last %} last {% endif %}">
+                      {% include 'comment' %}
+                    </li>
+                  {% endfor %}
+                </ul>
+
+                {% if paginate.pages > 1 %}
+                  <hr class="--clear hr--small">
+                  <div class="text-center">
+                    {% include 'pagination-custom' %}
+                  </div>
+                {% endif %}
+
+                <hr class="hr--clear hr--small">
+
+              {% endif %}
+
+              {% comment %}
+                Comment submission form
+              {% endcomment %}
+              {% form 'new_comment', article %}
+
+                <h2 class="h4">{{ 'blogs.comments.title' | t }}</h2>
+
+                {{ form.errors | default_errors }}
+
+                <div class="grid">
+
+                  <div class="grid__item post-large--one-half">
+                    <label for="CommentAuthor" class="label--hidden">{{ 'blogs.comments.name' | t }}</label>
+                    <input {% if form.errors contains "author" %} class="error"{% endif %} type="text" name="comment[author]" placeholder="{{ 'blogs.comments.name' | t }}" id="CommentAuthor" value="{{ form.author }}" autocapitalize="words">
+
+                    <label for="CommentEmail" class="label--hidden">{{ 'blogs.comments.email' | t }}</label>
+                    <input {% if form.errors contains "email" %} class="error"{% endif %} type="email" name="comment[email]" placeholder="{{ 'blogs.comments.email' | t }}" id="CommentEmail" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                  </div>
+
+                  <div class="grid__item">
+                    <label for="CommentBody" class="label--hidden">{{ 'blogs.comments.message' | t }}</label>
+                    <textarea {% if form.errors contains "body" %} class="error"{% endif %} name="comment[body]" id="CommentBody" placeholder="{{ 'blogs.comments.message' | t }}">{{ form.body }}</textarea>
+                  </div>
+
+                </div>
+
+                {% if blog.moderated? %}
+                  <p><small>{{ 'blogs.comments.moderated' | t }}</small></p>
+                {% endif %}
+
+                <input type="submit" class="btn" value="{{ 'blogs.comments.post' | t }}">
+
+              {% endform %}
+
+            </div>
+
+        {% endif %}
+
+      </div>
+    </div>
+  </article>    
+
+</div>
+      
+      
+      
+  </div>
+</div>
+
+<div class="home-page-wrap6 related-blog-h">
+    <div class="wrapper small--hide medium--hide">
+        <div class="grid-uniform">
+          	{% assign three_count = 0 %}
+            {% for art in blog.articles %}    
+            {% if art.tags contains article.tags[0] and three_count < 3 and art.handle != article.handle %}
+            {% assign three_count = three_count | plus: 1 %}
+                <div class="grid__item large--one-third">
+                  <a class="featured-blog" href="/blogs/{{art.handle}}">
+                    <div class="featured-blog-image">                      
+                      <img class="item-image" src="{{ art.image.src | img_url : '500x'}}">
+                    </div>
+                    <h2 class="featured-blog-title">
+                      {{ art.title }}
+                    </h2>
+                    <h3 class="featured-blog-subtitle">
+                      {{ art.excerpt | strip_html | truncatewords: 15}}    
+                    </h3>
+                    <p class="featured-blog-reading">
+                      <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
+                      <span>5 min read</span>
+                    </p>
+                  </a>
+            	</div>             
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="slider-wrap large--hide post-large--hide">
+        <div class="flexslider4 featured-blog-slider">
+            <ul class="slides">
+                <li>
+                    <a class="slide-wrap" href="/blogs/news/how-to-use-a-vibrator-7-creative-sex-positions-for-couples-play">
+                        <div class="featured-blog-image">
+                            {{ 'couple-sex.jpg' | asset_url | img_tag: 'Couples Sex'}}
+                        </div>
+                        <h2 class="featured-blog-title">
+                            7 Creative Sex Positions for Couples Play
+                        </h2>
+                        <h3 class="featured-blog-subtitle">
+                        	While vibrators seem easy to use on the surface, it’s using them creatively that makes all the difference to the depth of your shared pleasure.    
+                      	</h3>
+                        <p class="featured-blog-reading">
+                            <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
+                            <span>4 min read</span>
+                        </p>
+                    </a>
+                </li>
+                <li>
+                    <a class="slide-wrap" href="/blogs/news/5-reasons-your-penis-will-love-vibrators-for-men">
+                        <div class="featured-blog-image">
+                            {{ 'penis-vibrator.jpg' | asset_url | img_tag: 'Penis Vibrator'}}
+                        </div>
+                        <h2 class="featured-blog-title">
+                            5 Reasons Your Penis Will Love Vibrators for Men
+                        </h2>
+                        <h3 class="featured-blog-subtitle">
+                            Whether you are using one with a partner or during solo play, penis vibrators can add new dimensions to your sexual experiences. 
+                        </h3>
+                        <p class="featured-blog-reading">
+                            <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
+                            <span>4 min read</span>
+                        </p>
+                    </a>
+                </li>
+                <li>
+                    <a class="slide-wrap" href="/blogs/news/how-to-have-great-sex-after-menopause">
+                        <div class="featured-blog-image">
+                            {{ 'HowToHaveGreatSexAfterMenopause.jpg' | asset_url | img_tag: 'How To Have Great Sex After Menopause'}}
+                        </div>
+                        <h2 class="featured-blog-title">
+                            How To Have Great Sex After Menopause
+                        </h2>
+                        <h3 class="featured-blog-subtitle">
+                            There’s no reason why your sex life should suffer as a result of menopause. Here's our top 10 tips on how to have a great sex life after menopause.
+                      	</h3>
+                        <p class="featured-blog-reading">
+                            <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
+                            <span>4 min read</span>
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>    
+</div>
+
+<script>
+$(function() {
+
+  // Top slideshow
+  $(window).load(function() {
+    $('.flexslider1').flexslider({
+      slideshow: true,
+      animation: "slide",
+      directionNav: false,
+      itemWidth: '100%',
+      controlsContainer: $(".custom-controls-container1")
+      //customDirectionNav: $(".custom-navigation1 a")
+    });
+  });
+
+  // Outlet quotes
+  $('.outlet-logo-wrap').find('h2').hide().eq(0).show();
+  $('.flexslider2').flexslider({
+    animation: "slide",
+    animationLoop: true,
+    slideshow: true,
+    controlNav:	false,
+    directionNav: false,
+    slideshowSpeed: 3000,
+    startAt: 3,
+    after: function (slider) {
+      showQuote2(slider.currentSlide + 1);
+    }
+  });
+  function showQuote2(ind) {
+    var $h2 = $('.outlet-logo-wrap').find('h2');
+    $h2.eq(0).fadeOut(300)
+    .promise()
+    .done(function() {
+      var quote = $h2.eq(ind).html();
+      $h2.eq(0).html(quote).fadeIn(800);
+    });
+    var $img = $('.flexslider2').find('img');
+    $img.removeClass('active');
+    $img.eq(ind).addClass('active');
+  }
+
+  // Blog slideshow
+  $(window).load(function() {
+    $('.flexslider4').flexslider({
+      animation: "slide",
+      slideshow: false,
+      directionNav: false,
+      animationLoop: false,
+      startAt: 1,
+      itemMargin: 10
+    });
+  });
+      
+});
+</script>
+
+<div class="related-blog">
+	<ul>
+    {% assign three_count = 0 %}
+    {% for art in blog.articles %}    
+    {% if art.tags contains article.tags[0] and three_count < 3 and art.handle != article.handle %}
+    {% assign three_count = three_count | plus: 1 %}
+        <article class="relatable-item">
+        <a href="/blogs/{{art.handle}}">
+        <img class="item-image" src="{{ art.image.src | img_url: '500x' }}">
+        <h2>{{ art.title }}</h2>
+        <p>{{ art.excerpt | strip_html | truncatewords: 15}}</p>   
+        <p class="blog-article-readmore" style="float: left; margin-bottom: 30px;">
+          {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}       
+        </p>
+        <span class="read-more" style="float: left; margin-top: 6px; margin-left: 5px;">{{ article.created_at | date: "%b %d" }} </span><span style="float: left; margin-top: 3px; margin-left: 3px;"> 5 min read </span>
+        </a>
+      </article>  
+    {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+<style>
+  .related-blog { background: #f7f7f7; display: none;}
+  .related-blog ul { width: 70%; margin: auto; height: 460px; padding-top: 60px; }
+  .related-blog ul .relatable-item { float: left; width: 32%; }
+  .related-blog ul .relatable-item:nth-child(1) { margin: 0 1% 0 0;}
+  .related-blog ul .relatable-item:nth-child(2) { margin: 0 1%; }
+  .related-blog ul .relatable-item:nth-child(3) { margin: 0 0 0 1%; }
+  .related-blog ul .relatable-item .item-image { width: 100%; height: 200px; object-fit: cover; }
+  .related-blog ul .relatable-item h2 { font-size: 20px; }
+  @media screen and (max-width: 500px) {
+    .related-blog ul { height: auto; width: 90%;}
+  	.related-blog ul .relatable-item { width: 100%; }
+    .related-blog ul .relatable-item:nth-child(3) { margin-bottom: 60px; }    
+  }
+  .related-blog-h { min-height: 500px; background: #f7f7f7;}
+</style>
+
+
+<div class="text-page-spacer" style="background: #f7f7f7;"></div>
+
+<style>
+.main-content > div {
+    margin-left: -30px;  	
+}
+  .site-footer { background-color: #f7f7f7; }  
+  .blog-article-wrap { background: none; }
+  
+  .blog-article-wrap .section-header__title {
+  	font-weight: inherit;
+    font-family: medium-content-title-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    letter-spacing: 0;
+    line-height: 1.25;
+    font-style: normal;
+    font-size: 42px;
+    color: rgba(0,0,0,.84);	
+  }      
+  .blog-article-wrap .section-header__subtitle {
+  	font-size: 28px;
+    font-family: medium-content-sans-serif-font,"Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Arial,sans-serif;
+    font-weight: 400;
+    margin-top: 5px;
+    margin-bottom: 22px;
+    line-height: 1.22;
+    letter-spacing: -.012em;
+    color: #757575;
+    font-style: normal;
+  }
+  .read-more
+  {
+  	font-style: normal!important;
+    letter-spacing: 0!important;
+    font-size: 16px!important;
+    line-height: 20px!important;
+  }
+  
+  
+  @media screen and ( max-width: 500px ) {
+    .blog-article-wrap .section-header__title {
+  		font-size: 34px;
+    }
+    .blog-article-wrap .section-header__subtitle {
+    	font-size: 24px;
+    }
+  }
+  
+  .b-header-fixed {
+  	position: fixed;
+    width: 100%;
+    top: 0;
+  }
+  
+  .rte p {
+  	font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+    line-height: 1.58;
+    letter-spacing: -.003em;
+  }
+  .rte h3 {
+  	font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
+  }
+  
+  .read-more:after {
+    content: '\00B7';
+  }
+  
+</style>
+
+{% endpaginate %}
+
+<div class="custom-cs">
+<style>
+  
+  .blog-page-wrap { background: none; }
+  
+  .blog-special {
+  	width: 40%;
+  }
+  .blog-special .blog-image {
+  	width: 33%;
+  }
+  .blog-special .blog-image .article__image-wrapper{
+  	float: left !important;
+    max-width: 100% !important;
+  }
+  .blog-special h2 {
+  	width: 60%;
+    float: right;
+  }
+  .blog-special .blog-article-summary {
+  	display: none;
+  }
+  .blog-special .blog-article-readmore {
+  	float: left;
+    margin-left: 15px;
+  }
+  .blog-special .blog-article-readmore img {
+  	display: none;
+  }
+  .blog-special {
+  	padding-bottom: 20px;
+  }
+  
+  .blog-special.blog-article-item h2 a {
+  	line-height: 1;
+  }
+  
+  .blog-special:nth-child(2) {
+  	width: 60%;
+  }
+  .blog-special:nth-child(2) .blog-image {
+  	width: 100%;
+  }
+  .blog-special:nth-child(2) .blog-image .article__image-wrapper{
+  	float: left !important;
+    width: 100%;
+    clear: both;
+    max-width: 100% !important;
+    height: 200px;
+  }
+  .blog-special:nth-child(2) .blog-image .article__image-wrapper .image-div {
+  	padding-top: 0 !important;
+  }
+  .blog-special:nth-child(2) .blog-image .article__image-wrapper .article__image{
+  	object-fit: cover;
+   	height: 100%;
+  }
+  .blog-special:nth-child(2) h2 {
+  	float: left;
+    width: 100%;
+    margin: 20px 0 5px 12px;
+  }
+  .blog-special:nth-child(2) .blog-article-summary {
+  	float: left;
+    margin: 0 0 0 12px !important;
+    display: block !important;
+  }
+  .blog-special:nth-child(2) .blog-article-readmore {
+  	float: left;
+    margin: 20px 0 20px 12px;
+  }
+  .blog-special:nth-child(2) .blog-article-readmore img {
+  	display: block !important;
+  }
+  
+  .blog_border {     
+    display: none;
+    float: left;
+    width: 97%;
+    margin: 0 0px 0 30px;
+    border-bottom: solid 1px lightgrey; 
+  }
+  .blog_border a {
+  	float: right;
+    margin-bottom: 5px;
+  }
+  .pagination-custom { display: none; }
+  
+  .mobile-b-menu { display: none; }
+  
+  .mobile-b-h1 {
+  	display: none;
+  } 
+  .feature-wrap .desktop-b-h1 {
+   	display: none;
+  } 
+  
+  .blog-tag-title hr {
+	/*border: none; */
+    margin: -1px 0 20px;
+  }
+  .feature-wrap .blog-tag-title hr {
+	border: none;
+  }
+  
+  @media screen and (min-width: 768px){
+    .blog-tag-title hr {
+      border: none; 
+    }
+  }
+  
+  @media screen and (max-width: 768px){
+    .blog-header .blog-search form {
+        float: right;
+    }
+  }
+  
+  @media screen and (max-width: 500px){    
+    .blog-special { width: 100%; }
+    .blog-special:nth-child(2) { width: 100%; }
+    .blog_border { width: 91%; }
+    .desktop-b-menu .large--two-thirds { display: none; }
+    .desktop-b-menu .blog-search { 
+      	position: absolute;   
+      	width: 70%;
+    	right: 15px;
+    }
+    .desktop-b-menu .blog-search .input-group {
+    	border: none;
+      	background-color: transparent;
+    }
+    .desktop-b-menu span.input-wrap {
+    	display: none;
+    }
+    .desktop-b-menu .blog-search .input-group-btn .btn {
+        height: 30px;
+      	float: right;
+    }
+    .desktop-b-menu .blog-search button {
+    	font-size: 15px;
+    }
+    
+    .mobile-b-menu { 
+        display: block; 
+        z-index: 999999;
+        position: absolute;    		
+    }
+    .mobile-b-menu ul
+    {
+      	background: white;
+    	padding: 0 10px 0 0;
+        margin: 20px 0 10px;
+      	display: none;
+    }
+    .mobile-b-menu ul.show {
+    	display: block;
+    }
+    .mobile-b-menu .blog-search {
+    	display: none;
+    }
+    .mobile-b-h1 {
+    	display: block;
+    } 
+    .desktop-b-h1 {
+    	display: none;
+    } 
+    .blog-tag-title h1 {
+    	margin: 10px 0 0;
+    }
+    .special-signup3 form .input-group{
+    	margin-top: 5px !important;
+    }
+    .special-signup1 .grid-uniform.blog-get-guide, .special-signup2 .grid-uniform.blog-get-guide {
+    	display: none;
+    }
+    .blog-page-wrap { min-height: auto; }
+    .blog-header .blog-search .input-group {
+    	margin: 0px auto 0;
+    }
+  }
+  @media screen and (min-width: 500px) {
+    .article__image-wrapper.supports-js .article__image {
+    	height: 90%;
+    	object-fit: cover;
+    }
+  }
+</style>
+</div>
+      
+<script>
+	$(".blog_border a").click(function(e){  		
+  		e.preventDefault();
+  		$(".blog-article-item").removeClass("blog-special");
+      	$(this).parent().hide();
+      	$(".pagination-custom").css("display", "inline-block");
+  	});
+  
+    $(".mobile-b-h1").click(
+      function(){
+        if($(".mobile-b-menu ul").hasClass("hide")){          	
+        	$(".mobile-b-menu ul").addClass("show");
+        	$(".mobile-b-menu ul").removeClass("hide");
+        }
+        else if($(".mobile-b-menu ul").hasClass("show")){
+        	$(".mobile-b-menu ul").addClass("hide");
+        	$(".mobile-b-menu ul").removeClass("show");
+        }
+    });
+  	var cur_url = $(location).attr('href');
+  	if(cur_url.includes('tagged')){      
+      $(".blog-article-item").removeClass("blog-special");
+      $(".blog_border").hide();
+      $(".pagination-custom").css("display", "inline-block");
+      $(".blog-page-wrap").addClass("hide");
+      $(".blog-page-wrap.default-wrap").removeClass("hide");
+    }
+</script>
+
+<script>
+  var position = 50;   
+
+  $(window).scroll(function() {
+      var scroll = $(window).scrollTop();
+      if(scroll > position) {
+        $(".blog-header").addClass('b-header-fixed');
+      } else {
+        $(".blog-header").removeClass('b-header-fixed');
+      }
+  });
+</script>  
+
+
+{% schema %}
+{
+  "name": {
+    "de": "Artikel",
+    "en": "Article",
+    "es": "Artículo",
+    "fr": "Article",
+    "it": "Articolo",
+    "ja": "記事",
+    "pt-BR": "Artigo"
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "article_author_enable",
+      "label": {
+        "de": "Autor eines Blog-Beitrags anzeigen",
+        "en": "Show blog post author",
+        "es": "Mostrar autor de la entrada del blog",
+        "fr": "Afficher l'auteur de l'article de blog",
+        "it": "Mostra autore articolo del blog",
+        "ja": "ブログ記事の執筆者を表示する",
+        "pt-BR": "Exibir autor(a) do post do blog"
+      }
+    },
+    {
+      "type": "checkbox",
+      "id": "social_sharing",
+      "label": {
+        "de": "Freigabe von Blog-Beiträgen aktivieren",
+        "en": "Enable blog post sharing",
+        "es": "Habilitar la función compartir entrada en el blog",
+        "fr": "Activer le partage des articles de blog",
+        "it": "Abilita condivisione articoli del blog",
+        "ja": "ブログ記事の共有を有効にする",
+        "pt-BR": "Ativar compartilhamento de post do blog"
+      }
+    }
+  ]
+}
+{% endschema %}
