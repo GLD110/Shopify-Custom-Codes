@@ -42,7 +42,7 @@
 
 <div class="blog-article-wrap">
 <div class="wrapper">
-  <div class="grid-uniform">
+  <div class="grid-uniform mobile-blog-menu">
   <div class="grid__item blog-tag-title">
     <div class="h1-wrap">
       <h1 class="mobile-b-h1">
@@ -267,6 +267,30 @@
   </div>
 </div>
 
+<div class="v-social hide">
+{% if section.settings.social_sharing %}          
+{% include 'social-sharing' %}
+  <style>               
+    @media screen and ( min-width: 1300px ){
+      .v-social .social-sharing { width: 35px; position: fixed; top: 150px; left: 15%; z-index: 9; }
+    }    
+  </style>
+{% endif %} 
+</div>
+
+<script>
+  var position = 300;   
+
+  $(window).scroll(function() {
+      var scroll = $(window).scrollTop();
+      if(scroll > position) {
+        $(".v-social").removeClass('hide');
+      } else {
+        $(".v-social").addClass('hide');
+      }
+  });
+</script> 
+
 <div class="home-page-wrap6 related-blog-h">
     <div class="wrapper small--hide medium--hide">
         <div class="grid-uniform">
@@ -283,7 +307,7 @@
                       {{ art.title }}
                     </h2>
                     <h3 class="featured-blog-subtitle">
-                      {{ art.excerpt | strip_html | truncatewords: 15}}    
+                      {{ art.excerpt | strip_html | truncatewords: 13}}    
                     </h3>
                     <p class="featured-blog-reading">
                       <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
@@ -297,58 +321,30 @@
     </div>
     <div class="slider-wrap large--hide post-large--hide">
         <div class="flexslider4 featured-blog-slider">
-            <ul class="slides">
-                <li>
-                    <a class="slide-wrap" href="/blogs/news/how-to-use-a-vibrator-7-creative-sex-positions-for-couples-play">
+            <ul class="slides">                
+              	{% assign three_count = 0 %}
+                {% for art in blog.articles %}    
+                {% if art.tags contains article.tags[0] and three_count < 3 and art.handle != article.handle %}
+                {% assign three_count = three_count | plus: 1 %}
+                    <li>
+                        <a class="slide-wrap" href="/blogs/{{art.handle}}">
                         <div class="featured-blog-image">
-                            {{ 'couple-sex.jpg' | asset_url | img_tag: 'Couples Sex'}}
+                            <img class="item-image" src="{{ art.image.src | img_url : '500x'}}">
                         </div>
                         <h2 class="featured-blog-title">
-                            7 Creative Sex Positions for Couples Play
+                            {{ art.title }}
                         </h2>
                         <h3 class="featured-blog-subtitle">
-                        	While vibrators seem easy to use on the surface, it’s using them creatively that makes all the difference to the depth of your shared pleasure.    
+                        	{{ art.excerpt | strip_html | truncatewords: 13}}  
                       	</h3>
                         <p class="featured-blog-reading">
                             <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
-                            <span>4 min read</span>
+                            <span>5 min read</span>
                         </p>
                     </a>
-                </li>
-                <li>
-                    <a class="slide-wrap" href="/blogs/news/5-reasons-your-penis-will-love-vibrators-for-men">
-                        <div class="featured-blog-image">
-                            {{ 'penis-vibrator.jpg' | asset_url | img_tag: 'Penis Vibrator'}}
-                        </div>
-                        <h2 class="featured-blog-title">
-                            5 Reasons Your Penis Will Love Vibrators for Men
-                        </h2>
-                        <h3 class="featured-blog-subtitle">
-                            Whether you are using one with a partner or during solo play, penis vibrators can add new dimensions to your sexual experiences. 
-                        </h3>
-                        <p class="featured-blog-reading">
-                            <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
-                            <span>4 min read</span>
-                        </p>
-                    </a>
-                </li>
-                <li>
-                    <a class="slide-wrap" href="/blogs/news/how-to-have-great-sex-after-menopause">
-                        <div class="featured-blog-image">
-                            {{ 'HowToHaveGreatSexAfterMenopause.jpg' | asset_url | img_tag: 'How To Have Great Sex After Menopause'}}
-                        </div>
-                        <h2 class="featured-blog-title">
-                            How To Have Great Sex After Menopause
-                        </h2>
-                        <h3 class="featured-blog-subtitle">
-                            There’s no reason why your sex life should suffer as a result of menopause. Here's our top 10 tips on how to have a great sex life after menopause.
-                      	</h3>
-                        <p class="featured-blog-reading">
-                            <img src="{{ 'small-logo-pink.svg' | asset_url }}" alt="MV Logo">
-                            <span>4 min read</span>
-                        </p>
-                    </a>
-                </li>
+                    </li>            
+                {% endif %}
+                {% endfor %}
             </ul>
         </div>
     </div>    
@@ -411,45 +407,6 @@ $(function() {
 });
 </script>
 
-<div class="related-blog">
-	<ul>
-    {% assign three_count = 0 %}
-    {% for art in blog.articles %}    
-    {% if art.tags contains article.tags[0] and three_count < 3 and art.handle != article.handle %}
-    {% assign three_count = three_count | plus: 1 %}
-        <article class="relatable-item">
-        <a href="/blogs/{{art.handle}}">
-        <img class="item-image" src="{{ art.image.src | img_url: '500x' }}">
-        <h2>{{ art.title }}</h2>
-        <p>{{ art.excerpt | strip_html | truncatewords: 15}}</p>   
-        <p class="blog-article-readmore" style="float: left; margin-bottom: 30px;">
-          {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}       
-        </p>
-        <span class="read-more" style="float: left; margin-top: 6px; margin-left: 5px;">{{ article.created_at | date: "%b %d" }} </span><span style="float: left; margin-top: 3px; margin-left: 3px;"> 5 min read </span>
-        </a>
-      </article>  
-    {% endif %}
-    {% endfor %}
-  </ul>
-</div>
-<style>
-  .related-blog { background: #f7f7f7; display: none;}
-  .related-blog ul { width: 70%; margin: auto; height: 460px; padding-top: 60px; }
-  .related-blog ul .relatable-item { float: left; width: 32%; }
-  .related-blog ul .relatable-item:nth-child(1) { margin: 0 1% 0 0;}
-  .related-blog ul .relatable-item:nth-child(2) { margin: 0 1%; }
-  .related-blog ul .relatable-item:nth-child(3) { margin: 0 0 0 1%; }
-  .related-blog ul .relatable-item .item-image { width: 100%; height: 200px; object-fit: cover; }
-  .related-blog ul .relatable-item h2 { font-size: 20px; }
-  @media screen and (max-width: 500px) {
-    .related-blog ul { height: auto; width: 90%;}
-  	.related-blog ul .relatable-item { width: 100%; }
-    .related-blog ul .relatable-item:nth-child(3) { margin-bottom: 60px; }    
-  }
-  .related-blog-h { min-height: 500px; background: #f7f7f7;}
-</style>
-
-
 <div class="text-page-spacer" style="background: #f7f7f7;"></div>
 
 <style>
@@ -498,10 +455,14 @@ $(function() {
   }
   
   .b-header-fixed {
-  	position: fixed;
+  	position: fixed !important;
     width: 100%;
-    top: 0;
+    top: 0;    
   }
+  
+  @media screen and ( max-width: 500px ) {
+    .mobile-blog-menu { background: white; }
+  } 
   
   .rte p {
   	font-family: medium-content-serif-font,Georgia,Cambria,"Times New Roman",Times,serif;
@@ -518,6 +479,12 @@ $(function() {
   .read-more:after {
     content: '\00B7';
   }
+  
+  .related-blog-h.home-page-wrap6 { background: #f7f7f7; min-height: 0; }
+  .related-blog-h .wrapper { max-width: 1300px; padding-top: 75px; }
+  .related-blog-h.home-page-wrap6 .featured-blog-image { height: 200px; }
+  .related-blog-h.home-page-wrap6 .featured-blog-subtitle { min-height: 70px; }
+  .related-blog-h.home-page-wrap6 .slider-wrap { margin-top: 0; padding-top: 40px; }
   
 </style>
 
@@ -748,8 +715,10 @@ $(function() {
       var scroll = $(window).scrollTop();
       if(scroll > position) {
         $(".blog-header").addClass('b-header-fixed');
+        $(".mobile-blog-menu").addClass('b-header-fixed');        
       } else {
         $(".blog-header").removeClass('b-header-fixed');
+        $(".mobile-blog-menu").removeClass('b-header-fixed');        
       }
   });
 </script>  
