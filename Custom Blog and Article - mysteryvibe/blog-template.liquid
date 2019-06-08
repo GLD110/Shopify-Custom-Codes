@@ -6,7 +6,7 @@
     <div class="wrapper">
         <div class="desktop-b-menu grid">
             <div class="grid__item large--two-thirds">
-                <a href="/blogs/news" class="active">HOME</a>
+                <a href="/blogs/learn" class="active">HOME</a>
                 <a href="/blogs/learn/tagged/wellbeing">WELLBEING</a>
               	<a href="/blogs/learn/tagged/pleasure">PLEASURE</a>
                 <a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a>
@@ -57,7 +57,7 @@
                   <div class="mobile-b-menu grid">
                       <div class="grid__item large--two-thirds">
                         <ul class="hide">
-                          <li><a href="/blogs/news" class="active">HOME</a></li>
+                          <li><a href="/blogs/learn" class="active">HOME</a></li>
                           <li><a href="/blogs/learn/tagged/wellbeing">WELLBEING</a></li>
                           <li><a href="/blogs/learn/tagged/pleasure">PLEASURE</a></li>
                           <li><a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a></li>
@@ -114,9 +114,8 @@
                 </div>
                 <p class="blog-article-readmore">
                   {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
-                  <a href="{{ article.url }}">5 min read</a>
+                  <a href="{{ article.url }}">Read more &rarr;</a>
                 </p>
-              
             </div>
          	{% endif %}
             {% endfor %}
@@ -145,17 +144,23 @@
                     </div>
                     <div class="grid__item large--two-fifths">
                         <div class="blog-get-guide-form">
-                            <form action="/get-guide" method="get" class="clearfix">
+                            <form id="blog-get-guide-form-1" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
                                 <div class="input-group">
                                     <span class="input-wrap">
-                                        <input type="search" name="q" value="" class="input-group-field"
-                                               placeholder="Enter your email">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
                                     </span>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn icon-fallback-text">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button">
                                             <span>Sign up</span>
                                         </button>
                                     </span>
+                                </div>
+                                <div class="klaviyo_messages">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
                                 </div>
                             </form>
                         </div>
@@ -173,7 +178,7 @@
             <div class="grid__item blog-tag-title">
                 <div class="h1-wrap">
                     <h1>
-                      <a href="/blogs/news/tagged/wellbeing">
+                      <a href="/blogs/learn/tagged/wellbeing">
                       {% if current_tags %}
                         {{ current_tags.first }}
                       {% else %}
@@ -183,7 +188,7 @@
                    	</h1>
                 </div>
               	<div class="h1-wrap" style="float: right; border-bottom: none;">
-                  <h1><a href="/blogs/news/tagged/wellbeing">See All</a></h1>
+                  <h1><a href="/blogs/learn/tagged/wellbeing">See All</a></h1>
                 </div>
                 <hr>
             </div>
@@ -233,7 +238,7 @@
                 </div>
                 <p class="blog-article-readmore">
                   {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
-                  <a href="{{ article.url }}">5 min read</a>
+                  <a href="{{ article.url }}">Read more &rarr;</a>
                 </p>
             </div>
          	{% endif %}
@@ -253,17 +258,23 @@
                     </div>
                     <div class="grid__item large--two-fifths">
                         <div class="blog-get-guide-form">
-                            <form action="/get-guide" method="get" class="clearfix">
+                            <form id="blog-get-guide-form-2" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
                                 <div class="input-group" style="margin-top: 60px; background-color: #1f2931; border: none;">
                                     <span class="input-wrap">
-                                        <input type="search" name="q" value="" class="input-group-field"
-                                               placeholder="Enter your email">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
                                     </span>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn icon-fallback-text" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
                                             <span>Sign up</span>
                                         </button>
                                     </span>
+                                </div>
+                                <div class="klaviyo_messages" style="color: #fff; margin-top: 60px;">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
                                 </div>
                             </form>
                         </div>
@@ -281,7 +292,7 @@
             <div class="grid__item blog-tag-title">
                 <div class="h1-wrap">
                     <h1>
-                      <a href="/blogs/news/tagged/pleasure">
+                      <a href="/blogs/learn/tagged/pleasure">
                       {% if current_tags %}
                         {{ current_tags.first }}
                       {% else %}
@@ -291,7 +302,7 @@
                    </h1>
                 </div>
               	<div class="h1-wrap" style="float: right; border-bottom: none;">
-                  <h1><a href="/blogs/news/tagged/pleasure">See All</a></h1>
+                  <h1><a href="/blogs/learn/tagged/pleasure">See All</a></h1>
                 </div>
                 <hr>
             </div>
@@ -341,7 +352,7 @@
                 </div>
                 <p class="blog-article-readmore">
                   {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
-                  <a href="{{ article.url }}">5 min read</a>
+                  <a href="{{ article.url }}">Read more &rarr;</a>
                 </p>
             </div>
          	{% endif %}
@@ -361,17 +372,23 @@
                     </div>
                     <div class="grid__item large--two-fifths">
                         <div class="blog-get-guide-form">
-                            <form action="/get-guide" method="get" class="clearfix">
+                            <form id="blog-get-guide-form-3" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
                                 <div class="input-group" style="margin-top: 60px; background-color: #1f2931; border: none;">
                                     <span class="input-wrap">
-                                        <input type="search" name="q" value="" class="input-group-field"
-                                               placeholder="Enter your email">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
                                     </span>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn icon-fallback-text" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
                                             <span>Sign up</span>
                                         </button>
                                     </span>
+                                </div>
+                                <div class="klaviyo_messages" style="color: #fff; margin-top: 60px;">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
                                 </div>
                             </form>
                         </div>
@@ -389,7 +406,7 @@
             <div class="grid__item blog-tag-title">
                 <div class="h1-wrap">
                     <h1>
-                      <a href="/blogs/news/tagged/relationships">
+                      <a href="/blogs/learn/tagged/relationships">
                       {% if current_tags %}
                         {{ current_tags.first }}
                       {% else %}
@@ -399,7 +416,7 @@
                    </h1>
                 </div>
               	<div class="h1-wrap" style="float: right; border-bottom: none;">
-                  <h1><a href="/blogs/news/tagged/relationships">See All</a></h1>
+                  <h1><a href="/blogs/learn/tagged/relationships">See All</a></h1>
                 </div>
                 <hr>
             </div>
@@ -449,7 +466,7 @@
                 </div>
                 <p class="blog-article-readmore">
                   {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
-                  <a href="{{ article.url }}">5 min read</a>
+                  <a href="{{ article.url }}">Read more &rarr;</a>
                 </p>
             </div>
          	{% endif %}
@@ -469,17 +486,23 @@
                     </div>
                     <div class="grid__item large--two-fifths">
                         <div class="blog-get-guide-form">
-                            <form action="/get-guide" method="get" class="clearfix">
+                            <form id="blog-get-guide-form-4" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
                                 <div class="input-group" style="margin-top: 60px; background-color: #1f2931; border: none;">
                                     <span class="input-wrap">
-                                        <input type="search" name="q" value="" class="input-group-field"
-                                               placeholder="Enter your email">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
                                     </span>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn icon-fallback-text" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
                                             <span>Sign up</span>
                                         </button>
                                     </span>
+                                </div>
+                                <div class="klaviyo_messages" style="color: #fff; margin-top: 60px;">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
                                 </div>
                             </form>
                         </div>
@@ -497,7 +520,7 @@
             <div class="grid__item blog-tag-title">
                 <div class="h1-wrap">
                     <h1>
-                      <a href="/blogs/news/tagged/technology">
+                      <a href="/blogs/learn/tagged/technology">
                       {% if current_tags %}
                         {{ current_tags.first }}
                       {% else %}
@@ -507,7 +530,7 @@
                    </h1>
                 </div>
               	<div class="h1-wrap" style="float: right; border-bottom: none;">
-                  <h1><a href="/blogs/news/tagged/technology">See All</a></h1>
+                  <h1><a href="/blogs/learn/tagged/technology">See All</a></h1>
                 </div>
                 <hr>
             </div>
@@ -557,7 +580,7 @@
                 </div>
                 <p class="blog-article-readmore">
                   {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
-                  <a href="{{ article.url }}">5 min read</a>
+                  <a href="{{ article.url }}">Read more &rarr;</a>
                 </p>
             </div>
          	{% endif %}
@@ -577,17 +600,23 @@
                     </div>
                     <div class="grid__item large--two-fifths">
                         <div class="blog-get-guide-form">
-                            <form action="/get-guide" method="get" class="clearfix">
+                            <form id="blog-get-guide-form-5" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
                                 <div class="input-group">
                                     <span class="input-wrap">
-                                        <input type="search" name="q" value="" class="input-group-field"
-                                               placeholder="Enter your email">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
                                     </span>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn icon-fallback-text">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button">
                                             <span>Sign up</span>
                                         </button>
                                     </span>
+                                </div>
+                                <div class="klaviyo_messages">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
                                 </div>
                             </form>
                         </div>
@@ -621,11 +650,11 @@
                   <div class="mobile-b-menu grid">
                       <div class="grid__item large--two-thirds">
                         <ul class="hide">
-                          <li><a href="/blogs/news" class="active">HOME</a></li>
-                          <li><a href="/blogs/news/tagged/wellbeing">WELLBEING</a></li>
-                          <li><a href="/blogs/news/tagged/pleasure">PLEASURE</a></li>
-                          <li><a href="/blogs/news/tagged/relationships">RELATIONSHIPS</a></li>
-                          <li><a href="/blogs/news/tagged/technology">TECH</a></li>
+                          <li><a href="/blogs/learn" class="active">HOME</a></li>
+                          <li><a href="/blogs/learn/tagged/wellbeing">WELLBEING</a></li>
+                          <li><a href="/blogs/learn/tagged/pleasure">PLEASURE</a></li>
+                          <li><a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a></li>
+                          <li><a href="/blogs/learn/tagged/technology">TECH</a></li>
                         </ul>  
                       </div>                      
                   </div>
@@ -675,7 +704,7 @@
                 </div>
                 <p class="blog-article-readmore">
                   {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
-                  <a href="{{ article.url }}">5 min read</a>
+                  <a href="{{ article.url }}">Read more &rarr;</a>
                 </p>
             </div>
             {% endfor %}
@@ -704,19 +733,48 @@
                     </div>
                     <div class="grid__item large--two-fifths">
                         <div class="blog-get-guide-form">
-                            <form action="/get-guide" method="get" class="clearfix">
+                            <form id="blog-get-guide-form-6" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
                                 <div class="input-group">
                                     <span class="input-wrap">
-                                        <input type="search" name="q" value="" class="input-group-field"
-                                               placeholder="Enter your email">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
                                     </span>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn icon-fallback-text">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button">
                                             <span>Sign up</span>
                                         </button>
                                     </span>
                                 </div>
+                                <div class="klaviyo_messages">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
                             </form>
+                            <script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+                            <script type="text/javascript">
+                                KlaviyoSubscribe.attachToForms('[id^="blog-get-guide-form-"]', {
+                                    hide_form_on_success: true,
+                                    custom_success_message: true,
+                                    success: function ($form) {
+										                  $form.find('[class^="input-group"]').hide();
+                                    }
+                                });
+                            </script>
+                            <style>
+                              .blog-get-guide-form .klaviyo_messages {
+                                  text-align: center;
+                                  margin-top: 60px;
+                                  padding-right: 30px;
+                              }
+
+                              @media(min-width: 769px) {
+                                  .blog-get-guide-form .klaviyo_messages {
+                                      margin-top: 112px;
+                                  }
+                              }
+                            </style>
                         </div>
                     </div>
                 </div>
@@ -981,6 +1039,14 @@
         "ja": "ブログ記事の執筆者を表示する",
         "pt-BR": "Exibir autor(a) do post do blog"
       }
+    },
+	{
+      "type": "text",
+      "id": "time_format",
+      "label": {
+        "en": "Time Value"
+      },
+      "default":   "5 min read"   
     }
   ]
 }
