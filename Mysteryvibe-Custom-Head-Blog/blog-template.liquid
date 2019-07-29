@@ -1,0 +1,1358 @@
+{% paginate blog.articles by 30 %}
+
+<div class="blog-header">
+    <div class="wrapper">
+        <div class="desktop-b-menu grid">
+            <div class="grid__item large--two-thirds">
+                <a href="/blogs/learn" class="{% if current_tags %}{% else %}active{% endif %}">HOME</a>
+                <a href="/blogs/learn/tagged/wellbeing" class="{% if current_tags.first == 'Wellbeing' %}active{% endif %}">WELLBEING</a>
+              	<a href="/blogs/learn/tagged/pleasure" class="{% if current_tags.first == 'Pleasure' %}active{% endif %}">PLEASURE</a>
+                <a href="/blogs/learn/tagged/relationships" class="{% if current_tags.first == 'Relationships' %}active{% endif %}">RELATIONSHIPS</a>
+                <a href="/blogs/learn/tagged/technology" class="{% if current_tags.first == 'Technology' %}active{% endif %}">TECH</a>
+            </div>          	
+            <div class="grid__item large--one-third blog-search">
+                <form action="/search" method="get" class="clearfix" role="search">
+                    <input type="hidden" name="type" value="article">
+                    <div class="input-group">
+                        <span class="input-wrap">
+                            <input type="search" name="q" value="" class="input-group-field"
+                                   aria-label="Search" style="text-align: center;">
+                        </span>
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn icon-fallback-text">
+                                <span class="icon icon-search" aria-hidden="true"></span>
+                                <span class="fallback-text">Search</span>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>      
+    </div>
+</div>
+
+
+<div class="blog-page-wrap feature-wrap">
+    <div class="wrapper">
+        <div class="grid-uniform">
+
+            <div class="grid__item blog-tag-title mobile-blog-menu"> 
+                <div class="h1-wrap">
+                    <h1 class="desktop-b-h1">
+                    {% if current_tags %}
+                      {{ current_tags.first }}
+                    {% else %}
+                      Home
+                    {% endif %}
+                   </h1>
+                    <h1 class="mobile-b-h1">
+                      {% if current_tags %}
+                      <span> {{ current_tags.first }} ⌵</span>
+                      {% else %}
+                      <span>Home ⌵</span>
+                      {% endif %}
+                    </h1>
+                  <div class="mobile-b-menu grid">
+                      <div class="grid__item large--two-thirds">
+                        <ul class="" style="display: none;">
+                          <li><a href="/blogs/learn" class="active">HOME</a></li>
+                          <li><a href="/blogs/learn/tagged/wellbeing">WELLBEING</a></li>
+                          <li><a href="/blogs/learn/tagged/pleasure">PLEASURE</a></li>
+                          <li><a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a></li>
+                          <li><a href="/blogs/learn/tagged/technology">TECH</a></li>
+                        </ul>  
+                      </div>                      
+                  </div>
+                </div>
+                <hr style="margin-bottom: 7px;">
+            </div>
+          	
+          	{% assign four_count = 0 %}
+			{% for article in blog.articles %}
+          	{% if article.tags contains 'Home' and four_count < 4 %}
+          	{% assign four_count = four_count | plus: 1 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+            <div class="blog-special grid__item blog-article-item">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div class="image-div" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                    <a href="{{ article.url }}">
+                  	<div class="blog-article-summary">                    
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt | strip_html | truncatewords: 20}}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 20 }}
+                    {% endif %}                    
+                    </div>
+                  	</a>
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+              
+            </div>
+         	{% endif %}
+            {% endfor %}
+          
+          
+          
+        {% if paginate.pages > 1 %}
+          <div class="text-center">
+            {% include 'pagination-custom' %}
+          </div>
+        {% endif %}
+          
+        <div class="blog_border"><a href="#"></a></div> 
+          
+      </div>
+
+        <div class="grid-uniform">
+            <div class="grid__item" style="margin-top: -15px;">
+                <div class="grid-uniform blog-get-guide">
+                    <div class="grid__item large--three-fifths">
+                        <h1>Stay in the know</h1>
+                        <h2>
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths">
+                        <div class="blog-get-guide-form">
+                            <form id="blog-get-guide-form-1" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-page-wrap special-signup1">
+    <div class="wrapper">
+        <div class="grid-uniform">
+
+            <div class="grid__item blog-tag-title">
+                <div class="h1-wrap">
+                    <h1>
+                      <a href="/blogs/learn/tagged/wellbeing">
+                      {% if current_tags %}
+                        {{ current_tags.first }}
+                      {% else %}
+                        WELLBEING
+                      {% endif %}
+                      </a>	  
+                   	</h1>
+                </div>
+              	<div class="h1-wrap" style="float: right; border-bottom: none;">
+                  <h1><a href="/blogs/learn/tagged/wellbeing">See All</a></h1>
+                </div>
+                <hr>
+            </div>
+          	
+          	{% assign four_count = 0 %}
+			{% for article in blog.articles %}
+          	{% if article.tags contains 'Wellbeing' and four_count < 4 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+          	{% assign four_count = four_count | plus: 1 %}
+            <div class="grid__item blog-article-item">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>  
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                  	<a href="{{ article.url }}">
+                    <div class="blog-article-summary">
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt }}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 100 }}
+                    {% endif %}
+                    </div>
+                  	</a>
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+            </div>
+         	{% endif %}
+            {% endfor %}
+          
+      </div>
+
+        <div class="grid-uniform">
+            <div class="grid__item">
+                <div class="grid-uniform blog-get-guide" style="background-color: #0f1720;">
+                    <div class="grid__item large--three-fifths">
+                        <h1 style="color: white; margin-top: 20px;">Stay in the know</h1>
+                        <h2 style="color: white; margin-bottom: 30px;">
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths">
+                        <div class="blog-get-guide-form">
+                            <form id="blog-get-guide-form-2" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group" style="margin-top: 60px; border: none;">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages" style="color: #fff; margin-top: 60px;">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-page-wrap special-signup2">
+    <div class="wrapper">
+        <div class="grid-uniform">
+
+            <div class="grid__item blog-tag-title">
+                <div class="h1-wrap">
+                    <h1>
+                      <a href="/blogs/learn/tagged/pleasure">
+                      {% if current_tags %}
+                        {{ current_tags.first }}
+                      {% else %}
+                        PLEASURE
+                      {% endif %}
+                      </a>
+                   </h1>
+                </div>
+              	<div class="h1-wrap" style="float: right; border-bottom: none;">
+                  <h1><a href="/blogs/learn/tagged/pleasure">See All</a></h1>
+                </div>
+                <hr>
+            </div>
+          	
+          	{% assign four_count = 0 %}
+			{% for article in blog.articles %}
+          	{% if article.tags contains 'Pleasure' and four_count < 4 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+          	{% assign four_count = four_count | plus: 1 %}
+            <div class="grid__item blog-article-item">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>  
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                  	<a href="{{ article.url }}">
+                    <div class="blog-article-summary">
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt }}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 100 }}
+                    {% endif %}
+                    </div>
+                  	</a>  
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+            </div>
+         	{% endif %}
+            {% endfor %}
+          
+      </div>
+
+        <div class="grid-uniform">
+            <div class="grid__item">
+                <div class="grid-uniform blog-get-guide" style="background-color: #0f1720;">
+                    <div class="grid__item large--three-fifths">
+                        <h1 style="color: white; margin-top: 20px;">Stay in the know</h1>
+                        <h2 style="color: white; margin-bottom: 30px;">
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths">
+                        <div class="blog-get-guide-form">
+                            <form id="blog-get-guide-form-3" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group" style="margin-top: 60px; border: none;">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages" style="color: #fff; margin-top: 60px;">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-page-wrap special-signup3">
+    <div class="wrapper">
+        <div class="grid-uniform">
+
+            <div class="grid__item blog-tag-title">
+                <div class="h1-wrap">
+                    <h1>
+                      <a href="/blogs/learn/tagged/relationships">
+                      {% if current_tags %}
+                        {{ current_tags.first }}
+                      {% else %}
+                        RELATIONSHIPS
+                      {% endif %}
+                      </a>  
+                   </h1>
+                </div>
+              	<div class="h1-wrap" style="float: right; border-bottom: none;">
+                  <h1><a href="/blogs/learn/tagged/relationships">See All</a></h1>
+                </div>
+                <hr>
+            </div>
+          	
+          	{% assign four_count = 0 %}
+			{% for article in blog.articles %}
+          	{% if article.tags contains 'Relationships' and four_count < 4 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+          	{% assign four_count = four_count | plus: 1 %}
+            <div class="grid__item blog-article-item">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>  
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                  	<a href="{{ article.url }}">
+                    <div class="blog-article-summary">
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt }}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 100 }}
+                    {% endif %}
+                    </div>
+                  	</a>  	
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+            </div>
+         	{% endif %}
+            {% endfor %}
+          
+      </div>
+
+        <div class="grid-uniform">
+            <div class="grid__item">
+                <div class="grid-uniform blog-get-guide" style="background-color: #0f1720;">
+                    <div class="grid__item large--three-fifths">
+                        <h1 style="color: white; margin-top: 20px;">Stay in the know</h1>
+                        <h2 style="color: white; margin-bottom: 30px;">
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths">
+                        <div class="blog-get-guide-form">
+                            <form id="blog-get-guide-form-4" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group" style="margin-top: 60px; border: none;">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="background-image: linear-gradient(to right, #007ea6, #4bbfde);">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages" style="color: #fff; margin-top: 60px;">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-page-wrap">
+    <div class="wrapper" style="max-width: 100%; padding: 0;">
+        <div class="grid-uniform mobile" style="max-width: 1030px; margin: 0 auto; padding-left: 0; padding-right: 30px;">
+
+            <div class="grid__item blog-tag-title">
+                <div class="h1-wrap">
+                    <h1>
+                      <a href="/blogs/learn/tagged/technology">
+                      {% if current_tags %}
+                        {{ current_tags.first }}
+                      {% else %}
+                        TECH
+                      {% endif %}
+                      </a>
+                   </h1>
+                </div>
+              	<div class="h1-wrap" style="float: right; border-bottom: none;">
+                  <h1><a href="/blogs/learn/tagged/technology">See All</a></h1>
+                </div>
+                <hr>
+            </div>
+
+          	{% assign four_count = 0 %}
+			{% for article in blog.articles %}
+          	{% if article.tags contains 'Technology' and four_count < 4 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+          	{% assign four_count = four_count | plus: 1 %}
+            <div class="grid__item blog-article-item">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>  
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                  	<a href="{{ article.url }}">
+                    <div class="blog-article-summary">
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt }}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 100 }}
+                    {% endif %}
+                    </div>
+                  	</a>  	
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+            </div>
+         	{% endif %}
+            {% endfor %}
+          
+      </div>
+
+        <div class="grid-uniform" style="background: #f7f7f7;">
+            <div class="grid__item">
+                <div class="grid-uniform blog-get-guide" style="    max-width: 1030px; margin: 0 auto; padding: 0 15px;">
+                    <div class="grid__item large--three-fifths" style="padding-left: 15px;">
+                        <h1>Stay in the know</h1>
+                        <h2>
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths" style="padding-left: 15px;">
+                        <div class="blog-get-guide-form">
+                          	<form id="blog-get-guide-form-4" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group" style="">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button" style="">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages" style="">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>@media screen and (max-width: 500px){ .blog-page-wrap .mobile { margin-left: -15px !important; padding-right: 15px !important; } }</style>
+
+<div class="blog-page-wrap default-wrap feature-wrap hide">
+    <div class="wrapper">
+        <div class="grid-uniform">
+
+            <div class="grid__item blog-tag-title mobile-blog-menu"> 
+                <div class="h1-wrap">
+                    <h1 class="desktop-b-h1">
+                    {% if current_tags %}
+                      {{ current_tags.first }}
+                    {% else %}
+                      Home
+                    {% endif %}
+                   </h1>
+                    <h1 class="mobile-b-h1">
+                      {% if current_tags %}
+                      <span> {% if current_tags.first == 'Technology' %}{{ current_tags.first | truncate: 4 ,''}}{% else %}{{ current_tags.first }}{% endif %} ⌵</span>
+                      {% else %}
+                      <span>Home ⌵</span>
+                      {% endif %}
+                    </h1>
+                  <div class="mobile-b-menu grid">
+                      <div class="grid__item large--two-thirds">
+                        <ul class="" style="display: none;">
+                          <li><a href="/blogs/learn" class="active">HOME</a></li>
+                          <li><a href="/blogs/learn/tagged/wellbeing">WELLBEING</a></li>
+                          <li><a href="/blogs/learn/tagged/pleasure">PLEASURE</a></li>
+                          <li><a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a></li>
+                          <li><a href="/blogs/learn/tagged/technology">TECH</a></li>
+                        </ul>  
+                      </div>                      
+                  </div>
+                </div>
+                <hr style="margin-bottom: 7px;">
+            </div>
+          	
+          	{% assign four_count = 0 %}
+			{% for article in blog.articles %}
+          	{% if four_count < 4 %}
+          	{% assign four_count = four_count | plus: 1 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+            <div class="blog-special grid__item blog-article-item" style="padding-left: 30px;">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div class="image-div" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                    <a href="{{ article.url }}">
+                  	<div class="blog-article-summary">                    
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt | strip_html | truncatewords: 20}}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 20 }}
+                    {% endif %}                    
+                    </div>
+                  	</a>
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+              
+            </div>
+         	{% endif %}
+            {% endfor %}
+          
+          
+          
+        {% if paginate.pages > 1 %}
+          <div class="text-center hide">
+            {% include 'pagination-custom' %}
+          </div>
+        {% endif %}
+          
+        <div class="blog_border"><a href="#"></a></div> 
+          
+      </div>
+
+        <div class="grid-uniform">
+            <div class="grid__item" style="margin-left: 15px; margin-top: -15px;">
+                <div class="grid-uniform blog-get-guide">
+                    <div class="grid__item large--three-fifths">
+                        <h1>Stay in the know</h1>
+                        <h2>
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths">
+                        <div class="blog-get-guide-form">
+                            <form id="blog-get-guide-form-5" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-page-wrap default-wrap hide">
+    <div class="wrapper" style="max-width: 100%; padding: 0;">
+        <div class="grid-uniform" style="max-width: 1030px; margin: 0 auto; padding: 0 15px;">
+
+            <div class="grid__item blog-tag-title mobile-blog-menu hide">
+                <div class="h1-wrap">
+                    <h1 class="desktop-b-h1">
+                    {% if current_tags %}
+                      {{ current_tags.first }}
+                    {% else %}
+                      Home
+                    {% endif %}
+                   </h1>
+                    <h1 class="mobile-b-h1">
+                      {% if current_tags %}
+                      <span> {{ current_tags.first }} ⌵</span>
+                      {% else %}
+                      <span>Home ⌵</span>
+                      {% endif %}
+                    </h1>
+                  <div class="mobile-b-menu grid">
+                      <div class="grid__item large--two-thirds">
+                        <ul class="" style="display: none;">
+                          <li><a href="/blogs/learn" class="active">HOME</a></li>
+                          <li><a href="/blogs/learn/tagged/wellbeing">WELLBEING</a></li>
+                          <li><a href="/blogs/learn/tagged/pleasure">PLEASURE</a></li>
+                          <li><a href="/blogs/learn/tagged/relationships">RELATIONSHIPS</a></li>
+                          <li><a href="/blogs/learn/tagged/technology">TECH</a></li>
+                        </ul>  
+                      </div>                      
+                  </div>
+                </div>
+                <hr style="margin-bottom: 7px;">
+            </div>
+          
+          	{% assign four_count = 0 %}
+          	
+			{% for article in blog.articles %}
+                    	
+          	{% assign four_count = four_count | plus: 1 %}    
+          	{% if four_count > 4 %}
+          	{% assign read_time = '5 min read' %}
+            {% for tag in article.tags %}
+              {% assign read_time_pre = tag | truncate: 9, "" %}
+              {% if read_time_pre == 'read-time' %}        		
+              	{% assign read_time = '5 min read' | replace: '5', tag | replace: 'read-time-', '' %}
+              {% endif %}
+            {% endfor %}
+            <div class="grid__item blog-article-item">
+
+                <div class="rte">
+                    <div class="blog-image">
+                        {% if article.image %}
+                        {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+                        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                        {%- assign image_alt = article.title | escape -%}
+                        <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                          <div style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                            <a href="{{ article.url }}">
+                            <img id="{{ img_id }}"
+                                 class="article__image lazyload"
+                                 src="{{ article.image | img_url: '300x300' }}"
+                                 data-src="{{ img_url }}"
+                                 data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                                 data-sizes="auto"
+                                 alt="{{ image_alt }}">
+                            </a>  
+                          </div>
+                        </div>
+                        <noscript>
+                            <p>{{ article | img_url: '1024x1024' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+                        </noscript>
+                        {% endif %}
+                    </div>
+                    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+                  	<a href="{{ article.url }}">
+                    <div class="blog-article-summary">
+                    {% if article.excerpt.size > 0 %}
+                      {{ article.excerpt | strip_html | truncatewords: 20}}
+                    {% else %}
+                      {{ article.content | strip_html | truncatewords: 20 }}
+                    {% endif %}
+                    </div>
+                  	</a>  
+                </div>
+                <p class="blog-article-readmore">
+                  {{ 'small-logo.svg' | asset_url | img_tag: 'Logo'}}
+                  <a href="{{ article.url }}">{{ read_time }}</a>
+                </p>
+            </div>
+          	{% endif %}
+            {% endfor %}
+          
+          
+          
+        {% if paginate.pages > 1 %}
+          <div class="text-center">
+            {% include 'pagination-custom' %}
+          </div>
+        {% endif %}
+          
+        <div class="blog_border hide"><a href="#"></a></div> 
+          
+      </div>
+
+        <div class="grid-uniform" style="background: #f7f7f7; margin-left: 0;">
+            <div class="grid__item">
+                <div class="grid-uniform blog-get-guide" style="    max-width: 1030px; margin: 0 auto; padding: 0 15px;">
+                    <div class="grid__item large--three-fifths" style="padding-left: 15px;">
+                        <h1>Stay in the know</h1>
+                        <h2>
+                            Sign up to thought-provoking articles, tips &amp; tricks,
+                            exclusive offers and get our free MysteryPlaybook.
+                        </h2>
+                    </div>
+                    <div class="grid__item large--two-fifths" style="padding-left: 15px;">
+                        <div class="blog-get-guide-form">
+                            <form id="blog-get-guide-form-6" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" target="_blank" class="clearfix">
+                                <input type="hidden" name="g" value="PMkAdN">
+                                <div class="input-group">
+                                    <span class="input-wrap">
+                                        <input type="email" name="email" value="" class="input-group-field" placeholder="Enter your email" autocorrect="off" autocapitalize="off" required>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn icon-fallback-text klaviyo_submit_button">
+                                            <span>Sign up</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="klaviyo_messages">
+                                    <div class="success_message" style="display:none;">
+                                        <p class="" >Thanks for subscribing. Pleasure is on its way to your inbox.</p>
+					                          </div>
+                                    <div class="error_message" style="display:none;"></div>
+                                </div>
+                            </form>
+							<script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+                            <script type="text/javascript">
+                                KlaviyoSubscribe.attachToForms('[id^="blog-get-guide-form-"]', {
+                                    hide_form_on_success: true,
+                                    custom_success_message: true,
+                                    success: function ($form) {
+										                  $form.find('[class^="input-group"]').hide();
+                                    }
+                                });
+                            </script>
+                            <style>
+                              .blog-get-guide-form .klaviyo_messages {
+                                  text-align: center;
+                                  margin-top: 60px;
+                                  padding-right: 30px;
+                              }
+
+                              @media(min-width: 769px) {
+                                  .blog-get-guide-form .klaviyo_messages {
+                                      margin-top: 112px;
+                                  }
+                              }
+                            </style>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-page-spacer" style="background: #f7f7f7; padding-bottom: 66px;"></div>
+
+<!-- /******************------Global Class Css -------*************/ -->
+
+<style>
+.main-content > div {
+    margin-left: -30px;
+}
+  .site-footer { background-color: #f7f7f7; }  
+  
+  .blog-header a { font-weight: normal; }
+  
+  .b-header-fixed {
+  	position: fixed !important;
+    width: 100%;
+    top: 0;  
+    z-index: 5;
+    animation:slide-down 0.7s;
+  }
+  
+  @keyframes slide-down {
+      0% {
+          opacity: 0;
+          transform: translateY(-100%);
+      } 
+      100% {
+          opacity: 0.9;
+          transform: translateY(0);
+      } 
+  }
+  
+  .b-header-fixed + .blog-page-wrap.feature-wrap {
+  	padding-top: 50px;
+  }
+  .b-header-fixed ~ .blog-page-wrap.default-wrap.feature-wrap{
+  	padding-top: 50px;
+  }
+  .b-menu-fixed {
+  	position: fixed !important;
+    width: 100%;
+    top: 0;  
+    z-index: 4;    
+  }
+  @media screen and ( max-width: 500px ) {
+    .mobile-blog-menu { background: white; }
+    .blog-page-wrap.default-wrap.feature-wrap .grid__item { margin-left: 0 !important; }
+    .klaviyo_messages { margin-top: 0 !important; }
+  } 
+  
+  .blog-header a.active { color: black; }  
+  
+  .blog-header .blog-search .input-group {    
+      	max-width: 100%;
+  }
+</style>
+
+<!-- /******************------Custom Styles for first 4 blogs -------*************/ -->
+
+<div class="custom-cs">
+<style>
+  
+  .blog-page-wrap { background: none; }
+  
+  .blog-special {
+  	width: 40%;
+  }
+  .blog-special .blog-image {
+  	width: 33%;
+  }
+  .blog-special .blog-image .article__image-wrapper{
+  	float: left !important;
+    max-width: 100% !important;
+  }
+  .blog-special h2 {
+  	width: 60%;
+    float: right;
+  }
+  .blog-special .blog-article-summary {
+  	display: none;
+  }
+  .blog-special .blog-article-readmore {
+  	float: left;
+    margin-left: 15px;
+  }
+  .blog-special .blog-article-readmore img {
+  	display: none;
+  }
+  .blog-special {
+  	padding-bottom: 20px;
+  }
+  
+  .blog-special.blog-article-item h2 a {
+  	line-height: 1;
+  }
+  
+  .blog-special:nth-child(2) {
+  	width: 60%;
+  }
+  .blog-special:nth-child(2) .blog-image {
+  	width: 100%;
+  }
+  .blog-special:nth-child(2) .blog-image .article__image-wrapper{
+  	float: left !important;
+    width: 100%;
+    clear: both;
+    max-width: 100% !important;
+    height: 200px;
+    margin-left: 0;
+  }
+  .blog-special:nth-child(2) .blog-image .article__image-wrapper .image-div {
+  	padding-top: 0 !important;
+  }
+  .blog-special:nth-child(2) .blog-image .article__image-wrapper .article__image{
+  	object-fit: cover;
+   	height: 100%;
+  }
+  .blog-special:nth-child(2) h2 {
+  	float: left;
+    width: 100%;
+    margin: 20px 0 5px 0px;
+  }
+  .blog-special:nth-child(2) .blog-article-summary {
+  	float: left;
+    display: block !important;
+  }
+  .blog-special:nth-child(2) .blog-article-readmore {
+  	float: left;
+    margin: 0 0 20px 0;
+  }
+  .blog-special:nth-child(2) .blog-article-readmore img {
+  	display: block !important;
+    float: left;
+  }
+  .blog-special:nth-child(2) .blog-article-readmore a {  	
+    float: left;
+  }
+  
+  
+  .blog_border {     
+    display: none;
+    float: left;
+    width: 97%;
+    margin: 0 0px 0 30px;
+    border-bottom: solid 1px lightgrey; 
+  }
+  .blog_border a {
+  	float: right;
+    margin-bottom: 5px;
+  }
+  .pagination-custom { display: none; }
+  
+  .mobile-b-menu { display: none; }
+  
+  .mobile-b-h1 {
+  	display: none;
+  } 
+  .feature-wrap .desktop-b-h1 {
+   	display: none;
+  } 
+  
+  .feature-wrap hr { display: none; }
+  @media screen and ( max-width: 500px ) {
+  	.feature-wrap hr { display: block; }  
+  }  
+  
+  .blog-tag-title hr {	
+    margin: -1px 0 20px;
+  }
+  
+  .feature-wrap .mobile-b-menu .grid__item { padding-left: 0px !important; }
+  .default-wrap .grid__item { padding-left: 15px; padding-right: 15px; }
+  .default-wrap.feature-wrap { margin-bottom: 40px; }  
+  
+/*@media screen and (min-width: 768px){
+    .blog-tag-title hr {
+      border: none; 
+    }
+  } */
+  
+  @media screen and (max-width: 768px){
+    .blog-header .blog-search form {
+        float: right;
+    }
+    .blog-article-item .article__image-wrapper { float: left !important; max-width: 100% !important; }
+    .blog-article-item .blog-image { width: 33%; }
+    .default-wrap.feature-wrap .grid__item { padding-left: 30px; padding-right: 0;}
+    .rte h2 { width: 60%; float: right; }
+    .blog-article-item .blog-article-readmore { float: left; margin-left: 15px; }
+    .default-wrap .grid__item { padding-left: 0; padding-right: 0;}
+  }
+  
+  @media screen and (max-width: 500px){    
+    .blog-special { width: 100%; }
+    .blog-special:nth-child(2) { width: 100%; }
+    .blog-special:nth-child(2) .blog-article-readmore a {  	
+      margin-top: 5px;
+    }
+    .blog_border { width: 91%; }
+    .desktop-b-menu .large--two-thirds { display: none; }
+    .desktop-b-menu .blog-search { 
+      	position: absolute; 
+        width: 63%;
+      	right: 15px;
+    }
+    .desktop-b-menu .blog-search .input-group {
+      	background-color: transparent;
+    }
+    .desktop-b-menu .blog-search .input-group-btn .btn {
+        height: 30px;
+      	float: right;
+    }
+    .desktop-b-menu .blog-search button {
+    	font-size: 15px;
+    }
+    
+    .mobile-b-menu { 
+        display: block; 
+        z-index: 999999;
+        position: absolute;   
+      	margin-left: 0;
+      	width: 96%;
+      	margin-top: 20px;
+    }
+    .mobile-b-menu ul
+    {
+      	background: white;
+    	padding: 0 10px 0 0;
+        margin: 0 0 10px;
+      	display: none;
+      	line-height: 2.7;
+    }
+    .mobile-b-menu ul.show {
+    	display: block;
+    }
+    .mobile-b-menu .blog-search {
+    	display: none;
+    }
+    .mobile-b-h1 {
+    	display: block;
+    } 
+    .desktop-b-h1 {
+    	display: none;
+    } 
+    .blog-tag-title h1 {
+    	margin: 10px 0 0;
+    }
+    .special-signup3 form .input-group{
+    	margin-top: 5px !important;
+    }
+    .special-signup1 .grid-uniform.blog-get-guide, .special-signup2 .grid-uniform.blog-get-guide {
+    	display: none;
+    }
+    .blog-page-wrap { min-height: auto; }
+    .blog-header .blog-search .input-group {
+      	height: 32px;
+    	margin: 5px auto 0;      	
+    }
+    .blog-header .blog-search input { height: 30px; line-height: 0.8; }
+  }
+  @media screen and (min-width: 500px) {
+    .article__image-wrapper.supports-js .article__image {
+    	height: 90%;
+    	object-fit: cover;
+    }
+  }
+</style>
+</div>
+      
+<!-- /******************------Stick Menu Items -------*************/ -->
+
+<script>
+	$(".blog_border a").click(function(e){  		
+  		e.preventDefault();
+  		$(".blog-article-item").removeClass("blog-special");
+      	$(this).parent().hide();
+      	$(".pagination-custom").css("display", "inline-block");
+  	});
+  
+//     $(".mobile-b-h1").click(
+//       function(){
+//         if($(".mobile-b-menu ul").hasClass("hide")){    
+//           $(".mobile-b-menu ul").slideDown("1000", function(){
+//            	$(".mobile-b-menu ul").removeClass("hide");
+//              $(".mobile-b-menu ul").addClass("show");        	
+//           });        	
+//         }
+//         else if($(".mobile-b-menu ul").hasClass("show")){
+//         	$(".mobile-b-menu ul").slideUp("1000", function(){
+//           	  $(".mobile-b-menu ul").removeClass("show");	
+//               $(".mobile-b-menu ul").addClass("hide");        		
+//           	});          	        	
+//         }
+//     });
+  	
+  	$(".mobile-b-h1").click(
+      function(){
+        $(".mobile-b-menu ul").slideToggle();
+    });
+  
+  	var cur_url = $(location).attr('href');
+  	if(cur_url.includes('tagged')){      
+      //$(".blog_border").hide();
+      $(".pagination-custom").css("display", "inline-block");
+      $(".blog-page-wrap").addClass("hide");
+      $(".blog-page-wrap.default-wrap").removeClass("hide");
+    }
+</script>
+
+<!-- /******************------Stick Menu -------*************/ -->
+
+<script>
+  var position = 350;   
+
+  $(window).scroll(function() {
+      var scroll = $(window).scrollTop();
+      if(scroll > position) {
+        $(".blog-header").addClass('b-header-fixed');
+        $(".mobile-blog-menu").addClass('b-menu-fixed');        
+      } else {
+        $(".blog-header").removeClass('b-header-fixed');
+        $(".mobile-blog-menu").removeClass('b-menu-fixed');                
+      }
+  });
+</script>  
+      
+     
+<!-- /******************------ Search Function -------*************/ -->
+
+<script>  
+  
+  $("form[role='search'] .btn").click(function(e){
+  	var search_value = $("input[name='q']").val();
+    if(search_value == ''){
+      e.preventDefault();
+    }
+  });
+  
+  $("input[name='q']").keypress(function(e){
+    var search_value = $(this).val();
+    if(keycode == '13'){
+      if(search_value == ''){
+      	e.preventDefault();
+      }
+    }
+  });
+  
+</script>  
+{% endpaginate %}
+
+
+
+{% schema %}
+{
+  "name": {
+    "de": "Blog",
+    "en": "Blog",
+    "es": "Blog",
+    "fr": "Blog",
+    "it": "Blog",
+    "ja": "ブログ",
+    "pt-BR": "Blog"
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "blog_author_enable",
+      "label": {
+        "de": "Autor eines Blog-Beitrags anzeigen",
+        "en": "Show blog post author",
+        "es": "Mostrar autor del artículo del blog",
+        "fr": "Afficher l'auteur de l'article de blog",
+        "it": "Mostra autore articolo del blog",
+        "ja": "ブログ記事の執筆者を表示する",
+        "pt-BR": "Exibir autor(a) do post do blog"
+      }
+    }
+  ]
+}
+{% endschema %}
