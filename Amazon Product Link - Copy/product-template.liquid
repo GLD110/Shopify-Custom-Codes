@@ -1,0 +1,413 @@
+{% include 'bold-product' with product, hide_action: 'break' %}
+{%- assign current_variant = bold_selected_or_first_available_variant -%} 
+{%- assign featured_image = current_variant.featured_image | default: product.featured_image -%}
+{%- assign product_image_zoom_size = '1024x1024' -%}
+{%- assign zoom_enabled = section.settings.zoom_product -%}
+
+
+<div itemscope itemtype="http://schema.org/Product" id="prod-{{product.id}}" class="clearfix" data-section-id="{{ section.id }}" data-section-type="product"{% if section.settings.show_preorder %} data-show-preorder="yes"{% endif %}{% if zoom_enabled %} data-zoom-enabled="true"{% endif%}>
+
+  <meta itemprop="name" content="{{ product.title }}">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: '800x' }}">
+ 
+
+  <h2 class="page-title mb">{{ product.title | escape}} </h2>   
+  
+  <div id="product-images" class="clearfix{% if product.images.size > 1%} multi-image{% else %} single-image{% endif %}">
+    <a id="product-shot" class="productimage" data-image-id="{{featured_image.id}}" href="{{ featured_image | img_url: 'master' }}">
+      <img src="{{ featured_image | img_url: product_image_zoom_size }}" alt="{{ featured_image.alt | escape }}" />
+      {% if bold_compare_at_price > bold_price %}
+        {% if section.settings.show_sale_sticker %}
+        <span class="sale round">{{ 'products.general.sale' | t }}</span>
+        {% endif %}
+      {% endif %}
+      <span class="icon-magnifier"></span>
+    </a>
+
+    <div id="more-images" class="product-thumbs-{{section.id}} clearfix" data-arrow-left="{% include 'icon-arrowleft'%}" data-arrow-right="{% include 'icon-arrowright'%}">   
+      {% for image in product.images %}
+        {%- assign active_image = "" -%}
+        {%- if featured_image == image -%}
+          {%- assign active_image = "active-img" -%}
+        {%- endif -%}
+        <a href="{{ image | product_img_url: product_image_zoom_size }}" class="{{active_image}} productimage smallimg{% if section.settings.mobile_hide_prd_images %} hide-for-mobile{% endif %}" data-image-index="{{forloop.index0}}" title="{{product.title | escape }}" data-image-id="{{ image.id }}">
+        <img src="{{ image | product_img_url: 'compact'}}" alt="{{ image.alt | escape }}" />
+        </a>
+      {% endfor %}
+    </div>      
+  </div>  
+
+  <div id="product-details">
+    
+    <h4 style="display: none;"> {{ product.metafields["global"]["Brand-Name"] }}  </h4>
+  	<h2 class="page-title dktop">{{ product.title | escape}} </h2>   
+    {% assign product_vendor_handle = product.vendor | handle %}
+    {% if collections[product_vendor_handle].handle == product_vendor_handle %}
+      {% assign vendor_url = collections[product_vendor_handle].url %}
+    {% else %}
+      {% assign vendor_url = product.vendor | url_for_vendor %}
+    {% endif %}
+    
+    <div class="top-reviews">
+      	<span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>    
+    </div>
+
+    <h2 itemprop="brand" class="{% unless section.settings.show_vendor %}hide{% endunless%}">{{ product.vendor | link_to: vendor_url }}</h2>  
+	
+	{% if product.metafields["global"]["MSRP"]  != null %}
+    <!-- Group Price  -->   
+    <div class="group-price">
+      <h5 >MSRP <span style="text-decoration: line-through;">  {{ product.metafields["global"]["MSRP"] }} </span> </h5>
+      <h5>List Price <span style="text-decoration: line-through;">  {{ product.metafields["global"]["List-Price"] }}  </span> </h5>
+    </div>
+	{% endif %}
+
+    <div class="product-price-wrap" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+      <strong> Your Price: </strong>
+      <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+      {% if product.available %}
+        <link itemprop="availability" href="http://schema.org/InStock" />
+      {% else %}
+        <link itemprop="availability" href="http://schema.org/OutOfStock" />
+      {% endif %}
+      {% if bold_compare_at_price > bold_price %}
+        <span id="productPrice-{{ section.id }}" class="product-price on-sale" itemprop="price"><span class=price-money>{{ current_variant.price | money }}</span></span>&nbsp;<s id="comparePrice-{{ section.id }}" class="product-compare-price"><span class=price-money>{{ current_variant.compare_at_price | money }}</span></s>
+      {% else %}
+        <span id="productPrice-{{ section.id }}" class="product-price" itemprop="price"><span class=price-money>{{ current_variant.price | money }}</span></span>&nbsp;<s class="product-compare-price"></s>
+      {% endif %}
+    </div>    
+    
+    {% if section.settings.show_product_sku %}
+      <div id="productSKU-{{ section.id }}" class="sku-info">{% if current_variant.sku != blank %}{{'products.product.sku' | t}} {{current_variant.sku}}{% endif %}</div>
+    {% endif %}
+
+    {% if product.available %}
+      <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form shapp_qb_prod" id="AddToCartForm">
+            
+        <div id="infiniteoptions-container"></div>
+        
+        <div class="product-variants">
+          <fieldset>
+            {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+              {% for option in product.options_with_values %}
+                <div class="selector-wrapper js product-form__item">
+                  <label {% if option.name == 'default' %}class="label--hidden" {% endif %}for="SingleOptionSelector-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                  <select class="single-option-selector single-option-selector-{{ section.id }} product-form__input"
+                  id="SingleOptionSelector-{{ forloop.index0 }}"
+                  data-name="{{ option.name }}"
+                  data-index="option{{ forloop.index }}">
+                    {% assign option_set = 'options' | append: forloop.index %}
+                    {% assign option_values = [option_set] | default: option.values %}
+                    {% for value in option_values %}
+                    <option value="{{ value | escape }}"{% if option.selected_value == value %} selected="selected"{% endif %}>{{ value }}</option>
+                  {% endfor %}
+                  </select>
+                </div>
+              {% endfor %}
+            {% endunless %}
+
+            <select name="id" id="productSelect-{{ section.id }}" class="product-form__variants no-js">
+              {% for variant in product.variants %}
+              {% include 'bold-variant' with variant, hide_action: 'skip' %}
+                <option {% if variant == current_variant %} selected="selected" {% endif %}date-image-id="{{variant.featured_image.id}}" data-sku="{{ variant.sku }}" value="{{ variant.id }}" {% unless variant.available %} disabled="disabled" {% endunless %}>
+                {% if variant.available %}
+                  {{ variant.title }} - <span class=price-money>{{ variant.price | money_with_currency }}</span>
+                {% else %}
+                  {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                {% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </fieldset>
+
+          <div id="stockMsg-{{ section.id }}">
+            {% if section.settings.show_preorder %}
+              {% if current_variant.inventory_management and current_variant.inventory_quantity <= 0 and current_variant.inventory_policy == "continue" %}
+                <div class="var-msg">
+                  <!-- inventory is managed and stock qty is 0 or less but item can still be purchased -->
+                  {{'products.product.preorder_msg' | t}}
+                </div>
+              {% endif %} 
+            {% endif %} 
+          </div>
+        </div> 
+        
+        {% unless qb_loaded == 'true' %}
+        <div class="shappify-qty-msg">{{bold_selected_or_first_available_variant.metafields.shappify_qb.pricing_html}}</div>
+        {% assign qb_loaded = 'true' %}
+        {% endunless %}
+
+        <div class="quick-actions clearfix">  
+          {% if section.settings.show_qty %}
+            <p class="qty-field">
+              <label for="product-quantity-{{product.id}}">{{'products.product.quantity' | t}}</label>
+              <input type="number" id="product-quantity-{{product.id}}" name="quantity" value="1" min="1" />
+          	</p>
+          {% endif %}    
+          <span style="font-weight: bold;"> In Stock </span>	  
+          <div class="btn-field">
+          <button type="submit"
+          class="purchase button pulse animated" 
+          name="add"
+          id="addToCart-{{ section.id }}"
+          {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+          <span id="addToCartText-{{ section.id }}">
+            {% unless current_variant.available %}
+              {{ 'products.product.sold_out' | t }}
+            {% else %}
+              {{ 'products.product.add_to_cart' | t }}
+            {% endunless %}
+          </span>
+          </button>
+          </div>
+        </div>
+      </form>
+    {% else %}
+      <p><strong>{{'products.product.out_of_stock_msg' | t}}</strong></p>
+    
+    
+    {% endif %}    
+
+    {% if collection %}
+      {% if collection.previous_product or collection.next_product %}
+        <div class="product-nav clearfix">     
+          {% if collection.previous_product %}
+            {% capture prev_url %}{{ collection.previous_product}}#content{% endcapture %}
+            <span class="left">{{ 'products.general.previous_product_html' | t | link_to: prev_url }}</span>
+          {% endif %}
+          {% if collection.next_product %}
+            {% capture next_url %}{{ collection.next_product}}#content{% endcapture %}
+            <span class="right">{{ 'products.general.next_product_html' | t | link_to: next_url }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endif %}        
+		
+    <br>       
+    <p class="sku"> {{'products.product.sku' | t}} {{current_variant.sku}} </p>
+    
+    {% assign amzValues = product.metafields.amz %} 
+    
+    {% if section.settings.amz_block and amzValues.amzurl %}
+      <div id="amz-block" class="amz" style="border: solid 3px #f0f0f0 !important; text-align: center; padding: 5px;">
+        <p style="font-size: 20px; font-weight: bold; margin: 0 0 5px 0;"> Buy at Amazon for ${{ amzValues.amzprice }} </p>
+        <a href="{{ amzValues.amzurl }}" target="_blank"> Click Here </a>
+      </div>
+    {% endif %}
+	
+    {% if product.metafields["global"]["price-break-1"] != null and product.metafields["global"]["price-break-2"] != null and product.metafields["global"]["price-break-3"] != null  %}
+    <!-- Show Quantity --> 
+    <div class="product-description-slider ui-accordion ui-widget ui-helper-reset" itemprop="description" role="tablist">
+      <h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-accordion-header-active ui-state-active ui-corner-top" role="tab" id="ui-accordion-1-header-0" aria-controls="ui-accordion-1-panel-0" aria-selected="true" aria-expanded="true" tabindex="0">      
+        <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>
+        Quantity Discounts
+      </h3>
+      
+      <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" id="ui-accordion-1-panel-0" aria-labelledby="ui-accordion-1-header-0" role="tabpanel" style="display: block;" aria-hidden="false">
+        <table>
+         <tbody>
+           {% if product.metafields["global"]["price-break-1"] != null and product.metafields["global"]["price-break-1-SKU"] %}
+           <tr>
+              <td>{{ product.metafields["global"]["price-break-1"] }}% when you purchase a quantity of {{ product.metafields["global"]["price-break-1-SKU"] }} </td>
+           </tr>
+           {% endif %}
+           {% if product.metafields["global"]["price-break-2"] != null and product.metafields["global"]["price-break-2-SKU"] %}
+           <tr>
+              <td>{{ product.metafields["global"]["price-break-2"] }}% when you purchase a quantity of  {{ product.metafields["global"]["price-break-2-SKU"] }} </td>
+           </tr>
+           {% endif %}
+           {% if product.metafields["global"]["price-break-3"] != null and product.metafields["global"]["price-break-3-SKU"] %}
+           <tr>
+              <td>{{ product.metafields["global"]["price-break-3"] }}% when you purchase a quantity of  {{ product.metafields["global"]["price-break-3-SKU"] }} </td>
+            </tr>
+           {% endif %}
+          </tbody>
+        </table>
+      </div>
+      <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom" id="ui-accordion-1-panel-1" aria-labelledby="ui-accordion-1-header-1" role="tabpanel" aria-hidden="true" style="display: none;"></div>
+    </div>
+    {% endif %}
+    
+    {% if product.metafields["global"]["video-embedded"]  != null %}
+    <!-- Embeded Youtube  --> 
+	<div class="product-description-slider ui-accordion ui-widget ui-helper-reset" itemprop="description" role="tablist">
+      <h3 class="ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-accordion-header-active ui-state-active ui-corner-top" role="tab" id="ui-accordion-1-header-0" aria-controls="ui-accordion-1-panel-0" aria-selected="true" aria-expanded="true" tabindex="0"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>      
+        <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-s"></span>
+       	See Product Video
+      </h3>
+      
+      <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" id="ui-accordion-1-panel-0" aria-labelledby="ui-accordion-1-header-0" role="tabpanel" style="display: block;" aria-hidden="false">
+       	<br>
+        {{ product.metafields["global"]["video-embedded"] }}
+      </div>
+      <div class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-header ui-state-default ui-corner-all ui-accordion-icons" id="ui-accordion-1-panel-1" aria-labelledby="ui-accordion-1-header-1" role="tab" aria-hidden="true" style="display: none;" aria-controls="ui-accordion-1-panel-1" aria-selected="false" aria-expanded="false" tabindex="-1"><span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span></div>
+    </div>
+    {% endif %}
+    
+    {% if section.settings.product_social %}
+      <div id="share-me" class="clearfix">
+        {% capture shareHeading %}{{ 'products.general.share' | t }}{% endcapture %}
+        {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product, share_heading:shareHeading %}
+      </div>
+    {% endif %}
+    
+
+    
+    
+  </div> <!-- product details -->
+ 
+</div>  
+    
+    <div id="product-description" class="rte" itemprop="description">
+      {{ product.description }}
+      {{ product.metafields["global"]["Product-Description"] }}     
+    </div>
+    
+    <h4  style="display: none;"> SPECIAL FEATURES </h4>
+    <ul class="prouduct-bullets">
+      {% if product.metafields["global"]["Back"] != null %}
+      <li>Back:
+        <span class="a-list-item"> 
+          {{ product.metafields["global"]["Back"] }} 
+      	</span>
+      </li>
+      {% endif %}
+      {% if product.metafields["global"]["Features"] != null %}
+      <li>Features:
+        <span class="a-list-item"> 
+        {{ product.metafields["global"]["Features"] }} 
+      	</span>
+      </li> 
+      {% endif %}
+      {% if product.metafields["global"]["Glazing"] != null %}
+      <li>Glazing:
+        <span class="a-list-item"> 
+        {{ product.metafields["global"]["Glazing"] }} 
+        </span>
+      </li>  
+      {% endif %}
+      {% if product.metafields["global"]["Orientation"] != null %}
+      <li>Orientation:
+        <span class="a-list-item"> 
+        {{ product.metafields["global"]["Orientation"] }} 
+        </span>
+      </li>
+      {% endif %}
+    </ul>
+
+	<div id="desktop-product-description" class="rte"> 
+      {{ product.metafields["global"]["Long-Description"] }} 
+    </div>
+        
+    <div id="mobile-product-description" class="rte" itemprop="description">
+    	{{ product.metafields["global"]["Short-Description"] }} 
+    </div>
+
+{% comment %}
+<div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+{% endcomment %}
+
+{% if section.settings.product_related %}
+  {% include 'related' %}
+{% endif %}  
+
+{% unless product.empty? %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {% include 'bold-product', output: "json" %}
+  </script>
+{% endunless %}
+
+{% schema %}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_preorder",
+        "label": "Show \"pre-order\" message",
+        "default": true,
+        "info": "This will only appear when a product has managed inventory that is 0 or less and still available to buy"
+      },
+      {
+        "type": "checkbox",
+        "id": "zoom_product",
+        "label": "Enable image zoom",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_qty",
+        "label": "Show qty box on product screen",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_product_sku",
+        "label": "Show SKU",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sale_sticker",
+        "label": "Show sale sticker",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_social",
+        "label": "Show sharing buttons",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "amz_block",
+        "label": "Show Amazon Link",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Related items"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_related",
+        "label": "Enable",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title_related",
+        "label": "Title",
+        "default": "You may also like..."
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_related_items",
+        "label": "Hide related items on mobile",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}
+
+
+<script>
+  
+  
+ 
+    
+    $(document).ready(function(){
+          $('.product-nav a').addClass('button');
+    });
+    
+  
+
+
+</script> 
