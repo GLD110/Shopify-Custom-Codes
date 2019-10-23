@@ -1,0 +1,147 @@
+{% comment %}
+{{ guide: https://www.envision.io/blogs/ecommerce-pulse/95036801-how-to-create-customizable-products-in-shopify-without-an-app }}
+{{ sample: https://ecommerce-pulse-demo-shop.myshopify.com/products/test-product }}
+{% endcomment %}
+{% capture form_id %}AddToCartForm-{{ section_id }}{% endcapture %}
+{% form 'product', product, id: form_id, class: 'product-single__form' %}
+  {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+    {% for option in product.options_with_values %}
+      {% if settings.variant_type == 'button' %}
+        {% include 'variant-button', section_id: section_id, option_drop: option %}
+      {% else %}
+        {% include 'variant-dropdown', section_id: section_id %}
+      {% endif %}
+    {% endfor %}
+  {% endunless %}
+
+  <select name="id" id="ProductSelect-{{ section_id }}" class="product-single__variants no-js">
+    {% for variant in product.variants %}
+      {% if variant.available %}
+        <option {% if variant == product.selected_or_first_available_variant %}
+          selected="selected" {% endif %}
+          value="{{ variant.id }}">
+          {{ variant.title }} - {{ variant.price | money_with_currency }}
+        </option>
+      {% else %}
+        <option disabled="disabled">
+          {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+        </option>
+      {% endif %}
+    {% endfor %}
+  </select>
+
+{% if template contains 'custom-1' %}
+
+<div class="custom-block">
+
+  <style>
+  .ep_inline_block {display:inline-block;vertical-align:middle;margin-left:10px;}
+  .ep_block {display:block;margin-top:10px;margin-bottom:2px;}
+  .custom-block { text-align: left; }
+  .custom-block select, textarea { width: 100%; }  
+  </style>
+
+  <p class="line-item-property__field">
+  <label class="ep_block">Young Adult Option</label>
+  <select required id="choose-an-option1" name="properties[Young Adult Option]">
+  <option value="Adult">Adult</option>
+  <option value="Child">Child</option>
+  </select>
+  </p>
+
+  <p class="line-item-property__field">
+  <label for="custom_photo">Photo1 (JPG or PNG)</label>
+  <input required id="custom_photo1" type="file" name="properties[Photo1]">
+  </p>
+
+  <p class="line-item-property__field">
+  <label for="custom_photo">Photo2 (JPG or PNG)</label>
+  <input required id="custom_photo2" type="file" name="properties[Photo2]">
+  </p>
+
+  <p class="line-item-property__field">
+  <label>Choose a Style</label>
+  <input required type="radio" name="properties[Style]" value="Option 1"> <span>Option 1</span><br>
+  <input required type="radio" name="properties[Style]" value="Option 2"> <span>Option 2</span><br>
+  <input required type="radio" name="properties[Style]" value="Option 3"> <span>Option 3</span><br>
+  </p>
+
+  <p class="line-item-property__field">
+  <label class="ep_block">Choose a Size</label>
+  <select required id="choose-an-option2" name="properties[Size]">
+  <option value="Option 1">Option 1</option>
+  <option value="Option 2">Option 2</option>
+  <option value="Option 3">Option 3</option>
+  </select>
+  </p>
+
+
+  <p class="line-item-property__field">
+  <label for="custom-message">Custom message</label>
+  <textarea required id="custom-message" name="properties[Custom message]"></textarea>
+  </p>	
+</div>
+
+{% endif %}
+
+  {% if settings.quantity_enable %}
+    <div class="product__quantity product__quantity--{{ settings.variant_type }} js-qty">
+      <label for="Quantity-{{ section_id }}">{{ 'products.product.quantity' | t }}</label>
+      <input type="number" hidden="hidden" id="Quantity-{{ section_id }}" name="quantity" value="1" min="1" class="js-qty__fallback">
+      <div class="best-fit-size-chart"></div>
+    </div>
+  {% endif %}
+
+  <div
+    id="ProductInventory-{{ section_id }}"
+    class="product__inventory {% unless inventory_visible %}hide{% endunless %}"
+    >
+    {% if current_variant.available %}
+    {% if current_variant.inventory_quantity == 1 %}
+    {{ 'last one' }}
+    {% else %}
+      {{ 'products.product.stock_label' | t: count: current_variant.inventory_quantity }}
+    {% endif %}
+    {% endif %}
+  </div>
+
+  {%- assign enable_dynamic_buttons = false -%}
+  {% if settings.enable_payment_button and template != 'product.preorder' %}
+    {%- assign enable_dynamic_buttons = true -%}
+  {% endif %}
+
+  {% if enable_dynamic_buttons %}
+    <div class="payment-buttons">
+  {% endif %}
+
+    <button
+      {% if product.empty? %}type="button"{% else %}type="submit"{% endif %}
+      name="add"
+      id="AddToCart-{{ section_id }}"
+      class="btn btn--full add-to-cart
+      {% unless current_variant.available %} disabled="disabled"{% endunless %}>
+      <span id="AddToCartText-{{ section_id }}">
+        {% if current_variant.available %}
+          {% if template == 'product.preorder' %}
+            {{ 'products.product.preorder' | t }}
+          {% else %}
+            {{ 'products.product.add_to_cart' | t }}
+          {% endif %}
+        {% else %}
+          {{ 'products.product.sold_out' | t }}
+        {% endif %}
+      </span>
+    </button>
+
+    {% if enable_dynamic_buttons %}
+      {{ form | payment_button }}
+    {% endif %}
+
+  {% if enable_dynamic_buttons %}
+    </div>
+  {% endif %}
+
+  <div id="VariantsJson-{{ section_id }}" class="hide" aria-hidden="true">
+    {{ product.variants | json }}
+  </div>
+{% endform %}
